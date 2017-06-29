@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:gravity="center_horizontal"
+              android:orientation="vertical">
+
+    <include
+            android:id="@+id/includeviewColor"
+            android:layout_width="296dp"
+            android:layout_height="256dp"
+            layout="@layout/viewcolor_view"/>
+
+    <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp">
+
+        <AbsoluteLayout
+                android:layout_width="200dp"
+                android:layout_height="40dp">
+
+            <View
+                    android:id="@+id/Lama"
+                    android:layout_width="80dp"
+                    android:layout_height="40dp"
+                    android:layout_x="0dp"
+                    android:layout_y="0dp"
+                    android:background="#faa"/>
+
+            <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_x="80dp"
+                    android:layout_y="0dp"
+                    android:src="@drawable/adi"/>
+
+            <View
+                    android:id="@+id/Baru"
+                    android:layout_width="80dp"
+                    android:layout_height="40dp"
+                    android:layout_x="120dp"
+                    android:layout_y="0dp"
+                    android:background="#aaf"/>
+        </AbsoluteLayout>
+    </LinearLayout>
+
+</LinearLayout>

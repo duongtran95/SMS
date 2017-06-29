@@ -1,0 +1,37 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+<!--    <declare-styleable name="Ub0rButtonBar">
+        <attr name="ubButtonBarBackground" format="reference" />
+    </declare-styleable>
+
+    <style name="ubButtonBar" parent="@android:style/ButtonBar" />-->
+
+    <style name="TextAppearance.Widget.Subtitle" parent="@android:style/TextAppearance.Small">
+        <item name="android:textColor">@color/actionbar_text_color</item>
+    </style>
+
+    <style name="TextAppearance.MultiComplete" parent="@android:style/TextAppearance.Widget.EditText" />
+
+    <style name="Divider">
+        <item name="android:visibility">gone</item>
+    </style>
+    <style name="Theme.TrueSMS" parent="style/Theme.AppCompat">
+        <item name="android:actionBarStyle">@style/Widget.Styled.ActionBar</item>
+        <item name="actionBarStyle">@style/Widget.Styled.ActionBar</item>
+      <!--  <item name="ubButtonBarBackground">@color/ActionBarBackgroundDark</item>-->
+    </style>
+
+    <style name="Theme.TrueSMS_Light" parent="style/Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:actionBarStyle">@style/Widget.Styled.ActionBar_Light</item>
+        <item name="actionBarStyle">@style/Widget.Styled.ActionBar_Light</item>
+<!--        <item name="ubButtonBarBackground">@color/ActionBarBackgroundLight</item>-->
+    </style>
+    <style name="Widget.Styled.ActionBar" parent="Widget.AppCompat.ActionBar.Solid">
+        <item name="android:background">@color/actionbar_background_color</item>
+        <item name="background">@color/actionbar_background_color</item>
+    </style>
+
+    <style name="Widget.Styled.ActionBar_Light" parent="Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@color/actionbar_background_color</item>
+        <item name="background">@color/actionbar_background_color</item>
+    </style>
+</resources>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="sender_name">SMS (TrueSMS)</string>
+	<string name="faq_">FAQ</string>
+	<string name="DATEFORMAT_details">dd.MM.yyyy kk:mm</string>
+	<string-array name="themes_values">
+		<item>black</item>
+		<item>light</item>
+	</string-array>
+	<string-array name="led_color_values">
+		<item>65280</item>
+		<item>255</item>
+		<item>16711680</item>
+		<item>16753920</item>
+		<item>16711935</item>
+		<item>65535</item>
+	</string-array>
+	<string-array name="led_flash_values">
+		<item>500_2000</item>
+		<item>1_0</item>
+	</string-array>
+	<string-array name="vibrate_mode_values">
+		<item>10_1000</item>
+		<item>10_200_200_200_200_200</item>
+		<item>10_1000_500_1000_500_1000</item>
+		<item>10_200_250_1000_250_200_250_1000</item>
+	</string-array>
+	<string-array name="emoticons">
+		<item>O:-)</item>
+		<item>8-)</item>
+		<item>8)</item>
+		<item>;-(</item>
+		<item>;(</item>
+		<item>:-?</item>
+		<item>:-)</item>
+		<item>:)</item>
+		<item>:-*</item>
+		<item>:*</item>
+		<item>:-D</item>
+		<item>:D</item>
+		<item>:-X</item>
+		<item>:-X</item>
+		<item>:x</item>
+		<item>:-$</item>
+		<item>:-(</item>
+		<item>:(</item>
+		<item>:o</item>
+		<item>:-P</item>
+		<item>:P</item>
+		<item>:p</item>
+		<item>:-\\</item>
+		<item>;-)</item>
+		<item>;)</item>
+		<item>o.O</item>
+		<item>:O</item>
+	</string-array>
+	<bool name="default_icstheme">false</bool>
+</resources>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/appearance_and_behavior_">
+        <PreferenceScreen android:title="@string/appearance_">
+            <intent android:action="android.intent.action.MAIN"
+                    android:targetPackage="com.example.trantrungduong95.truesms.Presenter"
+                    android:targetClass="com.example.trantrungduong95.truesms.Presenter.SettingsAppearanceActivity"/>
+        </PreferenceScreen>
+        <PreferenceScreen android:title="@string/behavior_">
+            <intent android:action="android.intent.action.MAIN"
+                    android:targetPackage="com.example.trantrungduong95.truesms.Presenter"
+                    android:targetClass="com.example.trantrungduong95.truesms.Presenter.SettingsBehaviorActivity"/>
+        </PreferenceScreen>
+        <PreferenceScreen android:title="@string/notification_">
+            <intent android:action="android.intent.action.MAIN"
+                    android:targetPackage="com.example.trantrungduong95.truesms.Presenter"
+                    android:targetClass="com.example.trantrungduong95.truesms.Presenter.SettingsNofActivity"/>
+        </PreferenceScreen>
+    </PreferenceCategory>
+</PreferenceScreen>

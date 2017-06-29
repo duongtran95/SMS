@@ -51,7 +51,7 @@ import com.example.trantrungduong95.truesms.Presenter.Utils;
 import com.example.trantrungduong95.truesms.Receiver.SmsReceiver;
 
 import java.util.Calendar;
-
+//kt lan 1
 //showing conversations.
 public class MainActivity extends AppCompatActivity implements OnItemClickListener, OnItemLongClickListener {
     //Tag

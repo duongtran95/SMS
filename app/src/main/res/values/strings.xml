@@ -72,7 +72,7 @@
     <string name="delete_thread_" formatted="false">Xóa cuộc hội thoại</string>
     <string name="forward_" formatted="false">Chuyển tiếp</string>
     <string name="send_draft_" formatted="false">Gửi nháp</string>
-    <string name="copy_text_" formatted="false">sao chép tin nhắn</string>
+    <string name="copy_text_" formatted="false">Sao chép tin nhắn</string>
     <string name="view_details_" formatted="false">Xem chi tiết tin nhắn</string>
     <string name="delete_threads_" formatted="false">Xóa tất cả tin nhắn</string>
     <string name="mark_read_" formatted="false">Đánh dấu đọc</string>
@@ -200,4 +200,7 @@
     <string name="hint_contacts">Enter recipient</string>
     <string name="hint_reply">Enter a message</string>
     <string name="hint_count">count: </string>
+    <string name="menu_open_thread">Mở cuộc hội thoại</string>
+    <string name="menu_forward">Chuyển tiếp tin nhắn</string>
+
 </resources>

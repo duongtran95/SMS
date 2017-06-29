@@ -9,4 +9,6 @@
             <enum name="mini" value="1"/>
         </attr>
     </declare-styleable>
+
+    <attr name="backgroundColor" format="color" />
 </resources>

@@ -118,8 +118,7 @@ public class SmsReceiver extends BroadcastReceiver {
                         .equals(Telephony.Sms.getDefaultSmsPackage(context)));
     }
 
-    public static void handleOnReceive(BroadcastReceiver receiver, Context context,
-                                Intent intent) {
+    public static void handleOnReceive(BroadcastReceiver receiver, Context context, Intent intent) {
         String action = intent.getAction();
         Log.d("onReceive(context), ", action);
         PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
@@ -145,15 +144,15 @@ public class SmsReceiver extends BroadcastReceiver {
                 assert b != null;
                 Object[] messages = (Object[]) b.get("pdus");
                 SmsMessage[] smsMessage = new SmsMessage[messages.length];
-                int l = messages.length;
-                for (int i = 0; i < l; i++) {
+                int lengthMsg = messages.length;
+                for (int i = 0; i < lengthMsg; i++) {
                     smsMessage[i] = SmsMessage.createFromPdu((byte[]) messages[i]);
                 }
                 text = null;
-                if (l > 0) {
+                if (lengthMsg > 0) {
                     // concatenate multipart SMS body
                     StringBuilder sbt = new StringBuilder();
-                    for (int i = 0; i < l; i++) {
+                    for (int i = 0; i < lengthMsg; i++) {
                         sbt.append(smsMessage[i].getMessageBody());
                     }
                     text = sbt.toString();
@@ -162,10 +161,8 @@ public class SmsReceiver extends BroadcastReceiver {
                     String s = smsMessage[0].getDisplayOriginatingAddress();
 
                     // this code is used to strip a forwarding agent and display the orginated number as sender
-                    SharedPreferences prefs = PreferenceManager
-                            .getDefaultSharedPreferences(context);
-                    if (prefs.getBoolean(SettingsOldActivity.PREFS_FORWARD_SMS_CLEAN, false)
-                            && text.contains(":")) {
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+                    if (prefs.getBoolean(SettingsOldActivity.PREFS_FORWARD_SMS_CLEAN, false) && text.contains(":")) {
                         Pattern smsPattern = Pattern.compile("([0-9a-zA-Z+]+):");
                         Matcher m = smsPattern.matcher(text);
                         if (m.find()) {
@@ -194,8 +191,7 @@ public class SmsReceiver extends BroadcastReceiver {
                         ContentValues values = new ContentValues();
                         values.put("address", s);
                         values.put("body", text);
-                        context.getContentResolver().insert(Uri.parse("content://sms/inbox"),
-                                values);
+                        context.getContentResolver().insert(Uri.parse("content://sms/inbox"), values);
                         Log.d("Insert SMS into db: ", s+ ", "+ text);
                     }
                 }
@@ -210,8 +206,7 @@ public class SmsReceiver extends BroadcastReceiver {
         //wakelock released
     }
 
-    private static void updateNotificationsWithNewText(Context context, String text,
-                                                       boolean silent) {
+    private static void updateNotificationsWithNewText(Context context, String text, boolean silent) {
         if (silent) {
             //ignore notifications for silent text
             return;

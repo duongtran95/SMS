@@ -12,7 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.trantrungduong95.truesms.R;
-//Tiep tuc xu ly
+//Tiep tuc xu ly.
 public class PopupActivity extends ConversationActivity{
     private Toolbar mToolbar;
     private TextView mTitle;

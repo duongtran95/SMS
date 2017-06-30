@@ -16,8 +16,10 @@ import android.provider.CallLog;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Menu;
@@ -26,6 +28,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -44,7 +47,7 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
 
     private static String TAG = "ml";
 
-    private static String copyMsg = "";
+    public static String copyMsg = "";
 
     //ContactsWrapper
     private static ContactsWrapper WRAPPER = ContactsWrapper.getInstance();
@@ -115,6 +118,8 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
     //True, to update Contact's photo.
     private boolean needContactUpdate = false;
 
+    private boolean flag = false;
+
     //Get ListView.
     private ListView getListView() {
         return (ListView) findViewById(R.id.conversation_list);
@@ -156,14 +161,34 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
         ListView list = getListView();
         list.setOnItemLongClickListener(this);
         list.setOnItemClickListener(this);
-        View v = findViewById(R.id.send_SMS);
-        v.setOnClickListener(this);
-        v.setOnLongClickListener(this);
+
+        View vSend = findViewById(R.id.send_SMS);
+        vSend.setOnClickListener(this);
+        vSend.setOnLongClickListener(this);
+
+        View vAttachment = findViewById(R.id.compose_icon);
+        vAttachment.setOnClickListener(this);
+        vAttachment.setOnLongClickListener(this);
+
         // TextWatcher updating char count on writing.
-        MyTextWatcher textWatcher = new MyTextWatcher(this, (TextView) findViewById(R.id.content_count));
-        etText.addTextChangedListener(textWatcher);
+        final TextView count_reply = (TextView) findViewById(R.id.content_count);
+        etText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                count_reply.setText(String.valueOf(etText.getText().toString().length()));
+            }
+        });
         etText.setMaxLines(MAX_EDITTEXT_LINES);
-        textWatcher.afterTextChanged(etText.getEditableText());
 
         longItemClickDialog[WHICH_MARK_UNREAD] = getString(R.string.mark_unread_);
         longItemClickDialog[WHICH_REPLY] = getString(R.string.reply);
@@ -529,9 +554,7 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
                             i = MainActivity.getComposeIntent(ConversationActivity.this, ConversationActivity.this.conv.getContact().getNumber());
                         } else {
                             resId = R.string.forward_;
-                            i = new Intent(Intent.ACTION_SEND);
-                            i.setType("text/plain");
-                            i.putExtra("forwarded_message", true);
+                            i = MainActivity.getComposeIntent(ConversationActivity.this, null);
                         }
                         CharSequence text;
                         if (SettingsOldActivity.decodeDecimalNCR(context)) {
@@ -541,16 +564,10 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
                         }
                         i.putExtra(Intent.EXTRA_TEXT, text);
                         i.putExtra("sms_body", text);
-                        context.startActivity(Intent.createChooser(i, context.getString(resId)));
+                        startActivity(Intent.createChooser(i, context.getString(resId)));
                         break;
                     case WHICH_COPY_TEXT:
-                        /*if (PreferencesActivity.decodeDecimalNCR(context)) {
-                            copyMsg =Converter.convertDecNCR2Char(m.getBody());
-                        } else {
-                            copyMsg=m.getBody();
-                        }*/
                         copyMsg = m.getBody().toString();
-
                         break;
                     case WHICH_VIEW_DETAILS:
                         int t = m.getType();
@@ -602,22 +619,23 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
         builder.show();
         return true;
     }
-
+////todo attachment
     @SuppressWarnings("deprecation")
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.send_SMS:
                 send(true);
                 return;
-/*            case R.id.clearOrPaste:
-            if(!copyMsg.equals("")){
-                etText.setText(copyMsg);
+            case R.id.compose_icon:
+                LinearLayout attachment_panel = (LinearLayout) findViewById(R.id.attachment_panel);
+                if (!flag) {
+                    attachment_panel.setVisibility(View.VISIBLE);
+                    flag = true;
+                } else {
+                    attachment_panel.setVisibility(View.GONE);
+                    flag = false;
+                }
                 return;
-            }
-            else if (etText.getText().toString().length()>=0)
-            {
-                etText.setText("");
-            }*/
             default:
                 // should never happen
         }
@@ -627,7 +645,16 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
         switch (v.getId()) {
             case R.id.send_SMS:
                 send(false);
-
+                return true;
+            case R.id.compose_icon:
+                LinearLayout attachment_panel = (LinearLayout) findViewById(R.id.attachment_panel);
+                if (!flag) {
+                    attachment_panel.setVisibility(View.VISIBLE);
+                    flag = true;
+                } else {
+                    attachment_panel.setVisibility(View.GONE);
+                    flag = false;
+                }
                 return true;
             default:
                 return true;

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">TrueSMS</string>
+    <string name="title_search">Search</string>
     <string name="ringtone_defaultvalue">content://settings/system/notification_sound</string>
     <string name="listReference_theme_light">light</string>
     <string name="about_" formatted="false">Thông tin</string>
@@ -13,6 +14,9 @@
     <string name="new_message" formatted="false">1 tin nhắn chưa đọc.</string>
     <string name="new_messages_" formatted="false">Các tin nhắn mới</string>
     <string name="new_messages" formatted="false">%d tin nhắn chưa đọc.</string>
+    <string name="title_conversation_list" formatted="false">Hộp thư</string>
+    <string name="title_Filterd" formatted="false">Hộp thư lọc</string>
+    <string name="title_Backlist" formatted="false">Hộp thư chặn</string>
 
     <string name="call" formatted="false">Gọi</string>
     <string name="reply" formatted="false">Trả lời</string>
@@ -32,12 +36,8 @@
     <string name="receive_no_text_hint" formatted="false">Ẩn người gửi / văn bản trong thông báo.</string>
     <string name="behavior_" formatted="false">Chung</string>
     <string name="autosend_" formatted="false">Tự động gửi</string>
-    <string formatted="false" name="autosend_hint">Send answers automatically. Currently only WebSMS supports this feature. Other apps will just show the text.</string>
+    <string name="autosend_hint" formatted="false">Send answers automatically. Currently only WebSMS supports this feature. Other apps will just show the text.</string>
     <string name="appearance_and_behavior_" formatted="false">Hiện thị &amp; Chung</string>
-    <!-- <string name="show_text_field_" formatted="false">Show text field</string>
-     <string name="show_text_field_hint" formatted="false">Show text field instead of answer button.</string>-->
-    <!--    <string name="show_target_app_" formatted="false">Show target app</string>
-        <string name="show_target_app_hint" formatted="false">Show target App used for sending on \"send\" Button.</string>-->
     <string name="appearance_" formatted="false">Hiển thị</string>
     <string name="theme_" formatted="false">Giao diện</string>
     <string name="textsize_" formatted="false">Kích cỡ chữ</string>
@@ -50,8 +50,6 @@
     <string name="show_contact_photo_hint" formatted="false">Hiển thị ảnh của người liên hệ trong danh sách cuộc trò chuyện.</string>
     <string name="show_emoticons_" formatted="false">Hiển thị biểu tượng cảm xúc</string>
     <string name="show_emoticons_hint" formatted="false">Hiển thị biểu tượng cảm xúc trong tin nhắn.</string>
-    <!--    <string name="hide_send_" formatted="false">Hide "send" button</string>
-        <string name="hide_send_hint" formatted="false">Hide "send" button near text field.</string>-->
     <string name="hide_restore_" formatted="false">Ẩn nút "khôi phục lại tin nhắn cuối cùng"</string>
     <string name="hide_restore_hint" formatted="false">Ẩn nút "khôi phục lại tin nhắn cuối cùng" trong danh sách tin nhắn.</string>
     <string name="hide_widget_label_" formatted="false">Ẩn nhãn của tiện ích con</string>
@@ -143,18 +141,8 @@
     <string name="decode_decimal_ncr_hint" formatted="false">Một số nhà cung cấp cung cấp tin nhắn unicode được mã hoá bằng chữ số thập phân NCR (&amp;#0000;). Chọn để tự động giải mã các thực thể như vậy.</string>
     <string name="activate_sender_" formatted="false">Kích hoạt người gửi</string>
     <string name="activate_sender_hint" formatted="false">Kích hoạt người gửi tin nhắn của TrueSMS.</string>
-    <string name="fix_numbers_" formatted="false">Sửa số điện thoại</string>
-    <string name="fix_numbers_hint" formatted="false">Văn bản viết tắt</string>
-    <string name="fix_number1_regex_" formatted="false">Mẫu 1</string>
-    <string name="fix_number1_replace_" formatted="false">Thay thế 1</string>
-    <string name="fix_number2_regex_" formatted="false">Mẫu 2</string>
-    <string name="fix_number2_replace_" formatted="false">Thay thế 2</string>
-    <string name="fix_number3_regex_" formatted="false">Mẫu 3</string>
-    <string name="fix_number3_replace_" formatted="false">Thay thế 3</string>
-    <string name="fix_numbers_regex_hint" formatted="false">Từ </string>
-    <string name="fix_numbers_replace_hint" formatted="false">Thành.</string>
-    <string name="use_new_layout_" formatted="false">Sử dụng bố cục lát gạch</string>
-    <string name="use_new_layout_hint" formatted="false">Sử dụng một giao diện người dùng được lát gạch cho các cuộc hội thoại</string>
+    <string name="show_target_app_" formatted="false">Hiển thị ứng dụng</string>
+    <string name="show_target_app_hint" formatted="false">Hiển thị Ứng dụng được sử dụng để gửi.</string>
     <string name="error_start_mms_download" formatted="false">Lỗi khi bắt đầu tải xuống MMS</string>
     <string-array name="themes">
         <item>Black</item>
@@ -202,5 +190,8 @@
     <string name="hint_count">count: </string>
     <string name="menu_open_thread">Mở cuộc hội thoại</string>
     <string name="menu_forward">Chuyển tiếp tin nhắn</string>
-
+    <string name="receive_popup_">Popup</string>
+    <string name="receive_popup_hint">Bật tắt Popup.</string>
+    <string name="title_restore">Khôi phục</string>
+    <string name="message_restore">Bạn có muốn khôi phục số điện thoại này không?</string>
 </resources>

@@ -48,4 +48,12 @@
         <item name="android:colorBackground">@color/grey_light_mega_ultra</item>
         <item name="android:textColor">@color/text_primary_light</item>
     </style>
+
+    <style name="AppThemeLightDialog" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="backgroundColor">@color/grey_light_mega_ultra</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="toolbarStyle">@style/ActionBarTheme</item>
+    </style>
 </resources>

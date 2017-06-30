@@ -7,20 +7,23 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
+import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telephony.SmsManager;
+import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,35 +43,35 @@ public class ComposeActivity extends AppCompatActivity implements View.OnClickLi
     private String TAG = "send";
 
     //link Uri for saving messages.
-    private static Uri URI_SMS = Uri.parse("content://sms");
+    public static Uri URI_SMS = Uri.parse("content://sms");
 
     //link Uri for saving sent messages.
     public static Uri URI_SENT = Uri.parse("content://sms/sent");
 
     //Projection for getting the id.
-    private static String[] PROJECTION_ID = new String[]{BaseColumns._ID};
+    public static String[] PROJECTION_ID = new String[]{BaseColumns._ID};
 
     //SMS DB: address.
-    private String ADDRESS = "address";
+    public static String ADDRESS = "address";
 
     //SMS DB: read.
-    private static String READ = "read";
+    public static String READ = "read";
 
     //SMS DB: type.
     public static String TYPE = "type";
 
     //SMS DB: body.
-    private static String BODY = "body";
+    public static String BODY = "body";
 
     //SMS DB: date.
-    private static String DATE = "date";
+    public static String DATE = "date";
 
     //Message set action.
     public static String MESSAGE_SENT_ACTION = "com.android.mms.transaction.MESSAGE_SENT";
 
     //Hold recipient and text.
     private String phoneNo, text;
-
+    private boolean flag = false;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,14 +101,31 @@ public class ComposeActivity extends AppCompatActivity implements View.OnClickLi
                 setTheme(SettingsOldActivity.getTheme(this));
                 setContentView(R.layout.activity_compose);
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                EditText et = (EditText) findViewById(R.id.compose_reply_text);
-                et.addTextChangedListener(new MyTextWatcher(this, (TextView) findViewById(R.id.content_count)));
-                et.setText(text);
+
+                final EditText editText_reply = (EditText) findViewById(R.id.compose_reply_text);
+                final TextView count_reply = (TextView) findViewById(R.id.content_count);
+                editText_reply.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        count_reply.setText(String.valueOf(editText_reply.getText().toString().length()));
+                    }
+                });
+                editText_reply.setText(text);
+
                 MultiAutoCompleteTextView mtv = (MultiAutoCompleteTextView) this.findViewById(R.id.txtPhoneNo);
                 MobilePhoneAdapter mpa = new MobilePhoneAdapter(this);
                 SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this);
-                MobilePhoneAdapter.setMobileNumbersOnly(p.getBoolean(
-                        SettingsOldActivity.PREFS_MOBILE_ONLY, false));
+                MobilePhoneAdapter.setMobileNumbersOnly(p.getBoolean(SettingsOldActivity.PREFS_MOBILE_ONLY, false));
                 mtv.setAdapter(mpa);
                 mtv.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
                 mtv.setText(phoneNo);
@@ -133,18 +153,18 @@ public class ComposeActivity extends AppCompatActivity implements View.OnClickLi
                         }
                     }
                     mtv.setText(phoneNo);
-                    et.requestFocus();
+                    editText_reply.requestFocus();
                     Log.d("phoneno",phoneNo);
                 } else {
                     mtv.requestFocus();
                 }
-                int flags = et.getInputType();
+                int flags = editText_reply.getInputType();
                 if (p.getBoolean(SettingsOldActivity.PREFS_EDIT_SHORT_TEXT, true)) {
                     flags |= InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE;
                 } else {
                     flags &= ~InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE;
                 }
-                et.setInputType(flags);
+                editText_reply.setInputType(flags);
             }
         }
     }
@@ -278,7 +298,7 @@ public class ComposeActivity extends AppCompatActivity implements View.OnClickLi
      *
      * @return true, if message was sent
      */
-    private boolean send() {
+    public boolean send() {
         if (TextUtils.isEmpty(phoneNo) || TextUtils.isEmpty(text)) {
             return false;
         }
@@ -321,26 +341,41 @@ public class ComposeActivity extends AppCompatActivity implements View.OnClickLi
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    //todo attachment
     @SuppressWarnings("deprecation")
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.send_SMS:
                 // app icon in Action Bar clicked; go home
-                EditText ad = (EditText) findViewById(R.id.compose_reply_text);
-                text = ad.getText().toString();
-                ad = (MultiAutoCompleteTextView) findViewById(R.id.txtPhoneNo);
-                phoneNo = ad.getText().toString();
-                if (send()) {
+                Bundle b = getIntent().getExtras();
+                if (b!=null){
+                    text = b.getString("sms_body");
+                }
+                else {
+                    EditText compose_reply = (EditText) findViewById(R.id.compose_reply_text);
+                    text = compose_reply.getText().toString();
+                }
+
+                EditText compose_reply = (MultiAutoCompleteTextView) findViewById(R.id.txtPhoneNo);
+                phoneNo = compose_reply.getText().toString();
+                if ( send()) {
                     Toast.makeText(this, getString(R.string.sending_successfully)+"", Toast.LENGTH_SHORT).show();
                     finish();
                 }
                 return;
             case R.id.compose_icon:
-                Toast.makeText(this, "123", Toast.LENGTH_SHORT).show();
+                LinearLayout  attachment_panel = (LinearLayout) findViewById(R.id.attachment_panel);
+                if (!flag) {
+                    attachment_panel.setVisibility(View.VISIBLE);
+                    flag = true;
+                } else {
+                    attachment_panel.setVisibility(View.GONE);
+                    flag = false;
+                }
                 return;
             default:
                 break;
         }
     }
-
 }

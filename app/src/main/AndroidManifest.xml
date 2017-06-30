@@ -38,12 +38,13 @@
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:launchMode="singleTop"
             android:label="@string/app_name"
+            android:launchMode="singleTop"
             android:theme="@style/Theme.TrueSMS_Light"
             android:windowSoftInputMode="stateHidden|adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
@@ -68,7 +69,7 @@
         <activity android:name=".Presenter.SettingsNofActivity" />
         <activity
             android:name=".Presenter.AboutActivity"
-            android:theme="@style/Theme.TrueSMS_Light"/>
+            android:theme="@style/Theme.TrueSMS_Light" />
         <activity
             android:name=".Presenter.ConversationActivity"
             android:configChanges="orientation|keyboardHidden"
@@ -90,6 +91,7 @@
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data
                     android:host="@string/app_name"
                     android:mimeType="vnd.android-dir/mms-sms"
@@ -100,13 +102,12 @@
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".Presenter.ComposeActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/sender_name"
-            android:theme="@style/Theme.TrueSMS_Light"
             android:launchMode="singleTop"
+            android:theme="@style/Theme.TrueSMS_Light"
             android:windowSoftInputMode="stateHidden|adjustResize">
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />
@@ -121,17 +122,33 @@
                 <data android:scheme="mmsto" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".Presenter.PopupActivity"
+            android:excludeFromRecents="true"
+            android:screenOrientation="user"
+            android:taskAffinity=""
+            android:theme="@style/AppThemeLightDialog"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".Presenter.Filterd_Blacklist_Activity"
+            android:theme="@style/Theme.TrueSMS_Light">
+        </activity>
+
 
         <receiver
             android:name=".Receiver.SmsReceiver"
             android:exported="true"
             android:permission="android.permission.BROADCAST_SMS">
             <intent-filter>
-                <!--//SMS_RECEIVED_ACTION simply says "the system received an SMS,"
+
+                <!--
+                //SMS_RECEIVED_ACTION simply says "the system received an SMS,"
                 //whereas the SMS_DELIVER_ACTION says "the system is delivering your app an SMS,
-                //because you're the default SMS app."-->
+                //because you're the default SMS app."
+                -->
                 <action android:name="android.provider.Telephony.SMS_DELIVER" />
-                //<action android:name="android.provider.Telephony.SMS_RECEIVED" />
+                //
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
         <receiver
@@ -161,6 +178,7 @@
                 <data android:scheme="mmsto" />
             </intent-filter>
         </service>
+
         <receiver android:name=".Presenter.NofReceiver">
             <intent-filter>
                 <action android:name="com.example.trantrungduong95.truesms.Presenter.MARK_READ" />

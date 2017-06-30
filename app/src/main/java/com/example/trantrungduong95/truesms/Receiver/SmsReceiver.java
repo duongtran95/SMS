@@ -30,6 +30,7 @@ import android.telephony.SmsMessage;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
+import android.widget.Toast;
 
 import com.example.trantrungduong95.truesms.BuildConfig;
 import com.example.trantrungduong95.truesms.Presenter.DefaultAndPermission;
@@ -39,6 +40,7 @@ import com.example.trantrungduong95.truesms.Model.Message;
 import com.example.trantrungduong95.truesms.Presenter.ComposeActivity;
 import com.example.trantrungduong95.truesms.Presenter.ConversationActivity;
 import com.example.trantrungduong95.truesms.Presenter.NofReceiver;
+import com.example.trantrungduong95.truesms.Presenter.PopupActivity;
 import com.example.trantrungduong95.truesms.Presenter.SettingsOldActivity;
 import com.example.trantrungduong95.truesms.Presenter.SpamDB;
 import com.example.trantrungduong95.truesms.Presenter.WidgetProvider;
@@ -87,6 +89,7 @@ public class SmsReceiver extends BroadcastReceiver {
 
     //Delay for spinlock, waiting for new messages.
     private static long SLEEP = 500;
+
 
     //Number of maximal spins.
     private static int MAX_SPINS = 15;
@@ -152,6 +155,7 @@ public class SmsReceiver extends BroadcastReceiver {
                 if (lengthMsg > 0) {
                     // concatenate multipart SMS body
                     StringBuilder sbt = new StringBuilder();
+                    StringBuilder sbt2 = new StringBuilder();
                     for (int i = 0; i < lengthMsg; i++) {
                         sbt.append(smsMessage[i].getMessageBody());
                     }
@@ -159,6 +163,16 @@ public class SmsReceiver extends BroadcastReceiver {
 
                     // ! Check in blacklist db - filter spam
                     String s = smsMessage[0].getDisplayOriginatingAddress();
+
+                    //Todo popup
+                    SharedPreferences prefs1 = PreferenceManager.getDefaultSharedPreferences(context);
+                    if (prefs1.getBoolean(SettingsOldActivity.PREFS_POPUP, false)) {
+                        Intent intent1 = new Intent(context, PopupActivity.class);
+                        intent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent1.putExtra("body",text);
+                        intent1.putExtra("addr",s);
+                        context.startActivity(intent1);
+                    }
 
                     // this code is used to strip a forwarding agent and display the orginated number as sender
                     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -242,8 +256,7 @@ public class SmsReceiver extends BroadcastReceiver {
      */
     private static int[] getUnreadSMS(ContentResolver cr, String text) {
         Log.d("getUnreadSMS(cr, ", text+ ")");
-        Cursor cursor = cr.query(URI_SMS, Message.PROJECTION, Message.SELECTION_READ_UNREAD,
-                Message.SELECTION_UNREAD, SORT);
+        Cursor cursor = cr.query(URI_SMS, Message.PROJECTION, Message.SELECTION_READ_UNREAD, Message.SELECTION_UNREAD, SORT);
 
         //Cursor cursor = cr.query(URI_SMS, null, null, null, null);
 
@@ -384,15 +397,11 @@ public class SmsReceiver extends BroadcastReceiver {
      */
     public static int updateNewMessageNotification(Context context, String text) {
         Log.d("updNewMsgNoti(", context+ ","+ text+ ")");
-        NotificationManager mNotificationMgr = (NotificationManager) context
-                .getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager mNotificationMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean enableNotifications = prefs.getBoolean(
-                SettingsOldActivity.PREFS_NOTIFICATION_ENABLE, true);
-        boolean privateNotification = prefs.getBoolean(
-                SettingsOldActivity.PREFS_NOTIFICATION_PRIVACY, false);
-        boolean showPhoto = !privateNotification
-                && prefs.getBoolean(SettingsOldActivity.PREFS_CONTACT_PHOTO, true);
+        boolean enableNotifications = prefs.getBoolean(SettingsOldActivity.PREFS_NOTIFICATION_ENABLE, true);
+        boolean privateNotification = prefs.getBoolean(SettingsOldActivity.PREFS_NOTIFICATION_PRIVACY, false);
+        boolean showPhoto = !privateNotification && prefs.getBoolean(SettingsOldActivity.PREFS_CONTACT_PHOTO, true);
         if (!enableNotifications) {
             mNotificationMgr.cancelAll();
             //no notification needed!
@@ -424,8 +433,7 @@ public class SmsReceiver extends BroadcastReceiver {
             if (tid >= 0) {
                 uri = Uri.parse(ConversationActivity.URI + tid);
                 i = new Intent(Intent.ACTION_VIEW, uri, context, ConversationActivity.class);
-                pIntent = PendingIntent.getActivity(context, 0, i,
-                        PendingIntent.FLAG_UPDATE_CURRENT);
+                pIntent = PendingIntent.getActivity(context, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
 
                 if (enableNotifications) {
                     Conversation conv = Conversation.getConversation(context, tid, true);
@@ -461,18 +469,12 @@ public class SmsReceiver extends BroadcastReceiver {
                             nb.setStyle(new NotificationCompat.BigTextStyle().bigText(body));
 
                             // add actions
-                            Intent nextIntent = new Intent(
-                                    NofReceiver.ACTION_MARK_READ);
-                            nextIntent.putExtra(NofReceiver.EXTRA_MURI,
-                                    uri.toString());
-                            PendingIntent nextPendingIntent = PendingIntent
-                                    .getBroadcast(context, 0, nextIntent,
-                                            PendingIntent.FLAG_UPDATE_CURRENT);
+                            Intent nextIntent = new Intent(NofReceiver.ACTION_MARK_READ);
+                            nextIntent.putExtra(NofReceiver.EXTRA_MURI, uri.toString());
+                            PendingIntent nextPendingIntent = PendingIntent.getBroadcast(context, 0, nextIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-/*                            nb.addAction(R.drawable.ic_menu_mark,
-                                    context.getString(R.string.mark_read_), nextPendingIntent);
-                            nb.addAction(R.drawable.ic_menu_compose,
-                                    context.getString(R.string.reply), pIntent);*/
+                            nb.addAction(R.drawable.ic_menu_mark, context.getString(R.string.mark_read_), nextPendingIntent);
+                            nb.addAction(R.drawable.ic_menu_compose, context.getString(R.string.reply), pIntent);
                         } else {
                             nb.setContentTitle(a);
                             nb.setContentText(context.getString(R.string.new_messages, l));
@@ -501,8 +503,7 @@ public class SmsReceiver extends BroadcastReceiver {
             } else {
                 uri = Uri.parse(ConversationActivity.URI);
                 i = new Intent(Intent.ACTION_VIEW, uri, context, MainActivity.class);
-                pIntent = PendingIntent.getActivity(context, 0, i,
-                        PendingIntent.FLAG_UPDATE_CURRENT);
+                pIntent = PendingIntent.getActivity(context, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
 
                 if (enableNotifications) {
                     showNotification = true;
@@ -554,17 +555,14 @@ public class SmsReceiver extends BroadcastReceiver {
         }
         Log.d("return ", l+ " (2)");
         //noinspection ConstantConditions
-        AppWidgetManager.getInstance(context).updateAppWidget(
-                new ComponentName(context, WidgetProvider.class),
-                WidgetProvider.getRemoteViews(context, l, pIntent));
+        AppWidgetManager.getInstance(context).updateAppWidget(new ComponentName(context, WidgetProvider.class), WidgetProvider.getRemoteViews(context, l, pIntent));
         return l;
     }
 
     //Update failed message notification.
     private static void updateFailedNotification(Context context, Uri uri) {
         Log.d("updateFailedNotf: ", uri+"");
-        Cursor c = context.getContentResolver().query(uri, Message.PROJECTION_SMS, null,
-                null, null);
+        Cursor c = context.getContentResolver().query(uri, Message.PROJECTION_SMS, null, null, null);
         if (c != null && c.moveToFirst()) {
             int id = c.getInt(Message.INDEX_ID);
             int tid = c.getInt(Message.INDEX_THREADID);
@@ -573,11 +571,9 @@ public class SmsReceiver extends BroadcastReceiver {
 
             Conversation conv = Conversation.getConversation(context, tid, true);
 
-            NotificationManager mNotificationMgr = (NotificationManager) context
-                    .getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationManager mNotificationMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
-            boolean privateNotification = p.getBoolean(
-                    SettingsOldActivity.PREFS_NOTIFICATION_PRIVACY, false);
+            boolean privateNotification = p.getBoolean(SettingsOldActivity.PREFS_NOTIFICATION_PRIVACY, false);
             Intent intent;
             if (conv == null) {
                 intent = new Intent(Intent.ACTION_VIEW, null, context, ComposeActivity.class);

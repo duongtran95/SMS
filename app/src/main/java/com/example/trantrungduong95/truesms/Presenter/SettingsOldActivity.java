@@ -46,6 +46,9 @@ public class SettingsOldActivity extends PreferenceActivity implements IPreferen
     //Preference's name: enable notifications.
     public static String PREFS_NOTIFICATION_ENABLE = "notification_enable";
 
+    //Preference's name: popup
+    public static String PREFS_POPUP = "receive_popup";
+
     //Preference's name: hide sender/text in notifications.
     public static String PREFS_NOTIFICATION_PRIVACY = "receive_privacy";
 
@@ -102,9 +105,6 @@ public class SettingsOldActivity extends PreferenceActivity implements IPreferen
 
     //Preference's name: edit_short_text.
     public static String PREFS_EDIT_SHORT_TEXT = "edit_short_text";
-
-    //Preference's name: show text field.
-    public static String PREFS_SHOWTEXTFIELD = "show_textfield";
 
     //Preference's name: show target app.
     public static String PREFS_SHOWTARGETAPP = "show_target_app";
@@ -178,7 +178,7 @@ public class SettingsOldActivity extends PreferenceActivity implements IPreferen
             R.string.bubbles_white_right, R.string.bubbles_yellow_left,
             R.string.bubbles_yellow_right,};
 
-    // Listen to clicks on "notification icon" preferences.
+    // Listen to clicks on "notification icon" preferences.x
     private static class OnNotificationIconClickListener implements OnPreferenceClickListener {
         private Context ctx;
 
@@ -236,8 +236,7 @@ public class SettingsOldActivity extends PreferenceActivity implements IPreferen
                 m.put(cols[1], ctx.getString(BUBBLES_STR[i]));
                 rows.add(m);
             }
-            b.setAdapter(new SimpleAdapter(ctx, rows, R.layout.bubbles_item, cols, new int[]{
-                            android.R.id.icon, android.R.id.text1}),
+            b.setAdapter(new SimpleAdapter(ctx, rows, R.layout.bubbles_item, cols, new int[]{android.R.id.icon, android.R.id.text1}),
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {

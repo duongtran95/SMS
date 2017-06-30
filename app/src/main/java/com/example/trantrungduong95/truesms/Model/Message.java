@@ -171,7 +171,7 @@ public class Message {
     //Type for sms drafts.
     public static final int SMS_DRAFT = 3;
     // Type for pending sms.
-    // TODO public static int SMS_PENDING = 4;
+     public static int SMS_PENDING = 4;
 
     //Type for incoming mms.
     public static final int MMS_IN = 132;

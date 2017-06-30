@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_search"
         android:icon="@drawable/ic_search"
-        android:showAsAction="collapseActionView|always"
+        app:showAsAction="ifRoom"
+        android:title="@string/search" />
+    <item
+        android:id="@+id/item_filterd_blacklist"
+        android:icon="@drawable/filterd_blacklist"
+        app:showAsAction="ifRoom"
         android:title="@string/search" />
     <item
         android:id="@+id/item_delete_all_threads"
         android:title="@string/delete_threads_"
-        android:showAsAction="never"
         android:icon="@android:drawable/ic_menu_delete"/>
     <item
         android:id="@+id/item_settings"
         android:title="@string/settings"
-        android:showAsAction="never"
         android:icon="@android:drawable/ic_menu_preferences"/>
 
 </menu>

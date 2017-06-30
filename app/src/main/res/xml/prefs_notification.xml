@@ -36,4 +36,9 @@
                         android:title="@string/receive_no_text_"
                         android:summary="@string/receive_no_text_hint"
                         android:dependency="notification_enable"/>
+    <CheckBoxPreference android:key="receive_popup"
+        android:title="@string/receive_popup_"
+        android:summary="@string/receive_popup_hint"
+        android:dependency="notification_enable"/>
+
 </PreferenceScreen>

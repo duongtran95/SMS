@@ -7,7 +7,7 @@
     android:paddingRight="7dip">
     <View
         android:id="@+id/read"
-        android:background="#FF00AA00"
+        android:background="@color/purple_dark"
         android:layout_height="fill_parent"
         android:layout_width="5dip"
         android:layout_marginRight="1dip"/>

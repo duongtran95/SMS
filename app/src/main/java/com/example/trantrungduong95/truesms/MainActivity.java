@@ -24,15 +24,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.trantrungduong95.truesms.CustomAdapter.ConversationsAdapter;
@@ -44,6 +49,7 @@ import com.example.trantrungduong95.truesms.Model.Wrapper.ContactsWrapper;
 import com.example.trantrungduong95.truesms.Presenter.AsyncHelper;
 import com.example.trantrungduong95.truesms.Presenter.ConversationActivity;
 import com.example.trantrungduong95.truesms.Presenter.DefaultAndPermission;
+import com.example.trantrungduong95.truesms.Presenter.Filterd_Blacklist_Activity;
 import com.example.trantrungduong95.truesms.Presenter.SettingsNewActivity;
 import com.example.trantrungduong95.truesms.Presenter.SettingsOldActivity;
 import com.example.trantrungduong95.truesms.Presenter.SpamDB;
@@ -51,9 +57,7 @@ import com.example.trantrungduong95.truesms.Presenter.Utils;
 import com.example.trantrungduong95.truesms.Receiver.SmsReceiver;
 
 import java.util.Calendar;
-//kt lan 1
-//showing conversations.
-public class MainActivity extends AppCompatActivity implements OnItemClickListener, OnItemLongClickListener {
+public class MainActivity extends AppCompatActivity implements OnItemClickListener, OnItemLongClickListener{
     //Tag
     public static String TAG = "main";
     //ORIG_URI to resolve.
@@ -98,12 +102,18 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
     private static final int PERMISSIONS_REQUEST_READ_SMS = 1;
 
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 2;
-    private Activity activity = this;
+    //search
+    private MenuItem mSearchAction;
+    private boolean isSearchOpened = false;
+    private EditText edtSearch;
+    android.support.v7.app.ActionBar action;
+
     @Override
     public void onStart() {
         super.onStart();
         AsyncHelper.setAdapter(adapter);
     }
+
     @Override
     public void onStop() {
         super.onStop();
@@ -117,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
 
     //Set ListAdapter to  ListView.
     private void setListAdapter(ListAdapter la) {
-        ListView v  =getListView();
+        ListView v = getListView();
         v.setAdapter(la);
     }
 
@@ -144,8 +154,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         if (intent != null) {
             Bundle b = intent.getExtras();
             if (b != null) {
-                Log.d("user_query: ", b.get("user_query")+"");
-                Log.d("got extra: ", b+"");
+                Log.d("user_query: ", b.get("user_query") + "");
+                Log.d("got extra: ", b + "");
             }
             String query = intent.getStringExtra("user_query");
             // TODO: do something with search query
@@ -160,6 +170,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         setTheme(SettingsOldActivity.getTheme(this));
         Utils.setLocale(this);
         setContentView(R.layout.activity_main);
+
 
         ListView list = getListView();
         list.setOnItemClickListener(this);
@@ -196,11 +207,11 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent_compose = getComposeIntent(activity, null);
+                Intent intent_compose = getComposeIntent(MainActivity.this, null);
                 try {
                     startActivity(intent_compose);
                 } catch (ActivityNotFoundException e) {
-                    Log.e("er launching intent: ", intent_compose.getAction()+ ", "+ intent_compose.getData());
+                    Log.e("er launching intent: ", intent_compose.getAction() + ", " + intent_compose.getData());
                     Toast.makeText(getApplication(), "error launching messaging app!\nPlease contact the developer.", Toast.LENGTH_LONG).show();
                 }
             }
@@ -257,6 +268,9 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+
+        mSearchAction = menu.findItem(R.id.action_search);
+
         SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this);
         boolean hideDeleteAll = p.getBoolean(SettingsOldActivity.PREFS_HIDE_DELETE_ALL_THREADS, false);
         menu.findItem(R.id.item_delete_all_threads).setVisible(!hideDeleteAll);
@@ -292,8 +306,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
     }
 
     //Mark all messages with a given uri as read.
-    public static void markRead(Context context,Uri uri, int read) {
-        Log.d("markRead(", uri+ ","+ read+ ")");
+    public static void markRead(Context context, Uri uri, int read) {
+        Log.d("markRead(", uri + "," + read + ")");
         if (uri == null) {
             return;
         }
@@ -323,7 +337,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
      * @param activity {@link Activity} to finish when deleting.
      */
     public static void deleteMessages(final Context context, final Uri uri, int title, int message, final Activity activity) {
-        Log.i("deleteMessages(..,", uri+ " ,..)");
+        Log.i("deleteMessages(..,", uri + " ,..)");
         Builder builder = new Builder(context);
         builder.setTitle(title);
         builder.setMessage(message);
@@ -333,7 +347,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
             public void onClick(final DialogInterface dialog, final int which) {
                 try {
                     final int ret = context.getContentResolver().delete(uri, null, null);
-                    Log.d("deleted: ", ret+"");
+                    Log.d("deleted: ", ret + "");
                     if (activity != null && !activity.isFinishing()) {
                         activity.finish();
                     }
@@ -364,7 +378,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_search:
-
+                handleMenuSearch();
                 return true;
             case R.id.item_settings: // start settings activity
                 if (Build.VERSION.SDK_INT >= 19) {
@@ -376,6 +390,10 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
             case R.id.item_delete_all_threads:
                 deleteMessages(this, Uri.parse("content://sms/"), R.string.delete_threads_,
                         R.string.delete_threads_question, null);
+                return true;
+            case R.id.item_filterd_blacklist:
+                Intent intent_filterd_blacklist = new Intent(this, Filterd_Blacklist_Activity.class);
+                startActivity(intent_filterd_blacklist);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -400,12 +418,12 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         Conversation c = Conversation.getConversation(this, (Cursor) parent.getItemAtPosition(position), false);
         Uri target = c.getUri();
 
-        Intent i = new Intent(this,ConversationActivity.class);
+        Intent i = new Intent(this, ConversationActivity.class);
         i.setData(target);
         try {
             startActivity(i);
         } catch (ActivityNotFoundException e) {
-            Log.e("error launching intent ", i.getAction()+ ", "+ i.getData());
+            Log.e("error launching intent ", i.getAction() + ", " + i.getData());
             Toast.makeText(this, "error launching messaging app!\n" + "Please contact the developer.", Toast.LENGTH_LONG).show();
         }
     }
@@ -492,8 +510,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         if (t < MIN_DATE) {
             t *= MILLIS;
         }
-        if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(
-                SettingsOldActivity.PREFS_FULL_DATE, false)) {
+        if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SettingsOldActivity.PREFS_FULL_DATE, false)) {
             return DateFormat.getTimeFormat(context).format(t) + " "
                     + DateFormat.getDateFormat(context).format(t);
         } else if (t < CAL_DAYAGO.getTimeInMillis()) {
@@ -502,4 +519,81 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
             return DateFormat.getTimeFormat(context).format(t);
         }
     }
+
+    protected void handleMenuSearch() {
+        action = getSupportActionBar(); //get the actionbar
+        if (isSearchOpened) { //test if the search is open
+
+            action.setDisplayShowCustomEnabled(false); //disable a custom view inside the actionbar
+            action.setDisplayShowTitleEnabled(true); //show the title in the action bar
+
+            //hides the keyboard
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(edtSearch.getWindowToken(), 0);
+
+            //add the search icon in the action bar
+            mSearchAction.setIcon(getResources().getDrawable(R.drawable.ic_search));
+
+            isSearchOpened = false;
+        } else { //open the search entry
+
+            action.setDisplayShowCustomEnabled(true); //enable it to display a
+            // custom view in the action bar.
+            action.setCustomView(R.layout.search_bar);//add the custom view
+            action.setDisplayShowTitleEnabled(false); //hide the title
+
+            edtSearch = (EditText) action.getCustomView().findViewById(R.id.edtSearch); //the text editor
+
+            //this is a listener to do a search when the user clicks on search button
+            edtSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                        doSearch();
+                        return true;
+                    }
+                    return false;
+                }
+            });
+/*            edtSearch.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                }
+            });*/
+            edtSearch.requestFocus();
+
+            //open the keyboard focused in the edtSearch
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(edtSearch, InputMethodManager.SHOW_IMPLICIT);
+
+
+            //add the close icon
+            mSearchAction.setIcon(getResources().getDrawable(R.drawable.ic_cancel));
+
+            isSearchOpened = true;
+        }
+    }
+
+    private void doSearch() {
+        //Todo search
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (isSearchOpened) {
+            handleMenuSearch();
+            return;
+        }
+        super.onBackPressed();
+    }
+
 }

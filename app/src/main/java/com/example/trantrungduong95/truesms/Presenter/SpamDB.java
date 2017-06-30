@@ -136,8 +136,7 @@ public class SpamDB {
      * @return array of entries
      */
     private String[] getAllEntries() {
-        Cursor cursor = db.query(DATABASE_TABLE, PROJECTION, null, null, null, null,
-                null);
+        Cursor cursor = db.query(DATABASE_TABLE, PROJECTION, null, null, null, null, null);
         if (cursor == null) {
             return null;
         }

@@ -265,8 +265,7 @@ public class ConversationAdapter extends ResourceCursorAdapter {
                 public void onClick(View v) {
                     try {
                         Intent i = new Intent();
-                        i.setClassName("com.android.mms",
-                                "com.android.mms.transaction.TransactionService");
+                        i.setClassName("com.android.mms", "com.android.mms.transaction.TransactionService");
                         i.putExtra("uri", m.getUri().toString());
                         i.putExtra("type", 1);
                         ComponentName cn = context.startService(i);
@@ -274,15 +273,12 @@ public class ConversationAdapter extends ResourceCursorAdapter {
                             btn.setEnabled(false);
                             btn.setText(R.string.downloading_);
                         } else {
-                            i = new Intent(Intent.ACTION_VIEW, Uri.parse(ConversationActivity.URI
-                                    + m.getThreadId()));
-                            context.startActivity(Intent.createChooser(i,
-                                    context.getString(R.string.view_mms)));
+                            i = new Intent(Intent.ACTION_VIEW, Uri.parse(ConversationActivity.URI + m.getThreadId()));
+                            context.startActivity(Intent.createChooser(i, context.getString(R.string.view_mms)));
                         }
                     } catch (SecurityException e) {
                        //unable to start mms download
-                        Toast.makeText(context, R.string.error_start_mms_download,
-                                Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, R.string.error_start_mms_download, Toast.LENGTH_LONG).show();
                     }
                 }
             });

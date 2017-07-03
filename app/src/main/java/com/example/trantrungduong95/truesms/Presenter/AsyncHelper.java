@@ -53,7 +53,7 @@ public class AsyncHelper extends AsyncTask<Void, Void, Void> {
             try {
                 helper.execute((Void) null);
             } catch (RejectedExecutionException e) {
-                Log.e(TAG, "rejected execution", e);
+                Log.e("rejected execution", e.getMessage());
             }
         }
     }

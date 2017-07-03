@@ -14,37 +14,43 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.ContactsContract;
 import android.provider.Telephony;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.text.format.DateFormat;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.trantrungduong95.truesms.CustomAdapter.ConversationSearchAdapter;
 import com.example.trantrungduong95.truesms.CustomAdapter.ConversationsAdapter;
 import com.example.trantrungduong95.truesms.Fab.FloatingActionButton;
 import com.example.trantrungduong95.truesms.Model.Contact;
 import com.example.trantrungduong95.truesms.Model.Conversation;
 import com.example.trantrungduong95.truesms.Model.Message;
+import com.example.trantrungduong95.truesms.Model.Search;
 import com.example.trantrungduong95.truesms.Model.Wrapper.ContactsWrapper;
 import com.example.trantrungduong95.truesms.Presenter.AsyncHelper;
 import com.example.trantrungduong95.truesms.Presenter.ConversationActivity;
@@ -56,8 +62,10 @@ import com.example.trantrungduong95.truesms.Presenter.SpamDB;
 import com.example.trantrungduong95.truesms.Presenter.Utils;
 import com.example.trantrungduong95.truesms.Receiver.SmsReceiver;
 
+import java.util.ArrayList;
 import java.util.Calendar;
-public class MainActivity extends AppCompatActivity implements OnItemClickListener, OnItemLongClickListener{
+
+public class MainActivity extends AppCompatActivity implements OnItemClickListener, OnItemLongClickListener {
     //Tag
     public static String TAG = "main";
     //ORIG_URI to resolve.
@@ -102,22 +110,38 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
     private static final int PERMISSIONS_REQUEST_READ_SMS = 1;
 
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 2;
-    //search
+
     private MenuItem mSearchAction;
     private boolean isSearchOpened = false;
     private EditText edtSearch;
-    android.support.v7.app.ActionBar action;
+    private android.support.v7.app.ActionBar action;
+    private ConversationSearchAdapter conversationSearchAdapter;
+
+    //listview search
+    private ListView listView;
+    //listview conversations
+    private ListView listview_conversation;
 
     @Override
     public void onStart() {
         super.onStart();
         AsyncHelper.setAdapter(adapter);
+        Log.d("onStart", "");
+        adapter = new ConversationsAdapter(this);
+        setListAdapter(adapter);
+
+        adapter.startMsgListQuery();
     }
 
     @Override
     public void onStop() {
         super.onStop();
         AsyncHelper.setAdapter(null);
+        Log.d("onStop", "");
+        adapter = new ConversationsAdapter(this);
+        setListAdapter(adapter);
+
+        adapter.startMsgListQuery();
     }
 
     //Get Listview.
@@ -125,10 +149,10 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         return (ListView) findViewById(R.id.conversations_list);
     }
 
-    //Set ListAdapter to  ListView.
-    private void setListAdapter(ListAdapter la) {
+    //Set ListAdapter to ListView.
+    private void setListAdapter(ListAdapter adapter) {
         ListView v = getListView();
-        v.setAdapter(la);
+        v.setAdapter(adapter);
     }
 
     //Show all list of a particular uri.
@@ -138,6 +162,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         Cursor c = context.getContentResolver().query(u, null, null, null, null);
         if (c != null) {
             int l = c.getColumnCount();
+
             StringBuilder buf = new StringBuilder();
             for (int i = 0; i < l; i++) {
                 buf.append(i).append(":");
@@ -156,25 +181,158 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
             if (b != null) {
                 Log.d("user_query: ", b.get("user_query") + "");
                 Log.d("got extra: ", b + "");
+                Toast.makeText(this, b + "", Toast.LENGTH_SHORT).show();
             }
             String query = intent.getStringExtra("user_query");
             // TODO: do something with search query
         }
     }
 
+    protected void handleMenuSearch() {
+        action = getSupportActionBar();
+        if (isSearchOpened) { //test if the search is open
+
+            action.setDisplayShowCustomEnabled(false); //disable a custom view inside the actionbar
+            action.setDisplayShowTitleEnabled(true); //show the title in the action bar
+
+            //hides the keyboard
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(edtSearch.getWindowToken(), 0);
+
+            //add the search icon in the action bar
+            mSearchAction.setIcon(getResources().getDrawable(R.drawable.ic_search));
+
+            listview_conversation.setVisibility(View.VISIBLE);
+            listView.setVisibility(View.INVISIBLE);
+
+            isSearchOpened = false;
+        } else { //open the search entry
+
+            action.setDisplayShowCustomEnabled(true); //enable it to display a
+            // custom view in the action bar.
+            action.setCustomView(R.layout.search_bar);//add the custom view
+            action.setDisplayShowTitleEnabled(false); //hide the title
+
+            edtSearch = (EditText) action.getCustomView().findViewById(R.id.edtSearch); //the text editor
+
+            //this is a listener to do a search when the user clicks on search button
+            listview_conversation.setVisibility(View.INVISIBLE);
+            listView = (ListView) findViewById(R.id.listView);
+            listView.setVisibility(View.VISIBLE);
+
+            // new search list
+            final ArrayList<Search> conversationsArrayList = new ArrayList<>();
+            getAllValues(listview_conversation, conversationsArrayList);
+
+            //set adapter search
+            conversationSearchAdapter = new ConversationSearchAdapter(conversationsArrayList, this);
+            listView.setAdapter(conversationSearchAdapter);
+
+            registerForContextMenu(listView);
+            listView.setTextFilterEnabled(true);
+
+            edtSearch.addTextChangedListener(new TextWatcher() {
+                                                 @Override
+                                                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                                                 }
+
+                                                 @Override
+                                                 public void onTextChanged(CharSequence s, int start, int before, int count) {
+                                                     if (count < before) {
+                                                         // We're deleting char so we need to reset the adapter data
+                                                         conversationSearchAdapter.resetData();
+                                                     }
+
+                                                     conversationSearchAdapter.getFilter().filter(s.toString());
+                                                 }
+
+                                                 @Override
+                                                 public void afterTextChanged(Editable s) {
+                                                 }
+                                             }
+            );
+
+            edtSearch.requestFocus();
+
+            //open the keyboard focused in the edtSearch
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(edtSearch, InputMethodManager.SHOW_IMPLICIT);
+
+            // click item listview
+            listView.setOnItemClickListener(new OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    MainActivity.this.startActivity(getComposeIntent(MainActivity.this, conversationsArrayList.get(position).getNum()));
+                }
+            });
+
+            //add the close icon
+            mSearchAction.setIcon(getResources().getDrawable(R.drawable.ic_cancel));
+
+            isSearchOpened = true;
+        }
+    }
+
+    //Get All item listview comversations
+    public void getAllValues(ListView list, ArrayList<Search> arrayList) {
+        View parentView = null;
+        for (int i = 0; i < list.getCount(); i++) {
+            parentView = getViewByPosition(i, list);
+            String addr = ((TextView) parentView
+                    .findViewById(R.id.addr)).getText().toString();
+            String body = ((TextView) parentView
+                    .findViewById(R.id.body)).getText().toString();
+            String date = ((TextView) parentView
+                    .findViewById(R.id.date)).getText().toString();
+            String count = ((TextView) parentView
+                    .findViewById(R.id.count)).getText().toString();
+            ImageView photo = ((ImageView) parentView.findViewById(R.id.photo));
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) photo.getDrawable();
+            Bitmap yourBitmap = bitmapDrawable.getBitmap();
+            Search a;
+            if (!addr.equals("false")) {
+                a = new Search(addr, body);
+                arrayList.add(a);
+            }
+        }
+    }
+
+    public View getViewByPosition(int pos, ListView listView) {
+        final int firstListItemPosition = listView.getFirstVisiblePosition();
+        final int lastListItemPosition = firstListItemPosition
+                + listView.getChildCount() - 1;
+
+        if (pos < firstListItemPosition || pos > lastListItemPosition) {
+            return listView.getAdapter().getView(pos, null, listView);
+        } else {
+            final int childIndex = pos - firstListItemPosition;
+            return listView.getChildAt(childIndex);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (isSearchOpened) {
+            handleMenuSearch();
+            return;
+        }
+        super.onBackPressed();
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         super.onCreate(savedInstanceState);
-
+        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this);
         setTheme(SettingsOldActivity.getTheme(this));
         Utils.setLocale(this);
         setContentView(R.layout.activity_main);
 
+        listview_conversation = getListView();
 
-        ListView list = getListView();
-        list.setOnItemClickListener(this);
-        list.setOnItemLongClickListener(this);
+        listview_conversation.setOnItemClickListener(this);
+        listview_conversation.setOnItemLongClickListener(this);
         longItemClickDialog = new String[WHICH_N];
         longItemClickDialog[WHICH_ANSWER] = getString(R.string.reply);
         longItemClickDialog[WHICH_CALL] = getString(R.string.call);
@@ -216,6 +374,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                 }
             }
         });
+        Log.d("onCreate", "");
     }
 
     private void initAdapter() {
@@ -243,7 +402,9 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
 
         adapter = new ConversationsAdapter(this);
         setListAdapter(adapter);
+
         adapter.startMsgListQuery();
+
     }
 
     @Override
@@ -258,6 +419,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         if (adapter != null) {
             adapter.startMsgListQuery();
         }
+        Log.d("onResume", "");
     }
 
     @Override
@@ -268,7 +430,6 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-
         mSearchAction = menu.findItem(R.id.action_search);
 
         SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this);
@@ -370,7 +531,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
     }
 
     //Add or remove an entry to/from blacklist.
-    private static void addToOrRemoveFromSpamlist(Context context, String addr) {
+    public static void addToOrRemoveFromSpamlist(Context context, String addr) {
         SpamDB.toggleBlacklist(context, addr);
     }
 
@@ -428,16 +589,16 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         }
     }
 
-    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        final Conversation c = Conversation.getConversation(this, (Cursor) parent.getItemAtPosition(position), true);
-        final Uri target = c.getUri();
+    public boolean onItemLongClick(final AdapterView<?> parent, final View view, final int position, long id) {
+        final Conversation conv = Conversation.getConversation(this, (Cursor) parent.getItemAtPosition(position), true);
+        final Uri target = conv.getUri();
         if (ContentUris.parseId(target) < 0) {
             // do not show anything for broken threadIds
             return true;
         }
         Builder builder = new Builder(this);
         String[] items = longItemClickDialog;
-        Contact contact = c.getContact();
+        Contact contact = conv.getContact();
         final String number = contact.getNumber();
         final String name = contact.getName();
         if (TextUtils.isEmpty(name)) {
@@ -447,7 +608,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         } else {
             builder.setTitle(name);
         }
-        if (SpamDB.isBlacklisted(getApplicationContext(), number)) {
+        if (SpamDB.isBlacklisted(this, number)) {
             items = items.clone();
             items[WHICH_MARK_SPAM] = getString(R.string.dont_filter_spam_);
         }
@@ -469,7 +630,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                                 i = ContactsWrapper.getInstance().getInsertPickIntent(number);
                                 Conversation.flushCache();
                             } else {
-                                Uri uri = c.getContact().getUri();
+                                Uri uri = conv.getContact().getUri();
                                 i = new Intent(Intent.ACTION_VIEW, uri);
                             }
                             MainActivity.this.startActivity(i);
@@ -487,8 +648,11 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                                             null);
                             break;
                         case WHICH_MARK_SPAM:
-                            MainActivity.addToOrRemoveFromSpamlist(
-                                    MainActivity.this, c.getContact().getNumber());
+                            MainActivity.addToOrRemoveFromSpamlist(MainActivity.this, conv.getContact().getNumber());
+                            adapter = new ConversationsAdapter(MainActivity.this);
+                            setListAdapter(adapter);
+
+                            adapter.startMsgListQuery();
                             break;
                         default:
                             break;
@@ -518,82 +682,6 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         } else {
             return DateFormat.getTimeFormat(context).format(t);
         }
-    }
-
-    protected void handleMenuSearch() {
-        action = getSupportActionBar(); //get the actionbar
-        if (isSearchOpened) { //test if the search is open
-
-            action.setDisplayShowCustomEnabled(false); //disable a custom view inside the actionbar
-            action.setDisplayShowTitleEnabled(true); //show the title in the action bar
-
-            //hides the keyboard
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(edtSearch.getWindowToken(), 0);
-
-            //add the search icon in the action bar
-            mSearchAction.setIcon(getResources().getDrawable(R.drawable.ic_search));
-
-            isSearchOpened = false;
-        } else { //open the search entry
-
-            action.setDisplayShowCustomEnabled(true); //enable it to display a
-            // custom view in the action bar.
-            action.setCustomView(R.layout.search_bar);//add the custom view
-            action.setDisplayShowTitleEnabled(false); //hide the title
-
-            edtSearch = (EditText) action.getCustomView().findViewById(R.id.edtSearch); //the text editor
-
-            //this is a listener to do a search when the user clicks on search button
-            edtSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                @Override
-                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                    if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                        doSearch();
-                        return true;
-                    }
-                    return false;
-                }
-            });
-/*            edtSearch.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                }
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                }
-                @Override
-                public void afterTextChanged(Editable s) {
-
-                }
-            });*/
-            edtSearch.requestFocus();
-
-            //open the keyboard focused in the edtSearch
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(edtSearch, InputMethodManager.SHOW_IMPLICIT);
-
-
-            //add the close icon
-            mSearchAction.setIcon(getResources().getDrawable(R.drawable.ic_cancel));
-
-            isSearchOpened = true;
-        }
-    }
-
-    private void doSearch() {
-        //Todo search
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (isSearchOpened) {
-            handleMenuSearch();
-            return;
-        }
-        super.onBackPressed();
     }
 
 }

@@ -23,12 +23,8 @@ public class SearchProvider extends ContentProvider {
         throw new UnsupportedOperationException("not implemented");
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection,
-            String[] selectionArgs, String sortOrder) {
+    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         if (uri == null) {
             return null;
         }
@@ -42,8 +38,7 @@ public class SearchProvider extends ContentProvider {
                 "address as " + SearchManager.SUGGEST_COLUMN_TEXT_1,
                 "body as " + SearchManager.SUGGEST_COLUMN_TEXT_2};
         String where = "body like '%" + query + "%'";
-        return new MergeCursor(new Cursor[]{getContext().getContentResolver()
-                .query(SMS_URI, proj, where, null, null)});
+        return new MergeCursor(new Cursor[]{getContext().getContentResolver().query(SMS_URI, proj, where, null, null)});
     }
 
     @Override

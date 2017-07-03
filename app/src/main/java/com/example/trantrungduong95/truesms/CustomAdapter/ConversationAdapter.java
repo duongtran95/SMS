@@ -31,6 +31,8 @@ import com.example.trantrungduong95.truesms.Presenter.SettingsOldActivity;
 import com.example.trantrungduong95.truesms.Presenter.SmileyParser;
 import com.example.trantrungduong95.truesms.R;
 
+import java.util.ArrayList;
+
 // Adapter for the list of link Conversation.
 public class ConversationAdapter extends ResourceCursorAdapter {
 
@@ -85,6 +87,8 @@ public class ConversationAdapter extends ResourceCursorAdapter {
 
         Button btnImport;
     }
+
+
 
     public ConversationAdapter(ConversationActivity c, Uri u) {
         super(c, R.layout.conversation_item, getCursor(c.getContentResolver(), u), true);
@@ -158,13 +162,12 @@ public class ConversationAdapter extends ResourceCursorAdapter {
         if (c[0] == null || c[0].getCount() == 0) {
             return c[1];
         }
-
         return new MergeCursor(c);
     }
 
     @Override
     public void bindView(View view, final Context context, Cursor cursor) {
-        final Message m = Message.getMessage(context, cursor);
+        final Message message = Message.getMessage(context, cursor);
 
         ViewHolder holder = (ViewHolder) view.getTag();
         if (holder == null) {
@@ -191,9 +194,9 @@ public class ConversationAdapter extends ResourceCursorAdapter {
             holder.tvBody.setTextColor(col);
             holder.tvDate.setTextColor(col);
         }
-        int t = m.getType();
+        int type = message.getType();
 
-        String subject = m.getSubject();
+        String subject = message.getSubject();
         if (subject == null) {
             subject = "";
         } else {
@@ -201,7 +204,7 @@ public class ConversationAdapter extends ResourceCursorAdapter {
         }
         // incoming / outgoing / pending
         int pendingvisability = View.GONE;
-        switch (t) {
+        switch (type) {
             case Message.SMS_DRAFT:
                 // TODO case Message.SMS_PENDING:
                 // case Message.MMS_DRAFT:
@@ -232,16 +235,16 @@ public class ConversationAdapter extends ResourceCursorAdapter {
         holder.vPending.setVisibility(pendingvisability);
 
         // unread / read
-        if (m.getRead() == 0) {
+        if (message.getRead() == 0) {
             holder.vRead.setVisibility(View.VISIBLE);
         } else {
             holder.vRead.setVisibility(View.INVISIBLE);
         }
 
-        long time = m.getDate();
+        long time = message.getDate();
         holder.tvDate.setText(MainActivity.getDate(context, time));
 
-        Bitmap pic = m.getPicture();
+        Bitmap pic = message.getPicture();
         if (pic != null) {
             if (pic == Message.BITMAP_PLAY) {
                 holder.ivPhoto.setImageResource(R.drawable.mms_play_btn);
@@ -249,15 +252,15 @@ public class ConversationAdapter extends ResourceCursorAdapter {
                 holder.ivPhoto.setImageBitmap(pic);
             }
             holder.ivPhoto.setVisibility(View.VISIBLE);
-            Intent i = m.getContentIntent();
+            Intent i = message.getContentIntent();
             holder.ivPhoto.setOnClickListener(DefaultAndPermission.getOnClickStartActivity(context, i));
-            holder.ivPhoto.setOnLongClickListener(m.getSaveAttachmentListener(mActivity));
+            holder.ivPhoto.setOnLongClickListener(message.getSaveAttachmentListener(mActivity));
         } else {
             holder.ivPhoto.setVisibility(View.GONE);
             holder.ivPhoto.setOnClickListener(null);
         }
 
-        CharSequence text = m.getBody();
+        CharSequence text = message.getBody();
         if (text == null && pic == null) {
             final Button btn = holder.btnDownload;
             btn.setOnClickListener(new OnClickListener() {
@@ -266,14 +269,14 @@ public class ConversationAdapter extends ResourceCursorAdapter {
                     try {
                         Intent i = new Intent();
                         i.setClassName("com.android.mms", "com.android.mms.transaction.TransactionService");
-                        i.putExtra("uri", m.getUri().toString());
+                        i.putExtra("uri", message.getUri().toString());
                         i.putExtra("type", 1);
                         ComponentName cn = context.startService(i);
                         if (cn != null) {
                             btn.setEnabled(false);
                             btn.setText(R.string.downloading_);
                         } else {
-                            i = new Intent(Intent.ACTION_VIEW, Uri.parse(ConversationActivity.URI + m.getThreadId()));
+                            i = new Intent(Intent.ACTION_VIEW, Uri.parse(ConversationActivity.URI + message.getThreadId()));
                             context.startActivity(Intent.createChooser(i, context.getString(R.string.view_mms)));
                         }
                     } catch (SecurityException e) {
@@ -308,7 +311,7 @@ public class ConversationAdapter extends ResourceCursorAdapter {
                     public void onClick(View v) {
                         Intent i = new Intent(Intent.ACTION_VIEW);
                         Uri uri = ContentUris
-                                .withAppendedId(MessageProvider.CONTENT_URI, m.getId());
+                                .withAppendedId(MessageProvider.CONTENT_URI, message.getId());
                         i.setDataAndType(uri, "text/x-vcard");
                         try {
                             context.startActivity(i);

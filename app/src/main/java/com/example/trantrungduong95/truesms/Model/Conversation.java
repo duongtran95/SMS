@@ -101,14 +101,13 @@ public class Conversation {
         AsyncHelper.fillConversation(context, this, sync);
         lastUpdate = System.currentTimeMillis();
     }
-
-    /**
-     * Update data.
-     *
-     * @param context {@link Context}
-     * @param cursor  {@link Cursor} to read from.
-     * @param sync    fetch of information
-     */
+        /**
+         * Update data.
+         *
+         * @param context {@link Context}
+         * @param cursor  {@link Cursor} to read from.
+         * @param sync    fetch of information
+         */
     private void update(Context context, Cursor cursor, boolean sync) {
         Log.d("update", threadId+ ", "+ sync);
         if (cursor == null || cursor.isClosed()) {
@@ -141,8 +140,7 @@ public class Conversation {
      * @param sync    fetch of information
      * @return {@link Conversation}
      */
-    public static Conversation getConversation(Context context, Cursor cursor,
-            boolean sync) {
+    public static Conversation getConversation(Context context, Cursor cursor, boolean sync) {
         Log.d("getConversation", sync+"");
         synchronized (CACHE) {
             Conversation ret = CACHE.get(cursor.getInt(INDEX_SIMPLE_ID));
@@ -232,7 +230,6 @@ public class Conversation {
     public void setBody(String b) {
         body = b;
     }
-
     public int getRead() {
         return read;
     }

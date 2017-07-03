@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.CallLog.Calls;
+import android.provider.ContactsContract;
 import android.provider.Telephony;
 import android.support.v4.app.NotificationCompat;
 import android.telephony.SmsMessage;
@@ -33,19 +34,26 @@ import android.util.TypedValue;
 import android.widget.Toast;
 
 import com.example.trantrungduong95.truesms.BuildConfig;
+import com.example.trantrungduong95.truesms.CustomAdapter.ConversationsAdapter;
+import com.example.trantrungduong95.truesms.Model.Contact;
 import com.example.trantrungduong95.truesms.Presenter.DefaultAndPermission;
 import com.example.trantrungduong95.truesms.MainActivity;
 import com.example.trantrungduong95.truesms.Model.Conversation;
 import com.example.trantrungduong95.truesms.Model.Message;
 import com.example.trantrungduong95.truesms.Presenter.ComposeActivity;
 import com.example.trantrungduong95.truesms.Presenter.ConversationActivity;
+import com.example.trantrungduong95.truesms.Presenter.Fragment_.Fragment_Filterd;
 import com.example.trantrungduong95.truesms.Presenter.NofReceiver;
 import com.example.trantrungduong95.truesms.Presenter.PopupActivity;
 import com.example.trantrungduong95.truesms.Presenter.SettingsOldActivity;
 import com.example.trantrungduong95.truesms.Presenter.SpamDB;
+import com.example.trantrungduong95.truesms.Presenter.Utils;
 import com.example.trantrungduong95.truesms.Presenter.WidgetProvider;
+import com.example.trantrungduong95.truesms.Presenter.isRun;
 import com.example.trantrungduong95.truesms.R;
 
+import java.util.ArrayList;
+import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -155,23 +163,61 @@ public class SmsReceiver extends BroadcastReceiver {
                 if (lengthMsg > 0) {
                     // concatenate multipart SMS body
                     StringBuilder sbt = new StringBuilder();
-                    StringBuilder sbt2 = new StringBuilder();
                     for (int i = 0; i < lengthMsg; i++) {
                         sbt.append(smsMessage[i].getMessageBody());
                     }
                     text = sbt.toString();
 
-                    // ! Check in blacklist db - filter spam
-                    String s = smsMessage[0].getDisplayOriginatingAddress();
+                    //todo ! Check in blacklist db - filter spam
+                    String addr = smsMessage[0].getDisplayOriginatingAddress();
 
-                    //Todo popup
+/*                    String[] a = SpamDB.getBlacklist(context);
+                    int i = a.length;
+                    while (i > 0) {
+                        Log.d("t1000", a[i - 1]);
+                        if (!a[i - 1].equals(s)) {
+
+                        }
+                    }
+                    i--;
+                    }*/
+
+                    // length body > 50 and number whitout in contacts.
+                    if (text.length()>0 && !checkNumberExits(context,addr)) {
+                        int i =0;
+                        String body = Utils.removeAccent(text);
+                        ArrayList<String> arrayList = new ArrayList<>();
+                        StringTokenizer st = new StringTokenizer(body);
+                        while (st.hasMoreTokens()) {
+                            arrayList.add(st.nextToken());
+                        }
+                        if (arrayList.size() !=0) {
+                            for (int a = 0; a < arrayList.size(); a++) {
+                                if (Fragment_Filterd.ReadFromfile("filter.txt", context).toLowerCase().contains(arrayList.get(a).toLowerCase())){
+                                    i++;
+                                }
+                            }
+                        }
+                        if (i >3){
+                            silent = true;
+                            Toast.makeText(context, context.getString(R.string.filter)+"", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                //Todo popup
                     SharedPreferences prefs1 = PreferenceManager.getDefaultSharedPreferences(context);
-                    if (prefs1.getBoolean(SettingsOldActivity.PREFS_POPUP, false)) {
-                        Intent intent1 = new Intent(context, PopupActivity.class);
-                        intent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        intent1.putExtra("body",text);
-                        intent1.putExtra("addr",s);
-                        context.startActivity(intent1);
+                    if (isRun.isApplicationBroughtToBackground(context)){
+                        //backround
+                        if (prefs1.getBoolean(SettingsOldActivity.PREFS_POPUP, false)) {
+                            Intent intent1 = new Intent(context, PopupActivity.class);
+                            intent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            intent1.putExtra("body", text);
+                            intent1.putExtra("addr", addr);
+                            context.startActivity(intent1);
+                        }
+                    }
+                    else {
+                        //forgeround
                     }
 
                     // this code is used to strip a forwarding agent and display the orginated number as sender
@@ -180,9 +226,9 @@ public class SmsReceiver extends BroadcastReceiver {
                         Pattern smsPattern = Pattern.compile("([0-9a-zA-Z+]+):");
                         Matcher m = smsPattern.matcher(text);
                         if (m.find()) {
-                            s = m.group(1);
+                            addr = m.group(1);
                             //found forwarding sms number
-                            Log.d("found forwardin number", s+"");
+                            Log.d("found forwardin number", addr+"");
                             // now strip the sender from the message
                             Pattern textPattern = Pattern.compile("^[0-9a-zA-Z+]+: (.*)");
                             Matcher m2 = textPattern.matcher(text);
@@ -194,19 +240,20 @@ public class SmsReceiver extends BroadcastReceiver {
                     }
 
                     if (SpamDB.isBlacklisted(context, smsMessage[0].getOriginatingAddress())) {
-                        Log.d("Message from ", s+ " filtered.");
+                        Log.d("Message from ", addr+ " filtered.");
+                        Toast.makeText(context, context.getString(R.string.block)+"", Toast.LENGTH_SHORT).show();
                         silent = true;
                     } else {
-                        Log.d("Message from ", s+ " NOT filtered.");
+                        Log.d("Message from ", addr+ " NOT filtered.");
                     }
 
                     if (action.equals(ACTION_SMS_NEW)) {
                         // API19+: save message to the database
                         ContentValues values = new ContentValues();
-                        values.put("address", s);
+                        values.put("address", addr);
                         values.put("body", text);
                         context.getContentResolver().insert(Uri.parse("content://sms/inbox"), values);
-                        Log.d("Insert SMS into db: ", s+ ", "+ text);
+                        Log.d("Insert SMS into db: ", addr+ ", "+ text);
                     }
                 }
                 updateNotificationsWithNewText(context, text, silent);
@@ -218,6 +265,29 @@ public class SmsReceiver extends BroadcastReceiver {
         }
         wakelock.release();
         //wakelock released
+    }
+
+    private static boolean checkNumberExits(Context context, String s){
+        ArrayList<Contact> contacts = new ArrayList<Contact>();
+        contacts = getAllContacts(context);
+        for (int i = 0;i<contacts.size();i++){
+            if (contacts.get(i).getNumber().equals(s))
+                return true;
+        }
+        return false;
+    }
+
+    private static ArrayList<Contact> getAllContacts(Context context) {
+        Cursor phones = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
+        ArrayList<Contact> contacts = new ArrayList<Contact>();
+        while (phones.moveToNext()) {
+            String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+            String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+            Contact contact = new Contact(phoneNumber, name);
+            contacts.add(contact);
+        }
+        phones.close();
+        return contacts;
     }
 
     private static void updateNotificationsWithNewText(Context context, String text, boolean silent) {
@@ -407,21 +477,21 @@ public class SmsReceiver extends BroadcastReceiver {
             //no notification needed!
         }
         int[] status = getUnread(context.getContentResolver(), text);
-        int l = status[ID_COUNT];
+        int tcount = status[ID_COUNT];
         int tid = status[ID_TID];
 
         // FIXME l is always -1..
-        Log.d( "l: ", l+"");
-        if (l < 0) {
-            return l;
+        Log.d( "l: ", tcount+"");
+        if (tcount < 0) {
+            return tcount;
         }
 
-        if (enableNotifications && (text != null || l == 0)) {
+        if (enableNotifications && (text != null || tcount == 0)) {
             mNotificationMgr.cancel(NOTIFICATION_ID_NEW);
         }
         Uri uri;
         PendingIntent pIntent;
-        if (l == 0) {
+        if (tcount == 0) {
             Intent i = new Intent(context, MainActivity.class);
             // add pending intent
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -440,7 +510,7 @@ public class SmsReceiver extends BroadcastReceiver {
                     if (conv != null) {
                         String a;
                         if (privateNotification) {
-                            if (l == 1) {
+                            if (tcount == 1) {
                                 a = context.getString(R.string.new_message_);
                             } else {
                                 a = context.getString(R.string.new_messages_);
@@ -452,7 +522,7 @@ public class SmsReceiver extends BroadcastReceiver {
                         nb.setSmallIcon(SettingsOldActivity.getNotificationIcon(context));
                         nb.setTicker(a);
                         nb.setWhen(lastUnreadDate);
-                        if (l == 1) {
+                        if (tcount == 1) {
                             String body;
                             if (privateNotification) {
                                 body = context.getString(R.string.new_message);
@@ -477,7 +547,7 @@ public class SmsReceiver extends BroadcastReceiver {
                             nb.addAction(R.drawable.ic_menu_compose, context.getString(R.string.reply), pIntent);
                         } else {
                             nb.setContentTitle(a);
-                            nb.setContentText(context.getString(R.string.new_messages, l));
+                            nb.setContentText(context.getString(R.string.new_messages, tcount));
                             nb.setContentIntent(pIntent);
                         }
                         if (showPhoto )// just for the speeeeed)
@@ -511,9 +581,9 @@ public class SmsReceiver extends BroadcastReceiver {
                     nb.setTicker(context.getString(R.string.new_messages_));
                     nb.setWhen(lastUnreadDate);
                     nb.setContentTitle(context.getString(R.string.new_messages_));
-                    nb.setContentText(context.getString(R.string.new_messages, l));
+                    nb.setContentText(context.getString(R.string.new_messages, tcount));
                     nb.setContentIntent(pIntent);
-                    nb.setNumber(l);
+                    nb.setNumber(tcount);
                 }
             }
             // add pending intent
@@ -553,10 +623,10 @@ public class SmsReceiver extends BroadcastReceiver {
                 }
             }
         }
-        Log.d("return ", l+ " (2)");
+        Log.d("return ", tcount+ " (2)");
         //noinspection ConstantConditions
-        AppWidgetManager.getInstance(context).updateAppWidget(new ComponentName(context, WidgetProvider.class), WidgetProvider.getRemoteViews(context, l, pIntent));
-        return l;
+        AppWidgetManager.getInstance(context).updateAppWidget(new ComponentName(context, WidgetProvider.class), WidgetProvider.getRemoteViews(context, tcount, pIntent));
+        return tcount;
     }
 
     //Update failed message notification.

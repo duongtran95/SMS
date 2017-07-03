@@ -67,7 +67,7 @@ public class DefaultAndPermission extends Application {
             }
             getPackageManager().setComponentEnabledSetting(new ComponentName(this, ComposeActivity.class), state, PackageManager.DONT_KILL_APP);
         } else {
-            Log.d(TAG, "ignore .Sender state, READ_SMS permission is missing to check default app");
+        Log.d(TAG, "ignore .Sender state, READ_SMS permission is missing to check default app");
         }
     }
 
@@ -92,7 +92,7 @@ public class DefaultAndPermission extends Application {
 
     public static boolean isDefaultApp(Context context) {
         // there is no default sms app before android 4.4
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+        if (Build.VERSION.SDK_INT < 19) {
             return true;
         }
         try {

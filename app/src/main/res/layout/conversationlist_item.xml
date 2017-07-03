@@ -47,7 +47,7 @@
             android:layout_alignParentTop="true"
             android:layout_toLeftOf="@id/date"
             android:id="@+id/count"
-            android:text="(@id/count)"
+            android:text="@id/count"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:paddingRight="2dip"/>
 

@@ -93,6 +93,12 @@ public class Contact {
 		this.updateNameAndNumer();
 	}
 
+	public Contact(String number, String name) {
+		this.mNumber = number;
+		 this.mName = name;
+	}
+
+
 	/**
 	 * Update {@link Contact}'s details.
 	 *

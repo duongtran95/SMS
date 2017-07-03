@@ -2,6 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/item_settings_conversation"
+        android:title="@string/settings"
+        android:icon="@android:drawable/ic_menu_preferences"/>
+    <item
         android:id="@+id/item_contact"
         android:title="@string/view_contact_"
         app:actionLayout="@layout/contact"

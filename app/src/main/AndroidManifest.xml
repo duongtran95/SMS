@@ -28,12 +28,14 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
+    <uses-permission android:name="android.permission.GET_TASKS" />
     <application
         android:name=".Presenter.DefaultAndPermission"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:theme="@style/Theme.TrueSMS_Light"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:resizeableActivity="true">
         <activity
             android:name=".MainActivity"
@@ -54,13 +56,13 @@
 
                 <data android:mimeType="vnd.android-dir/mms-sms" />
             </intent-filter>
-            <intent-filter>
+<!--            <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
 
             <meta-data
                 android:name="android.app.searchable"
-                android:resource="@xml/searchable" />
+                android:resource="@xml/searchable" />-->
         </activity>
         <activity android:name=".Presenter.SettingsOldActivity" />
         <activity android:name=".Presenter.SettingsNewActivity" />
@@ -98,9 +100,9 @@
                     android:pathPrefix="/conversations/"
                     android:scheme="http" />
             </intent-filter>
-            <intent-filter>
+<!--            <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
+            </intent-filter>-->
         </activity>
         <activity
             android:name=".Presenter.ComposeActivity"
@@ -197,10 +199,10 @@
         <provider
             android:name=".Presenter.MessageProvider"
             android:authorities="com.example.trantrungduong95.truesms.Presenter" />
-        <provider
+       <!-- <provider
             android:name=".Presenter.SearchProvider"
             android:authorities="com.example.trantrungduong95.truesms.Presenter.SearchProvider"
-            android:syncable="false" />
+            android:syncable="false" />-->
     </application>
 
 </manifest>

@@ -487,7 +487,6 @@ public class Message {
         return isMms;
     }
 
-
     public String getSubject() {
         return subject;
     }

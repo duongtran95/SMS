@@ -76,10 +76,10 @@ public abstract class ContactsWrapper {
     //Get instance.
     public static ContactsWrapper getInstance() {
         if (sInstance == null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR) {
-                sInstance = new ContactsWrapper5();
+            if (Build.VERSION.SDK_INT >= 19) {
+                sInstance = new ContactsWrapperNew();
             } else {
-                sInstance = new ContactsWrapper3();
+                sInstance = new ContactsWrapperOld();
             }
         }
         return sInstance;

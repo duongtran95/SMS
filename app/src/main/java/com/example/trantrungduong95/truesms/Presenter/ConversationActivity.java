@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.provider.CallLog;
 import android.support.annotation.Nullable;
@@ -451,14 +452,19 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
             case android.R.id.home:
                 // app icon in Action Bar clicked; go home
                 Intent intent = new Intent(this, MainActivity.class);
-
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
                 startActivity(intent);
                 return true;
             case R.id.item_delete_thread:
                 MainActivity.deleteMessages(this, uri, R.string.delete_thread_,
                         R.string.delete_thread_question, this);
+                return true;
+            case R.id.item_settings_conversation:
+                if (Build.VERSION.SDK_INT >= 19) {
+                    startActivity(new Intent(this, SettingsNewActivity.class));
+                } else {
+                    startActivity(new Intent(this, SettingsOldActivity.class));
+                }
                 return true;
             case R.id.item_call:
                 try {

@@ -28,6 +28,7 @@ import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.trantrungduong95.truesms.CustomAdapter.ConversationsAdapter;
 import com.example.trantrungduong95.truesms.CustomAdapter.MobilePhoneAdapter;
 import com.example.trantrungduong95.truesms.MainActivity;
 import com.example.trantrungduong95.truesms.Model.Message;
@@ -37,6 +38,8 @@ import com.example.trantrungduong95.truesms.Receiver.SmsReceiver;
 
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ComposeActivity extends AppCompatActivity implements View.OnClickListener {
     //Tag
@@ -72,9 +75,12 @@ public class ComposeActivity extends AppCompatActivity implements View.OnClickLi
     //Hold recipient and text.
     private String phoneNo, text;
     private boolean flag = false;
+    EditText editText_reply;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         handleIntent(getIntent());
     }
 
@@ -102,7 +108,7 @@ public class ComposeActivity extends AppCompatActivity implements View.OnClickLi
                 setContentView(R.layout.activity_compose);
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-                final EditText editText_reply = (EditText) findViewById(R.id.compose_reply_text);
+                editText_reply = (EditText) findViewById(R.id.compose_reply_text);
                 final TextView count_reply = (TextView) findViewById(R.id.content_count);
                 editText_reply.addTextChangedListener(new TextWatcher() {
                     @Override
@@ -308,8 +314,10 @@ public class ComposeActivity extends AppCompatActivity implements View.OnClickLi
                 Log.w("skip empty recipient: ", r);
                 continue;
             }
+
             try {
                 send(r, text);
+
             } catch (Exception e) {
                 Log.e("unable to send msg: ", phoneNo, e);
                 Toast.makeText(this, R.string.error_sending_failed, Toast.LENGTH_LONG).show();
@@ -329,6 +337,7 @@ public class ComposeActivity extends AppCompatActivity implements View.OnClickLi
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+
                 // app icon in Action Bar clicked; go home
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -357,10 +366,9 @@ public class ComposeActivity extends AppCompatActivity implements View.OnClickLi
                     text = compose_reply.getText().toString();
                 }
 
-                EditText compose_reply = (MultiAutoCompleteTextView) findViewById(R.id.txtPhoneNo);
-                phoneNo = compose_reply.getText().toString();
+                EditText compose_reply_p = (MultiAutoCompleteTextView) findViewById(R.id.txtPhoneNo);
+                phoneNo = compose_reply_p.getText().toString();
                 if ( send()) {
-                    Toast.makeText(this, getString(R.string.sending_successfully)+"", Toast.LENGTH_SHORT).show();
                     finish();
                 }
                 return;

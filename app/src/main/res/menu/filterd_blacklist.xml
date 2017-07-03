@@ -7,17 +7,8 @@
         app:showAsAction="ifRoom"
         android:title="@string/search" />
     <item
-        android:id="@+id/item_filterd_blacklist"
-        android:icon="@drawable/filterd_blacklist"
-        app:showAsAction="ifRoom"
-        android:title="@string/search" />
-    <item
-        android:id="@+id/item_settings"
+        android:id="@+id/item_settings_blacklist_filterd"
         android:title="@string/settings"
         android:icon="@android:drawable/ic_menu_preferences"/>
-    <item
-        android:id="@+id/item_delete_all_threads"
-        android:title="@string/delete_threads_"
-        android:icon="@android:drawable/ic_menu_delete"/>
 
 </menu>

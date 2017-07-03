@@ -16,8 +16,9 @@
     <string name="new_messages" formatted="false">%d tin nhắn chưa đọc.</string>
     <string name="title_conversation_list" formatted="false">Hộp thư</string>
     <string name="title_Filterd" formatted="false">Hộp thư lọc</string>
+    <string name="filter" formatted="false">Đã lọc tin nhắn rác</string>
     <string name="title_Backlist" formatted="false">Hộp thư chặn</string>
-
+    <string name="block" formatted="false">Đã chặn tin nhắn rác</string>
     <string name="call" formatted="false">Gọi</string>
     <string name="reply" formatted="false">Trả lời</string>
     <string name="send_" formatted="false">Gửi</string>
@@ -35,8 +36,6 @@
     <string name="receive_no_text_" formatted="false">Ẩn người gửi / văn bản</string>
     <string name="receive_no_text_hint" formatted="false">Ẩn người gửi / văn bản trong thông báo.</string>
     <string name="behavior_" formatted="false">Chung</string>
-    <string name="autosend_" formatted="false">Tự động gửi</string>
-    <string name="autosend_hint" formatted="false">Send answers automatically. Currently only WebSMS supports this feature. Other apps will just show the text.</string>
     <string name="appearance_and_behavior_" formatted="false">Hiện thị &amp; Chung</string>
     <string name="appearance_" formatted="false">Hiển thị</string>
     <string name="theme_" formatted="false">Giao diện</string>
@@ -174,7 +173,7 @@
     <string name="edit_short_text_hint" formatted="false">Xem xét nhập một tin nhắn ngắn. Bàn phím thường thay thế nút nhập với nụ cười nếu bật.</string>
     <string name="not_default_app" formatted="false">TrueSMS không phải là ứng dụng SMS mặc định</string>
     <string name="not_default_app_message" formatted="false">TrueSMS cần phải là ứng dụng SMS mặc định để hoạt động bình thường</string>
-    <string name="forwarded_sms_clean_" formatted="false">Sửa đổi nhận được sms</string>
+    <string name="forwarded_sms_clean_" formatted="false">Chuyển tiếp</string>
     <string name="forwarded_sms_clean_hint" formatted="false">Dải người gửi trong nhận sms theo "([0-9a-zA-Z] +):" và sử dụng số này làm người gửi.</string>
     <string name="error_unknown" formatted="false">Lỗi không rõ</string>
     <string name="permissions_" formatted="false">Quyền</string>
@@ -194,4 +193,11 @@
     <string name="receive_popup_hint">Bật tắt Popup.</string>
     <string name="title_restore">Khôi phục</string>
     <string name="message_restore">Bạn có muốn khôi phục số điện thoại này không?</string>
+    <string name="title_restore_hint">Khôi phục tất cả</string>
+    <string name="title_menu_add_blacklist">Thêm danh sách đen</string>
+    <string name="title_menu_add_filterd">Thêm mẫu lọc</string>
+    <string name="count">Số lượng SMS</string>
+    <string name="title_add_blacklit">Thêm SDT chặn</string>
+    <string name="title_add_blacklit_hint">Bạn có muốn thêm SDT vào danh sách chặn không?</string>
+    <string name="non_empty">Không đươc để trống</string>
 </resources>

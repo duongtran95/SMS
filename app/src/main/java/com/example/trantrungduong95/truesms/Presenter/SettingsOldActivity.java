@@ -124,7 +124,7 @@ public class SettingsOldActivity extends PreferenceActivity implements IPreferen
     //Preference's name: prefix regular expression.
     private static String PREFS_REGEX = "regex";
 
-//    /Preference's name: prefix replace.
+    //Preference's name: prefix replace.
     private static String PREFS_REPLACE = "replace";
 
     //Number of regular expressions.
@@ -161,6 +161,7 @@ public class SettingsOldActivity extends PreferenceActivity implements IPreferen
             R.drawable.bubble_purple_right, R.drawable.bubble_white_left,
             R.drawable.bubble_white_right, R.drawable.bubble_yellow_left,
             R.drawable.bubble_yellow_right,};
+
 
     //String resources for bubbles.
     private static int[] BUBBLES_STR = new int[]{R.string.bubbles_nothing,
@@ -447,7 +448,7 @@ public class SettingsOldActivity extends PreferenceActivity implements IPreferen
         switch (item.getItemId()) {
             case android.R.id.home:
                 // app icon in Action Bar clicked; go home
-                Intent intent = new Intent(this, MainActivity.class);
+                Intent intent = new Intent(this,MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 return true;

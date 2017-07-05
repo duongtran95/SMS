@@ -18,11 +18,10 @@ public class Conversation {
     private static int CACHESIZE = 50;
 
     //Internal Cache.
-    private static LinkedHashMap<Integer, Conversation> CACHE
-            = new LinkedHashMap<>(26, 0.9f, true);
+    private static LinkedHashMap<Integer, Conversation> CACHE = new LinkedHashMap<>(26, 0.9f, true);
 
     //No photo available.
-    public static Bitmap NO_PHOTO = Bitmap.createBitmap(1, 1, Bitmap.Config.RGB_565);
+    public Bitmap NO_PHOTO = Bitmap.createBitmap(1, 1, Bitmap.Config.RGB_565);
 
     //link Uri to all threads.
     public static Uri URI_SIMPLE = Uri.parse("content://mms-sms/conversations").buildUpon()
@@ -42,15 +41,15 @@ public class Conversation {
 
     public static int INDEX_SIMPLE_ID = 0;
 
-    public static int INDEX_SIMPLE_DATE = 1;
+    public int INDEX_SIMPLE_DATE = 1;
 
-    public static int INDEX_SIMPLE_COUNT = 2;
+    public int INDEX_SIMPLE_COUNT = 2;
 
-    public static int INDEX_SIMPLE_NID = 3;
+    public int INDEX_SIMPLE_NID = 3;
 
-    public static int INDEX_SIMPLE_BODY = 4;
+    public int INDEX_SIMPLE_BODY = 4;
 
-    public static int INDEX_SIMPLE_READ = 5;
+    public int INDEX_SIMPLE_READ = 5;
 
     //Cursor's projection.
     public static String[] PROJECTION_SIMPLE = { //
@@ -173,7 +172,7 @@ public class Conversation {
      * @return {@link Conversation}
      */
     public static Conversation getConversation(Context context, int threadId,
-            boolean forceUpdate) {
+                                               boolean forceUpdate) {
         Log.d("getConversation", threadId+"");
         synchronized (CACHE) {
             Conversation ret = CACHE.get(threadId);

@@ -65,7 +65,7 @@ public class ConversationAdapter extends ResourceCursorAdapter {
     private boolean showEmoticons;
 
     //View holder.
-    private static class ViewHolder {
+    private class ViewHolder {
 
         TextView tvBody;
 

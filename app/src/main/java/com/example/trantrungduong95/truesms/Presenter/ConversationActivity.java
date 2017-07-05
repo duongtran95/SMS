@@ -129,6 +129,7 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
     //Set ListAdapter to ListView.
     private void setListAdapter(ListAdapter la) {
         getListView().setAdapter(la);
+       // getListView().setFastScrollEnabled(true);
     }
 
     @Override
@@ -407,7 +408,6 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
             } else {
                 Log.d("ai.pn: ", ai.packageName);
             }
-            etText.setMinLines(3);
         }
 
     }
@@ -495,15 +495,15 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
     }
 
     public boolean onItemLongClick( AdapterView<?> parent, View view, int position, long id) {
-         final Context context = this;
-         final Message m = Message.getMessage(this, (Cursor) parent.getItemAtPosition(position));
-         final Uri target = m.getUri();
-         final int read = m.getRead();
-         final int type = m.getType();
+        final Context context = this;
+        final Message m = Message.getMessage(this, (Cursor) parent.getItemAtPosition(position));
+        final Uri target = m.getUri();
+        final int read = m.getRead();
+        final int type = m.getType();
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(R.string.message_options_);
 
-         Contact contact = conv.getContact();
+        Contact contact = conv.getContact();
         final String a = contact.getNumber();
         final String n = contact.getName();
 

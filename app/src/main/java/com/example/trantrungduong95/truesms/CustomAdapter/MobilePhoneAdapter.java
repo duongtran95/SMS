@@ -22,20 +22,20 @@ public class MobilePhoneAdapter extends ResourceCursorAdapter {
     private ContentResolver mContentResolver;
 
     //Projection for content.
-    private static String[] PROJECTION = new String[]{Phone._ID, // 0
+    private String[] PROJECTION = new String[]{Phone._ID, // 0
             Phone.DISPLAY_NAME, // 1
             Phone.NUMBER, // 2
             Phone.TYPE // 3
     };
 
     //Index of id/lookup key.
-    public static int INDEX_ID = 0;
+    public int INDEX_ID = 0;
 
-    public static int INDEX_NAME = 1;
+    public int INDEX_NAME = 1;
 
-    public static int INDEX_NUMBER = 2;
+    public int INDEX_NUMBER = 2;
 
-    public static int INDEX_TYPE = 3;
+    public int INDEX_TYPE = 3;
 
     private String[] types;
 
@@ -45,7 +45,7 @@ public class MobilePhoneAdapter extends ResourceCursorAdapter {
         types = context.getResources().getStringArray(android.R.array.phoneTypes);
     }
 
-    private static class ViewHolder {
+    private class ViewHolder {
         TextView tv1, tv2, tv3;
     }
 

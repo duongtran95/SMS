@@ -229,8 +229,7 @@ public class SettingsOldActivity extends PreferenceActivity implements IPreferen
             Builder b = new Builder(ctx);
             int l = BUBBLES_STR.length;
             String[] cols = new String[]{"icon", "text"};
-            ArrayList<HashMap<String, Object>> rows
-                    = new ArrayList<>();
+            ArrayList<HashMap<String, Object>> rows = new ArrayList<>();
             for (int i = 0; i < l; i++) {
                 HashMap<String, Object> m = new HashMap<>(2);
                 m.put(cols[0], BUBBLES_IMG[i]);
@@ -393,21 +392,21 @@ public class SettingsOldActivity extends PreferenceActivity implements IPreferen
     //Get drawable resource for bubble for incoming messages.
     public static int getBubblesIn(Context context) {
         SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
-        int i = p.getInt(PREFS_BUBBLES_IN, R.drawable.bubble_old_turquoise_left);
+        int i = p.getInt(PREFS_BUBBLES_IN, R.drawable.bubble_green_right);
         if (i >= 0 && i < BUBBLES_IMG.length) {
             return BUBBLES_IMG[i];
         }
-        return R.drawable.bubble_old_turquoise_left;
+        return R.drawable.bubble_green_right;
     }
 
     //Get drawable resource for bubble for outgoing messages.
     public static int getBubblesOut(Context context) {
         SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
-        int i = p.getInt(PREFS_BUBBLES_OUT, R.drawable.bubble_old_green_right);
+        int i = p.getInt(PREFS_BUBBLES_OUT, R.drawable.bubble_blue_left);
         if (i >= 0 && i < BUBBLES_IMG.length) {
             return BUBBLES_IMG[i];
         }
-        return R.drawable.bubble_old_green_right;
+        return R.drawable.bubble_blue_left;
     }
 
     //Get text's size from Preferences.

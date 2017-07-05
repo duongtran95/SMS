@@ -16,7 +16,7 @@
     <string name="new_messages" formatted="false">%d tin nhắn chưa đọc.</string>
     <string name="title_conversation_list" formatted="false">Hộp thư</string>
     <string name="title_Filterd" formatted="false">Hộp thư lọc</string>
-    <string name="filter" formatted="false">Đã lọc tin nhắn rác</string>
+    <string name="filterd" formatted="false">Đã lọc tin nhắn rác</string>
     <string name="title_Backlist" formatted="false">Hộp thư chặn</string>
     <string name="block" formatted="false">Đã chặn tin nhắn rác</string>
     <string name="call" formatted="false">Gọi</string>
@@ -196,8 +196,10 @@
     <string name="title_restore_hint">Khôi phục tất cả</string>
     <string name="title_menu_add_blacklist">Thêm danh sách đen</string>
     <string name="title_menu_add_filterd">Thêm mẫu lọc</string>
-    <string name="count">Số lượng SMS</string>
+    <string name="count">SL</string>
     <string name="title_add_blacklit">Thêm SDT chặn</string>
     <string name="title_add_blacklit_hint">Bạn có muốn thêm SDT vào danh sách chặn không?</string>
     <string name="non_empty">Không đươc để trống</string>
+    <string name="blacklist">Đã chặn</string>
+    <string name="filter">Là thư rác</string>
 </resources>

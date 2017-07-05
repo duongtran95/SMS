@@ -15,7 +15,6 @@ import android.provider.CallLog.Calls;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 
@@ -28,8 +27,7 @@ import com.example.trantrungduong95.truesms.Presenter.SettingsOldActivity;
 import com.example.trantrungduong95.truesms.Presenter.SmileyParser;
 import com.example.trantrungduong95.truesms.Presenter.SpamDB;
 import com.example.trantrungduong95.truesms.R;
-
-import java.util.ArrayList;
+import com.example.trantrungduong95.truesms.Receiver.SmsReceiver;
 
 // Adapter for the list of link Conversations.
 
@@ -39,7 +37,7 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
     static String TAG = "coa";
 
     //Cursor's sort.
-    private static String SORT = Calls.DATE + " DESC";
+    private String SORT = Calls.DATE + " DESC";
 
     //Used text size, color.
     private int textSize, textColor;
@@ -47,15 +45,15 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
     private BackgroundQueryHandler queryHandler;
 
     //Token for link BackgroundQueryHandler: message list query.
-    private static final int MESSAGE_LIST_QUERY_TOKEN = 0;
+    private final int MESSAGE_LIST_QUERY_TOKEN = 0;
 
     //Reference to link MainActivity.
     private Activity mActivity;
 
     //List of blocked numbers.
-    private static String[] blacklist;
+    private String[] blacklist;
 
-    private static ContactsWrapper WRAPPER = ContactsWrapper.getInstance();
+    private ContactsWrapper WRAPPER = ContactsWrapper.getInstance();
 
     //Default link Drawable for link Contacts.
     private Drawable defaultContactAvatar = null;
@@ -66,7 +64,7 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
     //Show emoticons as images
     private boolean showEmoticons;
 
-    private static class ViewHolder {
+    private class ViewHolder {
 
         TextView tvBody;
 
@@ -123,7 +121,7 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
             Log.e("error getting conv", e+"");
         }
 
-/*        if (cursor != null) {
+        if (cursor != null) {
             cursor.registerContentObserver(new ContentObserver(new Handler()) {
                 @Override
                 public void onChange(boolean selfChange) {
@@ -136,8 +134,8 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
                     }
                 }
             });
-        }*/
-         //startMsgListQuery();
+        }
+         startMsgListQuery();
     }
 
     //Start ConversationList query.
@@ -158,97 +156,98 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
         Conversation conv = Conversation.getConversation(context, cursor, true); // false
         Contact contact = conv.getContact();
 
-       /* if (! isBlocked(contact.getNumber())) {*/
-            ViewHolder holder = (ViewHolder) view.getTag();
-            if (holder == null) {
-                holder = new ViewHolder();
-                holder.tvPerson = (TextView) view.findViewById(R.id.addr);
-                holder.tvCount = (TextView) view.findViewById(R.id.count);
-                holder.tvBody = (TextView) view.findViewById(R.id.body);
-                holder.tvDate = (TextView) view.findViewById(R.id.date);
-                holder.ivPhoto = (ImageView) view.findViewById(R.id.photo);
-                holder.vRead = view.findViewById(R.id.read);
-                view.setTag(holder);
-            }
+        ViewHolder holder = (ViewHolder) view.getTag();
+        if (holder == null) {
+            holder = new ViewHolder();
+            holder.tvPerson = (TextView) view.findViewById(R.id.addr);
+            holder.tvCount = (TextView) view.findViewById(R.id.count);
+            holder.tvBody = (TextView) view.findViewById(R.id.body);
+            holder.tvDate = (TextView) view.findViewById(R.id.date);
+            holder.ivPhoto = (ImageView) view.findViewById(R.id.photo);
+            holder.vRead = view.findViewById(R.id.read);
+            view.setTag(holder);
+        }
 
-            SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
-            if (p.getBoolean(SettingsOldActivity.PREFS_HIDE_MESSAGE_COUNT, false)) {
-                holder.tvCount.setVisibility(View.GONE);
+        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
+        if (p.getBoolean(SettingsOldActivity.PREFS_HIDE_MESSAGE_COUNT, false)) {
+            holder.tvCount.setVisibility(View.GONE);
+        } else {
+            int count = conv.getCount();
+            if (count < 0) {
+                holder.tvCount.setText("");
             } else {
-                int count = conv.getCount();
-                if (count < 0) {
-                    holder.tvCount.setText("");
-                } else {
-                    holder.tvCount.setText(context.getString(R.string.count) + ": " + conv.getCount() + "");
-                }
+                holder.tvCount.setText(context.getString(R.string.count) + ": " + conv.getCount() + "");
             }
-            if (textSize > 0) {
-                holder.tvBody.setTextSize(textSize);
-            }
+        }
+        if (textSize > 0) {
+            holder.tvBody.setTextSize(textSize);
+        }
 
-            int col = textColor;
-            if (col != 0) {
-                holder.tvPerson.setTextColor(col);
-                holder.tvBody.setTextColor(col);
-                holder.tvCount.setTextColor(col);
-                holder.tvDate.setTextColor(col);
-            }
+        int col = textColor;
+        if (col != 0) {
+            holder.tvPerson.setTextColor(col);
+            holder.tvBody.setTextColor(col);
+            holder.tvCount.setTextColor(col);
+            holder.tvDate.setTextColor(col);
+        }
 
-            if (MainActivity.showContactPhoto) {
-                holder.ivPhoto.setImageDrawable(contact.getAvatar(mActivity, defaultContactAvatar));
-                holder.ivPhoto.setVisibility(View.VISIBLE);
-                holder.ivPhoto.setOnClickListener(WRAPPER.getQuickContact(context, holder.ivPhoto,
-                        contact.getLookUpUri(context.getContentResolver()), 2, null));
+        if (MainActivity.showContactPhoto) {
+            holder.ivPhoto.setImageDrawable(contact.getAvatar(mActivity, defaultContactAvatar));
+            holder.ivPhoto.setVisibility(View.VISIBLE);
+            holder.ivPhoto.setOnClickListener(WRAPPER.getQuickContact(context, holder.ivPhoto,
+                    contact.getLookUpUri(context.getContentResolver()), 2, null));
 
-            } else {
-                holder.ivPhoto.setVisibility(View.GONE);
-            }
+        } else {
+            holder.ivPhoto.setVisibility(View.GONE);
+        }
+        // body
+        CharSequence text = conv.getBody();
 
-            if (isBlocked(contact.getNumber())) {
-                //view.setLayoutParams(new LinearLayout.LayoutParams(10, 10));
-                //view.setVisibility(View.GONE);
-                holder.tvPerson.setText("[" + contact.getDisplayName() + "]");
-            } else {
-                holder.tvPerson.setText(contact.getDisplayName());
-            }
-
-            // read status
-            if (conv.getRead() == 0) {
-                holder.vRead.setVisibility(View.VISIBLE);
-            } else {
-                holder.vRead.setVisibility(View.INVISIBLE);
-            }
-
-            // body
-            CharSequence text = conv.getBody();
-            if (text == null) {
-                text = context.getString(R.string.mms_conversation);
-            }
-            if (convertNCR) {
-                text = Converter.convertDecNCR2Char(text);
-            }
-            if (showEmoticons) {
-                text = SmileyParser.getInstance(context).addSmileySpans(text);
-            }
-            holder.tvBody.setText(text);
-
-            // date
-            long time = conv.getDate();
-            holder.tvDate.setText(MainActivity.getDate(context, time));
-
-            // presence
-            ImageView ivPresence = (ImageView) view.findViewById(R.id.presence);
-            if (contact.getPresenceState() > 0) {
-                ivPresence.setImageResource(Contact.getPresenceRes(contact.getPresenceState()));
-                ivPresence.setVisibility(View.VISIBLE);
-            } else {
-                ivPresence.setVisibility(View.GONE);
-            }
-       /* }
+        if (isBlocked(contact.getNumber())) {
+            //view.setLayoutParams(new LinearLayout.LayoutParams(10, 10));
+            //view.setVisibility(View.GONE);
+            MainActivity.deleteMsg(conv.getUri(),context);
+            holder.tvPerson.setText(contact.getDisplayName()+" "+ context.getString(R.string.blacklist));
+        }
+        else if (!isBlocked(contact.getNumber()) && SmsReceiver.filter(context,text.toString(),contact.getNumber())){
+            holder.tvPerson.setText("");
+            holder.tvPerson.setText(contact.getDisplayName()+" "+ context.getString(R.string.filter));
+        }
         else {
-            view.setLayoutParams(new LinearLayout.LayoutParams(10, 10));
-            view.setVisibility(View.GONE);
-        }*/
+            holder.tvPerson.setText(contact.getDisplayName());
+        }
+
+        // read status
+        if (conv.getRead() == 0) {
+            holder.vRead.setVisibility(View.VISIBLE);
+        } else {
+            holder.vRead.setVisibility(View.INVISIBLE);
+        }
+
+
+        if (text == null) {
+            text = context.getString(R.string.mms_conversation);
+        }
+        if (convertNCR) {
+            text = Converter.convertDecNCR2Char(text);
+        }
+        if (showEmoticons) {
+            text = SmileyParser.getInstance(context).addSmileySpans(text);
+        }
+        holder.tvBody.setText(text);
+
+        // date
+        long time = conv.getDate();
+        holder.tvDate.setText(MainActivity.getDate(context, time));
+
+        // presence
+        ImageView ivPresence = (ImageView) view.findViewById(R.id.presence);
+        if (contact.getPresenceState() > 0) {
+            ivPresence.setImageResource(Contact.getPresenceRes(contact.getPresenceState()));
+            ivPresence.setVisibility(View.VISIBLE);
+        } else {
+            ivPresence.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -257,7 +256,7 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
      * @param addr address
      * @return true if address is blocked
      */
-    public  static boolean isBlocked(String addr) {
+    public boolean isBlocked(String addr) {
         if (addr == null) {
             return false;
         }

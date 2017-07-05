@@ -58,14 +58,13 @@
             android:layout_marginTop="16dp"
             android:layout_toLeftOf="@+id/send_SMS"
             android:layout_toRightOf="@+id/compose_button"
-            android:background="@color/grey_material"
+            android:background="@color/grey_light"
             android:gravity="center_vertical"
             android:hint="@string/hint_reply"
             android:imeOptions="flagNoExtractUi"
             android:inputType="textShortMessage|textMultiLine|textCapSentences"
             android:maxLines="3"
             android:minHeight="40dp"
-            android:textColorHint="@color/grey_light"
             android:textCursorDrawable="@null" />
 
         <TextView

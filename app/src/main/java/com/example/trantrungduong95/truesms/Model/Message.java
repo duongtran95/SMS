@@ -38,7 +38,7 @@ public class Message {
     public static Bitmap BITMAP_PLAY = Bitmap.createBitmap(1, 1, Config.RGB_565);
 
     //Filename for saved attachments.
-    public static String ATTACHMENT_FILE = "mms.";
+    public String ATTACHMENT_FILE = "mms.";
 
     //Cache size.
     private static int CAHCESIZE = 50;
@@ -70,16 +70,16 @@ public class Message {
     public static int INDEX_BODY = 6;
 
     //INDEX: subject.
-    public static int INDEX_SUBJECT = 7;
+    public int INDEX_SUBJECT = 7;
 
     //INDEX: m_type.
-    public static int INDEX_MTYPE = 8;
+    public int INDEX_MTYPE = 8;
 
     //INDEX: mid.
-    public static int INDEX_MID = 1;
+    public int INDEX_MID = 1;
 
     //INDEX: content type.
-    public static int INDEX_CT = 2;
+    public int INDEX_CT = 2;
 
     //Cursor's projection.
     public static String[] PROJECTION = { //
@@ -104,7 +104,7 @@ public class Message {
     };
 
     //Cursor's projection.
-    public static String[] PROJECTION_MMS = { //
+    public String[] PROJECTION_MMS = { //
             PROJECTION[INDEX_ID], // 0
             PROJECTION[INDEX_READ], // 1
             PROJECTION[INDEX_DATE], // 2
@@ -138,10 +138,10 @@ public class Message {
     };
 
     //link Uri for parts.
-    private static Uri URI_PARTS = Uri.parse("content://mms/part/");
+    private Uri URI_PARTS = Uri.parse("content://mms/part/");
 
     //Cursor's projection for parts.
-    public static String[] PROJECTION_PARTS = { //
+    public String[] PROJECTION_PARTS = { //
             "_id", // 0
             "mid", // 1
             "ct", // 2
@@ -160,7 +160,7 @@ public class Message {
     public static String SORT_USD = Calls.DATE + " ASC";
 
     //Cursor's sort, normal.
-    public static String SORT_NORM = Calls.DATE + " DESC";
+    public String SORT_NORM = Calls.DATE + " DESC";
 
     //Type for incoming sms.
     public static final int SMS_IN = Calls.INCOMING_TYPE;
@@ -171,7 +171,7 @@ public class Message {
     //Type for sms drafts.
     public static final int SMS_DRAFT = 3;
     // Type for pending sms.
-     public static int SMS_PENDING = 4;
+     public int SMS_PENDING = 4;
 
     //Type for incoming mms.
     public static final int MMS_IN = 132;
@@ -180,13 +180,13 @@ public class Message {
     public static final int MMS_OUT = 128;
 
     //Type for mms drafts.
-    // public static int MMS_DRAFT = 128;
+    // public int MMS_DRAFT = 128;
 
     //Type for pending mms.
-    // public static int MMS_PENDING = 128;
+    // public int MMS_PENDING = 128;
 
     //Type for not yet loaded mms.
-    public static int MMS_TOLOAD = 130;
+    public int MMS_TOLOAD = 130;
 
     private long id;
 

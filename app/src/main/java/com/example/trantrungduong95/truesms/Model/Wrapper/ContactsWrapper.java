@@ -19,34 +19,34 @@ import com.example.trantrungduong95.truesms.Model.Contact;
 public abstract class ContactsWrapper {
 
     // Tag
-    private static String TAG = "cw";
+    private String TAG = "cw";
 
     //Index of id/lookup key.
-    public static int FILTER_INDEX_ID = 0;
+    public int FILTER_INDEX_ID = 0;
 
     //Index of name.
-    public static int FILTER_INDEX_NAME = 1;
+    public int FILTER_INDEX_NAME = 1;
 
     //Index of number.
-    public static int FILTER_INDEX_NUMBER = 2;
+    public int FILTER_INDEX_NUMBER = 2;
 
     //Index of type.
-    public static int FILTER_INDEX_TYPE = 3;
+    public int FILTER_INDEX_TYPE = 3;
 
     //Index of id/lookup key.
-    public static int CONTENT_INDEX_ID = 0;
+    public int CONTENT_INDEX_ID = 0;
 
     //Index of name.
-    public static int CONTENT_INDEX_NAME = 1;
+    public int CONTENT_INDEX_NAME = 1;
 
     //Index of number.
-    public static int CONTENT_INDEX_NUMBER = 2;
+    public int CONTENT_INDEX_NUMBER = 2;
 
     //Index of type.
-    public static int CONTENT_INDEX_TYPE = 3;
+    public int CONTENT_INDEX_TYPE = 3;
 
     //Presence's state: unavailable.
-    public static int PRESENCE_STATE_UNKNOWN = -1;
+    public int PRESENCE_STATE_UNKNOWN = -1;
 
     //Presence's state: available.
     public static final int PRESENCE_STATE_AVAILABLE = 5;
@@ -67,7 +67,7 @@ public abstract class ContactsWrapper {
     public static final int PRESENCE_STATE_OFFLINE = 0;
 
     //Uri to fetch addresses.
-    protected static Uri CANONICAL_ADDRESS = Uri.parse("content://mms-sms/canonical-address");
+    protected Uri CANONICAL_ADDRESS = Uri.parse("content://mms-sms/canonical-address");
 
     //Static singleton instance of link ContactsWrapper holding the SDK-specific implementationof the class.
 

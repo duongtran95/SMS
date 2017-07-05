@@ -14,13 +14,10 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.provider.ContactsContract;
 import android.provider.Telephony;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -283,13 +280,13 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                     .findViewById(R.id.addr)).getText().toString();
             String body = ((TextView) parentView
                     .findViewById(R.id.body)).getText().toString();
-            String date = ((TextView) parentView
+          /*  String date = ((TextView) parentView
                     .findViewById(R.id.date)).getText().toString();
             String count = ((TextView) parentView
                     .findViewById(R.id.count)).getText().toString();
             ImageView photo = ((ImageView) parentView.findViewById(R.id.photo));
             BitmapDrawable bitmapDrawable = (BitmapDrawable) photo.getDrawable();
-            Bitmap yourBitmap = bitmapDrawable.getBitmap();
+            Bitmap yourBitmap = bitmapDrawable.getBitmap();*/
             Search a;
             if (!addr.equals("false")) {
                 a = new Search(addr, body);
@@ -507,7 +504,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
             @Override
             public void onClick(final DialogInterface dialog, final int which) {
                 try {
-                    final int ret = context.getContentResolver().delete(uri, null, null);
+                    int ret = context.getContentResolver().delete(uri, null, null);
                     Log.d("deleted: ", ret + "");
                     if (activity != null && !activity.isFinishing()) {
                         activity.finish();
@@ -609,6 +606,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
             builder.setTitle(name);
         }
         if (SpamDB.isBlacklisted(this, number)) {
+
             items = items.clone();
             items[WHICH_MARK_SPAM] = getString(R.string.dont_filter_spam_);
         }
@@ -641,18 +639,15 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                             MainActivity.this.startActivity(i);
                             break;
                         case WHICH_DELETE:
-                            MainActivity
-                                    .deleteMessages(MainActivity.this, target,
+                            MainActivity.deleteMessages(MainActivity.this, target,
                                             R.string.delete_thread_,
                                             R.string.delete_thread_question,
                                             null);
                             break;
                         case WHICH_MARK_SPAM:
                             MainActivity.addToOrRemoveFromSpamlist(MainActivity.this, conv.getContact().getNumber());
-                            adapter = new ConversationsAdapter(MainActivity.this);
-                            setListAdapter(adapter);
+                            deleteMsg(target,MainActivity.this);
 
-                            adapter.startMsgListQuery();
                             break;
                         default:
                             break;
@@ -684,4 +679,22 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         }
     }
 
+    // delete uri
+    public static void deleteMsg(Uri target,Context context){
+                    try {
+                int ret = context.getContentResolver().delete(target, null, null);
+                Log.d("deleted: ", ret + "");
+                if (ret > 0) {
+                    Conversation.flushCache();
+                    Message.flushCache();
+                    SmsReceiver.updateNewMessageNotification(context, null);
+                }
+            } catch (IllegalArgumentException e) {
+                Log.e(TAG, "Argument Error", e);
+                Toast.makeText(context, R.string.error_unknown, Toast.LENGTH_LONG).show();
+            } catch (SQLiteException e) {
+                Log.e(TAG, "SQL Error", e);
+                Toast.makeText(context, R.string.error_unknown, Toast.LENGTH_LONG).show();
+            }
+    }
 }

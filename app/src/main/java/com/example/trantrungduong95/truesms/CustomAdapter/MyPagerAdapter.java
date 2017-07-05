@@ -15,7 +15,7 @@ import com.example.trantrungduong95.truesms.R;
  */
 
 public class MyPagerAdapter extends FragmentStatePagerAdapter {
-    private static int NUM_ITEMS = 2;
+    private int NUM_ITEMS = 2;
     Context context;
 
     public MyPagerAdapter(FragmentManager fragmentManager,Context nContext) {

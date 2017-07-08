@@ -188,7 +188,7 @@ public class Message {
     //Type for not yet loaded mms.
     public int MMS_TOLOAD = 130;
 
-    private long id;
+    private int id;
 
     private long threadId;
 
@@ -212,14 +212,10 @@ public class Message {
     //Is this message a MMS?
     private boolean isMms;
 
-    /**
-     * Default constructor.
-     *
-     * @param context {@link Context} to spawn the {@link SmileyParser}.
-     * @param cursor  {@link Cursor} to read the data
-     */
+     //context link Context to spawn the link SmileyParser.
+     //link Cursor to read the data
     private Message(Context context, Cursor cursor) {
-        id = cursor.getLong(INDEX_ID);
+        id = cursor.getInt(INDEX_ID);  // GEtLong
         threadId = cursor.getLong(INDEX_THREADID);
         date = cursor.getLong(INDEX_DATE);
         if (date < MainActivity.MIN_DATE) {
@@ -266,11 +262,8 @@ public class Message {
         }
     }
 
-    /**
-     * Update {@link Message}.
-     *
-     * @param cursor {@link Cursor} to read from
-     */
+    //Update link Message.
+    //cursor link Cursor to read from
     public void update(Cursor cursor) {
         read = cursor.getInt(INDEX_READ);
         type = cursor.getInt(INDEX_TYPE);
@@ -286,12 +279,7 @@ public class Message {
         }
     }
 
-    /**
-     * Fetch a part.
-     *
-     * @param is {@link InputStream}
-     * @return part
-     */
+    //Fetch a part.
     private CharSequence fetchPart(InputStream is) {
         String ret = null;
         // get part
@@ -318,11 +306,7 @@ public class Message {
         return ret;
     }
 
-    /**
-     * Fetch MMS parts.
-     *
-     * @param context {@link Context}
-     */
+    //Fetch MMS parts.
     private void fetchMmsParts(Context context) {
         ContentResolver cr = context.getContentResolver();
         Cursor cursor = null;
@@ -394,13 +378,7 @@ public class Message {
         }
     }
 
-    /**
-     * Get a {@link Message} from cache or {@link Cursor}.
-     *
-     * @param context {@link Context}
-     * @param cursor  {@link Cursor}
-     * @return {@link Message}
-     */
+     //Get a link Message from cache or link Cursor.
     public static Message getMessage(Context context, Cursor cursor) {
         synchronized (CACHE) {
             String body = cursor.getString(INDEX_BODY);
@@ -448,10 +426,7 @@ public class Message {
         return date;
     }
 
-    /**
-     * @param context {@link Context} to query SMS DB for an address.
-     * @return the address
-     */
+     //Context link Context to query SMS DB for an address.
     public String getAddress(Context context) {
         if (address == null && context != null) {
             String select = Message.PROJECTION[Message.INDEX_THREADID] + " = '"
@@ -499,12 +474,7 @@ public class Message {
         return contentIntent;
     }
 
-    /**
-     * Get a {@link OnLongClickListener} to save the attachment.
-     *
-     * @param context {@link Context}
-     * @return {@link OnLongClickListener}
-     */
+    // Get a link OnLongClickListener to save the attachment.
     public OnLongClickListener getSaveAttachmentListener(final Activity context) {
         if (contentIntent == null) {
             return null;
@@ -587,9 +557,7 @@ public class Message {
         };
     }
 
-    /**
-     * @return {@link Uri} of this {@link Message}
-     */
+    //return link Uri of this link Message.
     public Uri getUri() {
         if (isMms) {
             return Uri.parse("content://mms/" + id);
@@ -598,15 +566,9 @@ public class Message {
         }
     }
 
-    /**
-     * Creates a unique file in the given directory by appending a hyphen and a number to the given
-     * filename.
-     *
-     * @param directory directory name
-     * @param filename  file name
-     * @return path to file
-     * @author k9mail team
-     */
+    //Creates a unique file in the given directory by appending a hyphen and a number to the given filename.
+    //Directory directory name
+    //Return path to file
     private File createUniqueFile(File directory, String filename) {
         File file = new File(directory, filename);
         if (!file.exists()) {

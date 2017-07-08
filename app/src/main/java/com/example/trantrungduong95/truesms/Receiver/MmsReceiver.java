@@ -8,7 +8,6 @@ import com.example.trantrungduong95.truesms.Presenter.DefaultAndPermission;
 import com.example.trantrungduong95.truesms.Receiver.SmsReceiver;
 
 //Listen for new mms.
-
 public class MmsReceiver extends BroadcastReceiver {
 
     @Override

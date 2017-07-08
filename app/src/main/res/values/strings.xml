@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">TrueSMS</string>
-    <string name="title_search">Search</string>
+    <string name="title_search">Nhập tìm</string>
+    <string name="nameSearch">Tên, SDT:</string>
+    <string name="bodySearch">Nội dung: </string>
     <string name="ringtone_defaultvalue">content://settings/system/notification_sound</string>
     <string name="listReference_theme_light">light</string>
     <string name="about_" formatted="false">Thông tin</string>
@@ -15,9 +17,9 @@
     <string name="new_messages_" formatted="false">Các tin nhắn mới</string>
     <string name="new_messages" formatted="false">%d tin nhắn chưa đọc.</string>
     <string name="title_conversation_list" formatted="false">Hộp thư</string>
-    <string name="title_Filterd" formatted="false">Hộp thư lọc</string>
+    <string name="title_Filterd" formatted="false">Lọc</string>
     <string name="filterd" formatted="false">Đã lọc tin nhắn rác</string>
-    <string name="title_Backlist" formatted="false">Hộp thư chặn</string>
+    <string name="title_Backlist" formatted="false">Chặn</string>
     <string name="block" formatted="false">Đã chặn tin nhắn rác</string>
     <string name="call" formatted="false">Gọi</string>
     <string name="reply" formatted="false">Trả lời</string>
@@ -63,6 +65,7 @@
     <string name="view_contact_" formatted="false">Xem danh bạ</string>
     <string name="add_contact_" formatted="false">Thêm vào danh bạ</string>
     <string name="view_thread_" formatted="false">Xem tin nhắn</string>
+    <string name="mark_block_" formatted="false">Chặn số điện thoại</string>
     <string name="filter_spam_" formatted="false">Đánh dấu Spam</string>
     <string name="dont_filter_spam_" formatted="false">Xoá khỏi Danh sách đen</string>
     <string name="delete_message_" formatted="false">Xóa tin nhắn</string>
@@ -184,8 +187,8 @@
     <string name="permissions_send_sms" formatted="false">Gửi SMS: cấp phép này là cần thiết để gửi SMS. \n Ứng dụng vẫn hoạt động khi quyền này bị từ chối. Bạn sẽ cần sử dụng một ứng dụng khác để gửi qua.</string>
     <string name="permissions_write_external_storage" formatted="false">Viết lưu trữ bên ngoài: sự cho phép này là cần thiết để lưu phương tiện truyền thông mms vào bộ nhớ ngoài. \n Ứng dụng vẫn hoạt động khi quyền này bị từ chối.</string>
     <string name="search" formatted="false">Tìm kiếm</string>
-    <string name="hint_contacts">Enter recipient</string>
-    <string name="hint_reply">Enter a message</string>
+    <string name="hint_contacts">Nhập người nhận</string>
+    <string name="hint_reply">Soạn tin</string>
     <string name="hint_count">count: </string>
     <string name="menu_open_thread">Mở cuộc hội thoại</string>
     <string name="menu_forward">Chuyển tiếp tin nhắn</string>
@@ -201,5 +204,5 @@
     <string name="title_add_blacklit_hint">Bạn có muốn thêm SDT vào danh sách chặn không?</string>
     <string name="non_empty">Không đươc để trống</string>
     <string name="blacklist">Đã chặn</string>
-    <string name="filter">Là thư rác</string>
+    <string name="filter"> (Thư rác)</string>
 </resources>

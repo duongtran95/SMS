@@ -26,7 +26,7 @@ import com.example.trantrungduong95.truesms.R;
 
 
 /**
- * Created by ngomi_000 on 6/24/2017.
+ * Created by ngomi_000 on 6/1/2017.
  */
 
 public class Fragment_Blacklist extends Fragment implements AdapterView.OnItemClickListener,AdapterView.OnItemLongClickListener{

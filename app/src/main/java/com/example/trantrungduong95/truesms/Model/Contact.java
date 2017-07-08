@@ -51,12 +51,7 @@ public class Contact {
 	//Lookup link Uri to link Contact.
 	private Uri mLookupUri = null;
 
-	/**
-	 * Get default {@link Drawable} resource id for {@link Contact}'s presence state.
-	 *
-	 * @param presenceState presence state
-	 * @return {@link Drawable}'s resId
-	 */
+	//Get default link Drawable resource id for link Contact's presence state. Return link Drawable's resId.
 	public static int getPresenceRes(int presenceState) {
 		switch (presenceState) {
 			case ContactsWrapper.PRESENCE_STATE_AVAILABLE:
@@ -75,20 +70,20 @@ public class Contact {
 	}
 
 	public Contact(long recipientId) {
-		this.mPersonId = -1L;
+		this.mPersonId = -1;
 		this.mRecipientId = recipientId;
 	}
 
 	public Contact(long recipientId, String number) {
-		this.mPersonId = -1L;
+		this.mPersonId = -1;
 		this.mRecipientId = recipientId;
 		this.mNumber = number;
 		this.updateNameAndNumer();
 	}
 
 	public Contact(String number) {
-		this.mPersonId = -1L;
-		this.mRecipientId = -1L;
+		this.mPersonId = -1;
+		this.mRecipientId = -1;
 		this.mNumber = number;
 		this.updateNameAndNumer();
 	}
@@ -99,14 +94,8 @@ public class Contact {
 	}
 
 
-	/**
-	 * Update {@link Contact}'s details.
-	 *
-	 * @param context    {@link Context}
-	 * @param loadOnly   load only data which is not available
-	 * @param loadAvatar load avatar?
-	 * @return true if {@link Contact}'s details where changed
-	 */
+	//Update link Contact's details. LoadOnly load only data which is not available. Return true if link Contact's details where changed
+
 	public boolean update(Context context, boolean loadOnly, boolean loadAvatar) {
 		return ContactsWrapper.getInstance().updateContactDetails(context, loadOnly, loadAvatar, this);
 	}
@@ -200,8 +189,7 @@ public class Contact {
 	public Drawable getAvatar(Context context, Drawable defaultValue) {
 		if (this.mAvatar == null) {
 			if (this.mAvatarData != null) {
-				Bitmap b = BitmapFactory.decodeByteArray(this.mAvatarData, 0,
-						this.mAvatarData.length);
+				Bitmap b = BitmapFactory.decodeByteArray(this.mAvatarData, 0, this.mAvatarData.length);
 				this.mAvatar = new BitmapDrawable(context.getResources(), b);
 			}
 		}

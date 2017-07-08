@@ -198,11 +198,12 @@ public class SmsReceiver extends BroadcastReceiver {
                     }
 
                     if (SpamDB.isBlacklisted(context, smsMessage[0].getOriginatingAddress())) {
-                        Log.d("Message from ", addr+ " filtered.");
+                        Log.d("Message from ", addr+ " blocked.");
                         //Toast.makeText(context, context.getString(R.string.block)+"", Toast.LENGTH_SHORT).show();
+
                         silent = true;
                     } else {
-                        Log.d("Message from ", addr+ " NOT filtered.");
+                        Log.d("Message from ", addr+ " NOT blocked.");
                     }
 
                     if (action.equals(ACTION_SMS_NEW)) {
@@ -223,30 +224,6 @@ public class SmsReceiver extends BroadcastReceiver {
         }
         wakelock.release();
         //wakelock released
-    }
-
-
-    private static boolean checkNumberExits(Context context, String s){
-        ArrayList<Contact> contacts = new ArrayList<Contact>();
-        contacts = getAllContacts(context);
-        for (int i = 0;i<contacts.size();i++){
-            if (contacts.get(i).getNumber().equals(s))
-                return true;
-        }
-        return false;
-    }
-
-    private static ArrayList<Contact> getAllContacts(Context context) {
-        Cursor phones = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
-        ArrayList<Contact> contacts = new ArrayList<Contact>();
-        while (phones.moveToNext()) {
-            String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-            String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-            Contact contact = new Contact(phoneNumber, name);
-            contacts.add(contact);
-        }
-        phones.close();
-        return contacts;
     }
 
     private static void updateNotificationsWithNewText(Context context, String text, boolean silent) {
@@ -519,7 +496,6 @@ public class SmsReceiver extends BroadcastReceiver {
                             if (d instanceof BitmapDrawable) {
                                 Bitmap bitmap = ((BitmapDrawable) d).getBitmap();
                                 // 24x24 dp according to android iconography  ->
-                                // http://developer.android.com/design/style/iconography.html#notification
                                 int px = Math.round(TypedValue
                                         .applyDimension(TypedValue.COMPLEX_UNIT_DIP, 64,
                                                 context.getResources().getDisplayMetrics()));
@@ -676,7 +652,7 @@ public class SmsReceiver extends BroadcastReceiver {
     private static void popup(Context context, String text,String addr){
         //Todo popup
         SharedPreferences prefs1 = PreferenceManager.getDefaultSharedPreferences(context);
-        if (isRun.isApplicationBroughtToBackground(context)){
+        if (!SpamDB.isBlacklisted(context, addr) && isRun.isApplicationBroughtToBackground(context)){
             //backround
             if (prefs1.getBoolean(SettingsOldActivity.PREFS_POPUP, false)) {
                 Intent intent1 = new Intent(context, PopupActivity.class);
@@ -694,7 +670,7 @@ public class SmsReceiver extends BroadcastReceiver {
     //Filter
     public static boolean filter(Context context,String text,String addr){
         // length body > 50 and number whitout in contacts.
-        if (text.length()>0 && !checkNumberExits(context,addr)) {
+        if (text.length()>0 && !checkNumberExits(context,addr) && !SpamDB.isBlacklisted(context, addr)) {
             int i =0;
             // remove marks all
             String body = Utils.removeAccent(text);
@@ -716,5 +692,27 @@ public class SmsReceiver extends BroadcastReceiver {
             }
         }
         return false;
+    }
+    private static boolean checkNumberExits(Context context, String s){
+        ArrayList<Contact> contacts = new ArrayList<Contact>();
+        contacts = getAllContacts(context);
+        for (int i = 0;i<contacts.size();i++){
+            if (contacts.get(i).getNumber().equals(s))
+                return true;
+        }
+        return false;
+    }
+
+    public static ArrayList<Contact> getAllContacts(Context context) {
+        Cursor phones = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
+        ArrayList<Contact> contacts = new ArrayList<Contact>();
+        while (phones.moveToNext()) {
+            String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+            String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+            Contact contact = new Contact(phoneNumber, name);
+            contacts.add(contact);
+        }
+        phones.close();
+        return contacts;
     }
 }

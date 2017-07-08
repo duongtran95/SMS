@@ -8,26 +8,25 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-// Database holding blacklisted numbers.
+// Database holding blacklisted Block and Filtered list.
 public class SpamDB {
     //Name of SQLiteDatabase.
-    private static String DATABASE_NAME = "spamlist";
+    private String DATABASE_NAME = "Spam";
 
     ///Version of SQLiteDatabase.
-    private static int DATABASE_VERSION = 1;
+    private int DATABASE_VERSION = 1;
 
     //Table in  SQLiteDatabase.
-    private static String DATABASE_TABLE = "numbers";
+    private String DATABASE_TABLE = "Block";
 
     //Key in table.
-    private static String KEY_NR = "nr";
+    private String KEY_NUMBER = "number";
 
     //Projection.
-    private static String[] PROJECTION = new String[]{KEY_NR};
+    private String[] PROJECTION = new String[]{KEY_NUMBER};
 
     //SQL to create SQLiteDatabase.
-    private static String DATABASE_CREATE
-            = "CREATE TABLE IF NOT EXISTS numbers (nr varchar(50) )";
+    private String DATABASE_CREATE = "CREATE TABLE IF NOT EXISTS Block (number varchar(50) )";
     //link DatabaseHelper
     private DatabaseHelper dbHelper;
 
@@ -40,13 +39,7 @@ public class SpamDB {
     }
 
     //link DatabaseHelper for opening the database.
-    private static class DatabaseHelper extends SQLiteOpenHelper {
-
-        /**
-         * Default constructor.
-         *
-         * @param context {@link Context}
-         */
+    private class DatabaseHelper extends SQLiteOpenHelper {
         DatabaseHelper(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
         }
@@ -61,7 +54,7 @@ public class SpamDB {
             //Upgrading database from version  oldVersion  to  newVersion
             //  which will destroy all old data"
             Log.w("Upgrading db from vs: ", oldVersion+ " to "+ newVersion);
-            db.execSQL("DROP TABLE IF EXISTS numbers");
+            db.execSQL("DROP TABLE IF EXISTS Block");
             onCreate(db);
         }
     }
@@ -78,33 +71,23 @@ public class SpamDB {
         dbHelper.close();
     }
 
-    /**
-     * Insert a number into the spam database.
-     *
-     * @param nr number
-     * @return id in database
-     */
-    private long insertNr(String nr) {
-        if (nr == null) {
-            return -1L;
+    //Insert a number into the spam database.
+    private long insertNumber(String number) {
+        if (number == null) {
+            return -1;
         }
         ContentValues initialValues = new ContentValues();
-        initialValues.put(KEY_NR, nr);
+        initialValues.put(KEY_NUMBER, number);
         return db.insert(DATABASE_TABLE, null, initialValues);
     }
 
-    /**
-     * Check if number is blacklisted.
-     *
-     * @param nr number
-     * @return true if number is blacklisted
-     */
-    private boolean isInDB(String nr) {
-        if (nr == null) {
+    // Check if number is blacklisted.
+    private boolean isInDB(String number) {
+        if (number == null) {
             return false;
         }
-        Cursor cursor = db.query(DATABASE_TABLE, PROJECTION, KEY_NR + " = ?",
-                new String[]{nr}, null, null, null);
+        Cursor cursor = db.query(DATABASE_TABLE, PROJECTION, KEY_NUMBER + " = ?",
+                new String[]{number}, null, null, null);
         boolean ret = cursor.moveToFirst();
         if (!cursor.isClosed()) {
             cursor.close();
@@ -112,14 +95,10 @@ public class SpamDB {
         return ret;
     }
 
-    /**
-     * Get all blacklisted numbers.
-     *
-     * @return blacklist
-     */
+    // Get all blacklisted Block
+
     public int getEntrieCount() {
-        Cursor cursor = db.rawQuery("SELECT COUNT(nr) FROM " + DATABASE_TABLE, null);
-        Log.d("cusor", cursor.toString());
+        Cursor cursor = db.rawQuery("SELECT COUNT(number) FROM " + DATABASE_TABLE, null);
         int ret = 0;
         if (cursor.moveToFirst()) {
             ret = cursor.getInt(0);
@@ -130,11 +109,7 @@ public class SpamDB {
         return ret;
     }
 
-    /**
-     * Get all entries from blacklist.
-     *
-     * @return array of entries
-     */
+    // Get all entries from blacklist.
     private String[] getAllEntries() {
         Cursor cursor = db.query(DATABASE_TABLE, PROJECTION, null, null, null, null, null);
         if (cursor == null) {
@@ -155,16 +130,12 @@ public class SpamDB {
         return ret;
     }
 
-    /**
-     * Remove number from blacklist.
-     *
-     * @param nr number
-     */
-    private void removeNr(String nr) {
-        if (nr == null) {
+    //Remove number from blacklist.
+    private void removeNumber(String number) {
+        if (number == null) {
             return;
         }
-        db.delete(DATABASE_TABLE, KEY_NR + " = ?", new String[]{nr});
+        db.delete(DATABASE_TABLE, KEY_NUMBER + " = ?", new String[]{number});
     }
 
     public static String[] getBlacklist(Context context) {
@@ -176,7 +147,7 @@ public class SpamDB {
             spamDB.close();
         } catch (SQLiteException e) {
             //ER opening spam db, continue with empty list
-            Log.e("ER opening spam db",e+"");
+            Log.e("ERR opening spam db",e+"");
             blacklist = new String[0];
         }
         return blacklist;
@@ -201,16 +172,17 @@ public class SpamDB {
             SpamDB spamDB = new SpamDB(context);
             spamDB.open();
             if (!spamDB.isInDB(number)) {
-                spamDB.insertNr(number);
+                spamDB.insertNumber(number);
                 Log.d("Added ", number+ " to spam list");
             } else {
-                spamDB.removeNr(number);
+                spamDB.removeNumber(number);
                 Log.d("Removed ", number+ " from spam list");
             }
             spamDB.close();
         } catch (SQLiteException e) {
             //error opening spam db, doing nothing
-            Log.e(" do nothing",e+"");
+            Log.e("Do nothing",e+"");
         }
     }
+
 }

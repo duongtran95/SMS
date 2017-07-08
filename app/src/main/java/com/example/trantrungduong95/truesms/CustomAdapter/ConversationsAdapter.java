@@ -34,7 +34,7 @@ import com.example.trantrungduong95.truesms.Receiver.SmsReceiver;
 public class ConversationsAdapter extends ResourceCursorAdapter {
 
     //Tag
-    static String TAG = "coa";
+    static String TAG = "ConversationsAdapter";
 
     //Cursor's sort.
     private String SORT = Calls.DATE + " DESC";
@@ -250,12 +250,6 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
         }
     }
 
-    /**
-     * Check if address is blacklisted.
-     *
-     * @param addr address
-     * @return true if address is blocked
-     */
     public boolean isBlocked(String addr) {
         if (addr == null) {
             return false;

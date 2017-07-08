@@ -93,12 +93,8 @@ public class MobilePhoneAdapter extends ResourceCursorAdapter {
         prefsMobilesOnly = b;
     }
 
-    /**
-     * Clean recipient's phone number from [ -.()<>].
-     *
-     * @param recipient recipient's mobile number
-     * @return clean number
-     */
+    // Clean recipient's phone number from [ -.()<>]. Return clean number
+
     public static String cleanRecipient(String recipient) {
         if (TextUtils.isEmpty(recipient)) {
             return "";

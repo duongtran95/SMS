@@ -20,36 +20,32 @@ public class Conversation {
     //Internal Cache.
     private static LinkedHashMap<Integer, Conversation> CACHE = new LinkedHashMap<>(26, 0.9f, true);
 
-    //No photo available.
-    public Bitmap NO_PHOTO = Bitmap.createBitmap(1, 1, Bitmap.Config.RGB_565);
-
     //link Uri to all threads.
-    public static Uri URI_SIMPLE = Uri.parse("content://mms-sms/conversations").buildUpon()
-            .appendQueryParameter("simple", "true").build();
+    public static Uri URI_SIMPLE = Uri.parse("content://mms-sms/conversations").buildUpon().appendQueryParameter("simple", "true").build();
 
-    public static String ID = BaseColumns._ID;
+    private static String ID = BaseColumns._ID;
 
-    public static String DATE = Calls.DATE;
+    private static String DATE = Calls.DATE;
 
     public static String COUNT = "message_count";
 
-    public static String NID = "recipient_ids";
+    private static String NID = "recipient_ids";
 
-    public static String BODY = "snippet";
+    private static String BODY = "snippet";
 
-    public static String READ = "read";
+    private static String READ = "read";
 
-    public static int INDEX_SIMPLE_ID = 0;
+    private static int INDEX_SIMPLE_ID = 0;
 
-    public int INDEX_SIMPLE_DATE = 1;
+    private int INDEX_SIMPLE_DATE = 1;
 
-    public int INDEX_SIMPLE_COUNT = 2;
+    private int INDEX_SIMPLE_COUNT = 2;
 
-    public int INDEX_SIMPLE_NID = 3;
+    private int INDEX_SIMPLE_NID = 3;
 
-    public int INDEX_SIMPLE_BODY = 4;
+    private int INDEX_SIMPLE_BODY = 4;
 
-    public int INDEX_SIMPLE_READ = 5;
+    private int INDEX_SIMPLE_READ = 5;
 
     //Cursor's projection.
     public static String[] PROJECTION_SIMPLE = { //
@@ -60,8 +56,6 @@ public class Conversation {
             BODY, // 4
             READ, // 5
     };
-
-    public static String DATE_FORMAT = "dd.MM. kk:mm";
 
     //Time of valid cache.
     private static long validCache = 0;
@@ -171,8 +165,7 @@ public class Conversation {
      * @param forceUpdate force an update of that {@link Conversation}
      * @return {@link Conversation}
      */
-    public static Conversation getConversation(Context context, int threadId,
-                                               boolean forceUpdate) {
+    public static Conversation getConversation(Context context, int threadId, boolean forceUpdate) {
         Log.d("getConversation", threadId+"");
         synchronized (CACHE) {
             Conversation ret = CACHE.get(threadId);

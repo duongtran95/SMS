@@ -34,7 +34,7 @@
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/Theme.TrueSMS_Light"
+
         android:roundIcon="@mipmap/ic_launcher_round"
         android:resizeableActivity="true">
         <activity
@@ -56,13 +56,6 @@
 
                 <data android:mimeType="vnd.android-dir/mms-sms" />
             </intent-filter>
-<!--            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.app.searchable"
-                android:resource="@xml/searchable" />-->
         </activity>
         <activity android:name=".Presenter.SettingsOldActivity" />
         <activity android:name=".Presenter.SettingsNewActivity" />
@@ -71,7 +64,8 @@
         <activity android:name=".Presenter.SettingsNofActivity" />
         <activity
             android:name=".Presenter.AboutActivity"
-            android:theme="@style/Theme.TrueSMS_Light" />
+            android:theme="@style/Theme.TrueSMS"
+            />
         <activity
             android:name=".Presenter.ConversationActivity"
             android:configChanges="orientation|keyboardHidden"
@@ -84,10 +78,10 @@
                 <category android:name="android.intent.category.DEFAULT" />
 
                 <data
-                    android:host="@string/app_name"
+                    android:host="0"
                     android:mimeType="vnd.android-dir/mms-sms"
                     android:pathPrefix="/threadID/"
-                    android:scheme="http" />
+                    android:scheme="0" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -100,9 +94,6 @@
                     android:pathPrefix="/conversations/"
                     android:scheme="http" />
             </intent-filter>
-<!--            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>-->
         </activity>
         <activity
             android:name=".Presenter.ComposeActivity"
@@ -135,7 +126,6 @@
             android:name=".Presenter.Filterd_Blacklist_Activity"
             android:theme="@style/Theme.TrueSMS_Light">
         </activity>
-
 
         <receiver
             android:name=".Receiver.SmsReceiver"
@@ -199,10 +189,6 @@
         <provider
             android:name=".Presenter.MessageProvider"
             android:authorities="com.example.trantrungduong95.truesms.Presenter" />
-       <!-- <provider
-            android:name=".Presenter.SearchProvider"
-            android:authorities="com.example.trantrungduong95.truesms.Presenter.SearchProvider"
-            android:syncable="false" />-->
     </application>
 
 </manifest>

@@ -12,7 +12,7 @@ import java.util.List;
 
 public class isRun {
 
-    public static boolean isAppRunning(final Context context, final String packageName) {
+  /*  public boolean isAppRunning(final Context context, final String packageName) {
         final ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         final List<ActivityManager.RunningAppProcessInfo> procInfos = activityManager.getRunningAppProcesses();
         if (procInfos != null)
@@ -24,7 +24,7 @@ public class isRun {
             }
         }
         return false;
-    }
+    }*/
     public static boolean isApplicationBroughtToBackground(Context context) {
         ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningTaskInfo> tasks = am.getRunningTasks(1);

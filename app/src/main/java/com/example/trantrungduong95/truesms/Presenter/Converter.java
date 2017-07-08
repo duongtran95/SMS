@@ -14,12 +14,7 @@ public class Converter {
     //Pattern for NCR.
     private static Pattern PATTERN = Pattern.compile("&#([0-9]{1,7});");
 
-    /**
-     * Converts a string containing &#...; escapes to a string of characters.
-     *
-     * @param str {@link CharSequence} to convert
-     * @return converted {@link CharSequence}
-     */
+    //Converts a string containing &#...; escapes to a string of characters.
     public static CharSequence convertDecNCR2Char(CharSequence str) {
         if (TextUtils.isEmpty(str)) {
             return str;
@@ -37,14 +32,9 @@ public class Converter {
         return sb.toString();
     }
 
-    /**
-     * Converts a single string representing a decimal number to a character note that no checking
-     * is performed to ensure that this is just a hex number, eg. no spaces etc dec: string, the dec
-     * codepoint to be converted.
-     *
-     * @param str single {@link String}
-     * @return decoded {@link String}
-     */
+    /*Converts a single string representing a decimal number to a character note that no checking
+     is performed to ensure that this is just a hex number, eg. no spaces etc dec: string, the dec
+     codepoint to be converted.*/
     private static String dec2char(String str) {
         try {
             int n = Integer.valueOf(str);

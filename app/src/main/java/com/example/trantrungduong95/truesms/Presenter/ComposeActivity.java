@@ -43,7 +43,7 @@ import java.util.regex.Pattern;
 
 public class ComposeActivity extends AppCompatActivity implements View.OnClickListener {
     //Tag
-    private String TAG = "send";
+    private String TAG = "ComposeActivity";
 
     //link Uri for saving messages.
     public static Uri URI_SMS = Uri.parse("content://sms");
@@ -164,13 +164,6 @@ public class ComposeActivity extends AppCompatActivity implements View.OnClickLi
                 } else {
                     mtv.requestFocus();
                 }
-                int flags = editText_reply.getInputType();
-                if (p.getBoolean(SettingsOldActivity.PREFS_EDIT_SHORT_TEXT, true)) {
-                    flags |= InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE;
-                } else {
-                    flags &= ~InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE;
-                }
-                editText_reply.setInputType(flags);
             }
         }
     }

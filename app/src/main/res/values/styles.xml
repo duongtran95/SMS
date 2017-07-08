@@ -1,10 +1,4 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-<!--    <declare-styleable name="Ub0rButtonBar">
-        <attr name="ubButtonBarBackground" format="reference" />
-    </declare-styleable>
-
-    <style name="ubButtonBar" parent="@android:style/ButtonBar" />-->
-
     <style name="TextAppearance.Widget.Subtitle" parent="@android:style/TextAppearance.Small">
         <item name="android:textColor">@color/actionbar_text_color</item>
     </style>

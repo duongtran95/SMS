@@ -19,7 +19,7 @@ import java.io.IOException;
 public class MessageProvider extends ContentProvider {
 
     //Tag
-    static String TAG = "mp";
+    String TAG = "MessageProvider";
 
     //Content link Uri for messages.
     public static Uri CONTENT_URI = Uri.parse("content://com.example.trantrungduong95.truesms.Presenter/msg");

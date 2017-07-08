@@ -1,6 +1,7 @@
 package com.example.trantrungduong95.truesms.Presenter;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
@@ -15,17 +16,19 @@ public class AboutActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.about);
-        //setTitle(getString(R.string.about_) + " " + getString(R.string.app_name));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                // app icon in Action Bar clicked; go home
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
+                if (Build.VERSION.SDK_INT >= 19) {
+                    startActivity(new Intent(this, SettingsNewActivity.class));
+                } else {
+                    startActivity(new Intent(this, SettingsOldActivity.class));
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

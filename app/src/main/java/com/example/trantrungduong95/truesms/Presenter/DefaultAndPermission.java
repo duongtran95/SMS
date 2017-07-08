@@ -29,10 +29,10 @@ import com.example.trantrungduong95.truesms.R;
 
 public class DefaultAndPermission extends Application {
     //Tag
-    private static String TAG = "app";
+    private static String TAG = "TrueSMS";
 
     //Projection for checking link Cursor.
-    private static String[] PROJECTION = new String[]{"_id"};
+    private String[] PROJECTION = new String[]{"_id"};
 
     @Override
     public void onCreate() {
@@ -45,25 +45,21 @@ public class DefaultAndPermission extends Application {
         if (hasPermission(this, Manifest.permission.READ_SMS)) {
             SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this);
             int state = PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
-            if (p.getBoolean(SettingsOldActivity.PREFS_ACTIVATE_SENDER, true)) {
-                try {
-                    Cursor c = getContentResolver().query(ComposeActivity.URI_SENT, PROJECTION, null, null, "_id LIMIT 1");
-                    if (c == null) {
-                        Log.i(TAG, "disable .Sender: cursor=null");
-                    } else if (SmsManager.getDefault() == null) {
-                        Log.i(TAG, "disable .Sender: SmsManager=null");
-                    } else {
-                        state = PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
-                        Log.d(TAG, "enable .Sender");
-                    }
-                    if (c != null && !c.isClosed()) {
-                        c.close();
-                    }
-                } catch (IllegalArgumentException | SQLiteException e) {
-                    Log.e("disable .Sender: ", e.getMessage());
+            try {
+                Cursor c = getContentResolver().query(ComposeActivity.URI_SENT, PROJECTION, null, null, "_id LIMIT 1");
+                if (c == null) {
+                    Log.i(TAG, "disable .Sender: cursor=null");
+                } else if (SmsManager.getDefault() == null) {
+                    Log.i(TAG, "disable .Sender: SmsManager=null");
+                } else {
+                    state = PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
+                    Log.d(TAG, "enable .Sender");
                 }
-            } else {
-                Log.d(TAG, "disable .Sender");
+                if (c != null && !c.isClosed()) {
+                    c.close();
+                }
+            } catch (IllegalArgumentException | SQLiteException e) {
+                Log.e("disable .Sender: ", e.getMessage());
             }
             getPackageManager().setComponentEnabledSetting(new ComponentName(this, ComposeActivity.class), state, PackageManager.DONT_KILL_APP);
         } else {
@@ -104,7 +100,7 @@ public class DefaultAndPermission extends Application {
         }
     }
 
-    public  static boolean hasPermission(Context context, String permission) {
+    public static boolean hasPermission(Context context, String permission) {
         return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED;
     }
 

@@ -32,67 +32,67 @@ public class Utils {
     /**
      * Tag for output.
      */
-    private static String TAG = "utls";
+    private static String TAG = "Utils";
 
     /**
      * 10.
      */
-    public static int N_10 = 10;
+    public int N_10 = 10;
 
     /**
      * 100.
      */
-    public static int N_100 = 100;
+    public int N_100 = 100;
 
     /**
      * 1000.
      */
-    public static int N_1000 = 1000;
+    public int N_1000 = 1000;
 
     /**
      * One hour in minutes.
      */
-    public static int HOUR_IN_MINUTES = 60;
+    public int HOUR_IN_MINUTES = 60;
 
     /**
      * One hour in seconds.
      */
-    public static int HOUR_IN_SECONDS = 60 * 60;
+    public int HOUR_IN_SECONDS = 60 * 60;
 
     /**
      * One hour in milliseconds.
      */
-    public static int HOUR_IN_MILLIS = 60 * 60 * 1000;
+    public int HOUR_IN_MILLIS = 60 * 60 * 1000;
 
     /**
      * One minutes in seconds.
      */
-    public static int MINUTES_IN_SECONDS = 60;
+    public int MINUTES_IN_SECONDS = 60;
 
     /**
      * One minutes in milliseconds.
      */
-    public static int MINUTES_IN_MILLIS = 60 * 1000;
+    public int MINUTES_IN_MILLIS = 60 * 1000;
 
     /**
      * One day in seconds.
      */
-    public static long DAY_IN_SECONDS = 60L * 60L * 24L;
+    public long DAY_IN_SECONDS = 60L * 60L * 24L;
 
     /**
      * One day in milliseconds.
      */
-    public static long DAY_IN_MILLIS = 60L * 60L * 24L * 1000L;
+    public long DAY_IN_MILLIS = 60L * 60L * 24L * 1000L;
 
     /**
      * k aka 1024.
      */
-    public static int K = 1024;
+    public int K = 1024;
 
     /**
      * M aka 1024 * 1024.
      */
-    public static int M = K * K;
+    public int M = K * K;
 
     /**
      * Default Constructor.
@@ -108,7 +108,7 @@ public class Utils {
      * @param defValue default value
      * @return parsed {@link Boolean}
      */
-    public static boolean parseBoolean(String value, boolean defValue) {
+    public boolean parseBoolean(String value, boolean defValue) {
         boolean ret = defValue;
         if (value == null || value.length() == 0) {
             return ret;
@@ -148,7 +148,7 @@ public class Utils {
      * @param defValue default value
      * @return parsed {@link Long}
      */
-    public static long parseLong(String value, long defValue) {
+    public long parseLong(String value, long defValue) {
         long ret = defValue;
         if (value == null || value.length() == 0) {
             return ret;
@@ -168,7 +168,7 @@ public class Utils {
      * @param defValue default value
      * @return parsed {@link Float}
      */
-    public static float parseFloat(String value, float defValue) {
+    public float parseFloat(String value, float defValue) {
         float ret = defValue;
         if (value == null || value.length() == 0) {
             return ret;
@@ -187,7 +187,7 @@ public class Utils {
      * @param s input
      * @return hash
      */
-    public static String md5(String s) {
+    public String md5(String s) {
         try {
             // Create MD5 Hash
             MessageDigest digest = MessageDigest.getInstance("MD5");
@@ -235,7 +235,7 @@ public class Utils {
      *
      * @param context {@link Context}
      */
-    public static void startMoreLocale(Context context) {
+    public void startMoreLocale(Context context) {
         try {
             Intent i = new Intent(Intent.ACTION_MAIN);
             i.setComponent(new ComponentName("jp.co.c_lis.ccl.morelocale",
@@ -260,7 +260,7 @@ public class Utils {
      * @param destination destination
      * @throws IOException File not found or any other IO Exception.
      */
-    public static void copyFile(String source, String destination) throws IOException {
+    public void copyFile(String source, String destination) throws IOException {
         InputStream in = new FileInputStream(source);
         OutputStream out = new FileOutputStream(destination);
         byte[] buf = new byte[K];
@@ -278,7 +278,7 @@ public class Utils {
      * @param bytes array of byte arrays
      * @return byte array
      */
-    public static byte[] concatByteArrays(byte[][] bytes) {
+    public byte[] concatByteArrays(byte[][] bytes) {
         int rl = 0;
         for (byte[] aByte : bytes) {
             rl += aByte.length;
@@ -299,7 +299,7 @@ public class Utils {
      * @param number number
      * @return prefix
      */
-    public static String getPrefixFromTelephoneNumber(String number) {
+    public String getPrefixFromTelephoneNumber(String number) {
         String prefix = null;
 
         if (number.startsWith("+10") || number.startsWith("+11")) {

@@ -13,7 +13,7 @@ import java.util.concurrent.RejectedExecutionException;
 public class AsyncHelper extends AsyncTask<Void, Void, Void> {
 
     //Tag
-    static String TAG = "as";
+    static String TAG = "AsyncTask";
 
     //link ConversationsAdapter to invalidate on new data.
     private static ConversationsAdapter adapter = null;
@@ -34,13 +34,8 @@ public class AsyncHelper extends AsyncTask<Void, Void, Void> {
         conv = con;
     }
 
-    /**
-     * Fill Conversations data. If needed: spawn threads.
-     *
-     * @param context {@link Context}
-     * @param c       {@link Conversation}
-     * @param sync    fetch of information
-     */
+     //Fill Conversations data. If needed: spawn threads.
+     //sync fetch of information
     public static void fillConversation(Context context, Conversation c, boolean sync) {
         //fillConversation
         if (context == null || c == null || c.getThreadId() < 0) {

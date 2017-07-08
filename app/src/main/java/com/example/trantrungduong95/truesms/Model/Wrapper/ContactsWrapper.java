@@ -19,7 +19,7 @@ import com.example.trantrungduong95.truesms.Model.Contact;
 public abstract class ContactsWrapper {
 
     // Tag
-    private String TAG = "cw";
+    private String TAG = "ContactsWrapper";
 
     //Index of id/lookup key.
     public int FILTER_INDEX_ID = 0;

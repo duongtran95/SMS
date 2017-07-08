@@ -15,21 +15,13 @@ import com.example.trantrungduong95.truesms.Receiver.SmsReceiver;
 //A widget provider.
 public class WidgetProvider extends AppWidgetProvider {
     @Override
-    public void onUpdate(Context context, AppWidgetManager appWidgetManager,
-            int[] appWidgetIds) {
+    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         SmsReceiver.updateNewMessageNotification(context, null);
     }
 
-    /**
-     * Get {@link RemoteViews}.
-     *
-     * @param context {@link Context}
-     * @param count   number of unread messages
-     * @param pIntent {@link PendingIntent}
-     * @return {@link RemoteViews}
-     */
+    //Get link RemoteViews. Count number of unread messages
     public static RemoteViews getRemoteViews(Context context, int count,
-            PendingIntent pIntent) {
+                                             PendingIntent pIntent) {
         SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
         views.setTextViewText(R.id.text1, String.valueOf(count));

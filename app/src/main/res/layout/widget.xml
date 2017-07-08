@@ -15,7 +15,7 @@
             android:layout_centerHorizontal="true"
             android:paddingTop="2dip"
             android:scaleType="centerInside"
-            android:src="@drawable/icon"/>
+            android:src="@drawable/icon_56"/>
 
     <TextView
             android:id="@+id/text1"

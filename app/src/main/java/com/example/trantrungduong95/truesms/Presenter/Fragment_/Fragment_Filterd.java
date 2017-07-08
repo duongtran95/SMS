@@ -54,8 +54,7 @@ public class Fragment_Filterd extends android.support.v4.app.Fragment {
         InputStreamReader isr = null;
         BufferedReader input = null;
         try {
-            fIn = context.getResources().getAssets()
-                    .open(fileName, Context.MODE_WORLD_READABLE);
+            fIn = context.getResources().getAssets().open(fileName, Context.MODE_WORLD_READABLE);
             isr = new InputStreamReader(fIn);
             input = new BufferedReader(isr);
             String line = "";

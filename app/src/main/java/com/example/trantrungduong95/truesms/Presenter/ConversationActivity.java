@@ -46,45 +46,45 @@ import com.example.trantrungduong95.truesms.R;
 public class ConversationActivity extends AppCompatActivity implements AdapterView.OnItemClickListener,
         AdapterView.OnItemLongClickListener, View.OnClickListener, View.OnLongClickListener {
 
-    private static String TAG = "ml";
+    private String TAG = "ConversationActivity";
 
-    public static String copyMsg = "";
+    public String copyMsg = "";
 
     //ContactsWrapper
-    private static ContactsWrapper WRAPPER = ContactsWrapper.getInstance();
+    private ContactsWrapper WRAPPER = ContactsWrapper.getInstance();
 
     //Number of items.
-    private static int WHICH_N = 8;
+    private int WHICH_N = 8;
 
     //
-    private static final int WHICH_VIEW_CONTACT = 0;
+    private final int WHICH_VIEW_CONTACT = 0;
 
     //
-    private static final int WHICH_CALL = 1;
+    private final int WHICH_CALL = 1;
 
     //Index in dialog: mark read/unread.
-    private static final int WHICH_MARK_UNREAD = 2;
+    private final int WHICH_MARK_UNREAD = 2;
 
     //Index in dialog: reply.
-    private static final int WHICH_REPLY = 3;
+    private final int WHICH_REPLY = 3;
 
     //
-    private static final int WHICH_FORWARD = 4;
+    private final int WHICH_FORWARD = 4;
 
     //Index in dialog: copy text.
-    private static final int WHICH_COPY_TEXT = 5;
+    private final int WHICH_COPY_TEXT = 5;
 
     //Index in dialog: view details.
-    private static final int WHICH_VIEW_DETAILS = 6;
+    private final int WHICH_VIEW_DETAILS = 6;
 
     //Index in dialog: delete.
-    private static final int WHICH_DELETE = 7;
+    private final int WHICH_DELETE = 7;
 
     //maximum number of lines in EditText
-    private static int MAX_EDITTEXT_LINES = 10;
+    private int MAX_EDITTEXT_LINES = 10;
 
     //Package name for System's chooser.
-    private static String chooserPackage = null;
+    private String chooserPackage = null;
 
     //Used Uri.
     private Uri uri;
@@ -150,13 +150,6 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
         }
 
         etText = (EditText) findViewById(R.id.compose_reply_text);
-        int flags = etText.getInputType();
-        if (p.getBoolean(SettingsOldActivity.PREFS_EDIT_SHORT_TEXT, true)) {
-            flags |= InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE;
-        } else {
-            flags &= ~InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE;
-        }
-        etText.setInputType(flags);
 
         parseIntent(getIntent());
 
@@ -220,7 +213,7 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
                 uri = Uri.parse(URI + uri.getLastPathSegment());
             }
         } else {
-            long tid = intent.getLongExtra("thread_id", -1L);
+            long tid = intent.getLongExtra("thread_id", -1);
             uri = Uri.parse(URI + tid);
             if (tid < 0L) {
                 try {

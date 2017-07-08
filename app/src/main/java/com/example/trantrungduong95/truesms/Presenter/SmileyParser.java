@@ -45,7 +45,7 @@ public class SmileyParser {
     }
 
     // Smiley resources keys.
-    private static int[] DEFAULT_SMILEY_RES_IDS = {R.mipmap.emo_im_angel, // 0
+    private int[] DEFAULT_SMILEY_RES_IDS = {R.mipmap.emo_im_angel, // 0
             R.mipmap.emo_im_cool, // 1
             R.mipmap.emo_im_cool, // 2
             R.mipmap.emo_im_crying, // 3

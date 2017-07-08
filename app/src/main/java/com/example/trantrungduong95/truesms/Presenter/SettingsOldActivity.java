@@ -31,7 +31,6 @@ public class SettingsOldActivity extends PreferenceActivity implements IPreferen
     public static String PREFS_VIBRATE = "receive_vibrate";
 
     //Preference's name: sound on receive.
-
     public static String PREFS_SOUND = "receive_sound";
 
     //Preference's name: led color.
@@ -103,9 +102,6 @@ public class SettingsOldActivity extends PreferenceActivity implements IPreferen
     //Preference's name: mobile_only.
     public static String PREFS_MOBILE_ONLY = "mobile_only";
 
-    //Preference's name: edit_short_text.
-    public static String PREFS_EDIT_SHORT_TEXT = "edit_short_text";
-
     //Preference's name: show target app.
     public static String PREFS_SHOWTARGETAPP = "show_target_app";
 
@@ -114,9 +110,6 @@ public class SettingsOldActivity extends PreferenceActivity implements IPreferen
 
     //Preference's name: decode decimal ncr.
     public static String PREFS_DECODE_DECIMAL_NCR = "decode_decimal_ncr";
-
-    //Preference's name: activate sender.
-    public static String PREFS_ACTIVATE_SENDER = "activate_sender";
 
     //Preference's name: forward sms sender.
     public static String PREFS_FORWARD_SMS_CLEAN = "forwarded_sms_clean";
@@ -392,21 +385,21 @@ public class SettingsOldActivity extends PreferenceActivity implements IPreferen
     //Get drawable resource for bubble for incoming messages.
     public static int getBubblesIn(Context context) {
         SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
-        int i = p.getInt(PREFS_BUBBLES_IN, R.drawable.bubble_green_right);
+        int i = p.getInt(PREFS_BUBBLES_IN, R.drawable.bubble_brown_right);
         if (i >= 0 && i < BUBBLES_IMG.length) {
             return BUBBLES_IMG[i];
         }
-        return R.drawable.bubble_green_right;
+        return R.drawable.bubble_brown_right;
     }
 
     //Get drawable resource for bubble for outgoing messages.
     public static int getBubblesOut(Context context) {
         SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
-        int i = p.getInt(PREFS_BUBBLES_OUT, R.drawable.bubble_blue_left);
+        int i = p.getInt(PREFS_BUBBLES_OUT, R.drawable.bubble_gray_left);
         if (i >= 0 && i < BUBBLES_IMG.length) {
             return BUBBLES_IMG[i];
         }
-        return R.drawable.bubble_blue_left;
+        return R.drawable.bubble_gray_left;
     }
 
     //Get text's size from Preferences.
@@ -421,25 +414,6 @@ public class SettingsOldActivity extends PreferenceActivity implements IPreferen
     public static boolean showEmoticons(Context context) {
         SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
         return p.getBoolean(PREFS_EMOTICONS, true);
-    }
-
-    //Fix a number with regex load from link SharedPreferences.
-    public static String fixNumber(Context context, String number) {
-        String ret = number;
-        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
-        for (int i = 1; i <= PREFS_REGEX_COUNT; i++) {
-            String regex = p.getString(PREFS_REGEX + i, null);
-            if (!TextUtils.isEmpty(regex)) {
-                try {
-                    Log.d("search for '", regex+ "' in "+ ret);
-                    ret = ret.replaceAll(regex, p.getString(PREFS_REPLACE + i, ""));
-                    Log.d("new number: ", ret);
-                } catch (PatternSyntaxException e) {
-                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
-                }
-            }
-        }
-        return ret;
     }
 
     @Override

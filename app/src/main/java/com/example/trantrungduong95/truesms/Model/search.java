@@ -1,5 +1,6 @@
 package com.example.trantrungduong95.truesms.Model;
 
+
 /**
  * Created by ngomi_000 on 7/1/2017.
  */
@@ -28,4 +29,5 @@ public class Search {
     public void setContent(String content) {
         this.content = content;
     }
+
 }

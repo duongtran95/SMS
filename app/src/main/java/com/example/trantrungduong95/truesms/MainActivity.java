@@ -30,13 +30,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -45,24 +43,24 @@ import android.widget.Toast;
 import com.example.trantrungduong95.truesms.CustomAdapter.ConversationSearchAdapter;
 import com.example.trantrungduong95.truesms.CustomAdapter.ConversationsAdapter;
 import com.example.trantrungduong95.truesms.Fab.FloatingActionButton;
+import com.example.trantrungduong95.truesms.Model.Block;
 import com.example.trantrungduong95.truesms.Model.Contact;
 import com.example.trantrungduong95.truesms.Model.Conversation;
 import com.example.trantrungduong95.truesms.Model.Message;
 import com.example.trantrungduong95.truesms.Model.Search;
 import com.example.trantrungduong95.truesms.Model.Wrapper.ContactsWrapper;
 import com.example.trantrungduong95.truesms.Presenter.AsyncHelper;
+import com.example.trantrungduong95.truesms.Presenter.BlacklistActivity;
 import com.example.trantrungduong95.truesms.Presenter.ConversationActivity;
 import com.example.trantrungduong95.truesms.Presenter.DefaultAndPermission;
-import com.example.trantrungduong95.truesms.Presenter.Filterd_Blacklist_Activity;
 import com.example.trantrungduong95.truesms.Presenter.SettingsNewActivity;
 import com.example.trantrungduong95.truesms.Presenter.SettingsOldActivity;
-import com.example.trantrungduong95.truesms.Presenter.SpamDB;
+import com.example.trantrungduong95.truesms.Presenter.SpamHandler;
 import com.example.trantrungduong95.truesms.Presenter.Utils;
 import com.example.trantrungduong95.truesms.Receiver.SmsReceiver;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.regex.PatternSyntaxException;
 
 public class MainActivity extends AppCompatActivity implements OnItemClickListener, OnItemLongClickListener {
     //Tag
@@ -121,6 +119,10 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
     //listview conversations
     private ListView listview_conversation;
 
+    //db
+    private SpamHandler db = new SpamHandler(this);
+
+
     @Override
     public void onStart() {
         super.onStart();
@@ -145,26 +147,6 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         ListView v = getListView();
         v.setAdapter(adapter);
     }
-
-/*    //Show all list of a particular uri.
-    @SuppressWarnings("UnusedDeclaration")
-    public static void showList(Context context, Uri u) {
-        Log.d("GET HEADERS", u.toString());
-        Cursor c = context.getContentResolver().query(u, null, null, null, null);
-        if (c != null) {
-            int l = c.getColumnCount();
-
-            StringBuilder buf = new StringBuilder();
-            for (int i = 0; i < l; i++) {
-                buf.append(i).append(":");
-                buf.append(c.getColumnName(i));
-                buf.append(" | ");
-            }
-            Log.d(TAG, buf.toString());
-        }
-
-    }*/
-
 
     protected void handleMenuSearch() {
         action = getSupportActionBar();
@@ -305,7 +287,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        //requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         super.onCreate(savedInstanceState);
         SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this);
         setTheme(SettingsOldActivity.getTheme(this));
@@ -508,11 +490,6 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         builder.show();
     }
 
-    //Add or remove an entry to/from blacklist.
-    public static void addToOrRemoveFromSpamlist(Context context, String addr) {
-        SpamDB.toggleBlacklist(context, addr);
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -531,8 +508,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                         R.string.delete_threads_question, null);
                 return true;
             case R.id.item_filterd_blacklist:
-                Intent intent_filterd_blacklist = new Intent(this, Filterd_Blacklist_Activity.class);
-                startActivity(intent_filterd_blacklist);
+                Intent intent_blacklist = new Intent(this, BlacklistActivity.class);
+                startActivity(intent_blacklist);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -587,11 +564,6 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         } else {
             builder.setTitle(name);
         }
-        if (SpamDB.isBlacklisted(this, number)) {
-
-            items = items.clone();
-            items[WHICH_MARK_SPAM] = getString(R.string.dont_filter_spam_);
-        }
         builder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -627,9 +599,13 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                                             null);
                             break;
                         case WHICH_MARK_SPAM:
-                            addToOrRemoveFromSpamlist(MainActivity.this, conv.getContact().getNumber());
-                            deleteMsg(target,MainActivity.this);
+                            /*addToOrRemoveFromSpamlist(MainActivity.this, conv.getContact().getNumber());
+                            deleteMsg(target,MainActivity.this);*/
+                            Block block =  new Block();
+                            block.setNumber(conv.getContact().getNumber());
+                            db.addBlock(block);
 
+                            //todo Hide view and push block list
                             break;
                         default:
                             break;
@@ -679,6 +655,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                 Toast.makeText(context, R.string.error_unknown, Toast.LENGTH_LONG).show();
             }
     }
+
     public String ChecknumberContact(String number){
         ArrayList<Contact> contacts = new ArrayList<Contact>();
         contacts = getAllContacts();

@@ -19,15 +19,18 @@ import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 
 import com.example.trantrungduong95.truesms.MainActivity;
+import com.example.trantrungduong95.truesms.Model.Block;
 import com.example.trantrungduong95.truesms.Model.Contact;
 import com.example.trantrungduong95.truesms.Model.Conversation;
 import com.example.trantrungduong95.truesms.Model.Wrapper.ContactsWrapper;
 import com.example.trantrungduong95.truesms.Presenter.Converter;
 import com.example.trantrungduong95.truesms.Presenter.SettingsOldActivity;
 import com.example.trantrungduong95.truesms.Presenter.SmileyParser;
-import com.example.trantrungduong95.truesms.Presenter.SpamDB;
+import com.example.trantrungduong95.truesms.Presenter.SpamHandler;
 import com.example.trantrungduong95.truesms.R;
 import com.example.trantrungduong95.truesms.Receiver.SmsReceiver;
+
+import java.util.List;
 
 // Adapter for the list of link Conversations.
 
@@ -51,7 +54,7 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
     private Activity mActivity;
 
     //List of blocked numbers.
-    private String[] blacklist;
+    private List<Block> blacklist;
 
     private ContactsWrapper WRAPPER = ContactsWrapper.getInstance();
 
@@ -92,7 +95,7 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
             switch (token) {
                 case MESSAGE_LIST_QUERY_TOKEN:
                     ConversationsAdapter.this.changeCursor(cursor);
-                    ConversationsAdapter.this.mActivity.setProgressBarIndeterminateVisibility(Boolean.FALSE);
+                    //ConversationsAdapter.this.mActivity.setProgressBarIndeterminateVisibility(Boolean.FALSE);
                     return;
                 default:
             }
@@ -105,7 +108,9 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
         mActivity = activity;
         ContentResolver cr = activity.getContentResolver();
         queryHandler = new BackgroundQueryHandler(cr);
-        blacklist = SpamDB.getBlacklist(activity);
+
+        SpamHandler db = new SpamHandler(activity);
+        blacklist = db.getAllBlocks();
 
         defaultContactAvatar = activity.getResources().getDrawable(R.drawable.contact_blue);
 
@@ -144,7 +149,7 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
         queryHandler.cancelOperation(MESSAGE_LIST_QUERY_TOKEN);
         try {
             // Kick off the new query
-            mActivity.setProgressBarIndeterminateVisibility(Boolean.TRUE);
+            //mActivity.setProgressBarIndeterminateVisibility(Boolean.TRUE);
             queryHandler.startQuery(MESSAGE_LIST_QUERY_TOKEN, null, Conversation.URI_SIMPLE, Conversation.PROJECTION_SIMPLE, Conversation.COUNT + ">0", null, SORT);
         } catch (SQLiteException e) {
             Log.e(TAG, "error starting query", e);
@@ -206,7 +211,7 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
         if (isBlocked(contact.getNumber())) {
             //view.setLayoutParams(new LinearLayout.LayoutParams(10, 10));
             //view.setVisibility(View.GONE);
-            MainActivity.deleteMsg(conv.getUri(),context);
+            //MainActivity.deleteMsg(conv.getUri(),context);
             holder.tvPerson.setText(contact.getDisplayName()+" "+ context.getString(R.string.blacklist));
         }
         else if (!isBlocked(contact.getNumber()) && SmsReceiver.filter(context,text.toString(),contact.getNumber())){
@@ -254,8 +259,8 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
         if (addr == null) {
             return false;
         }
-        for (String aBlacklist : blacklist) {
-            if (addr.equals(aBlacklist)) {
+        for (Block aBlacklist : blacklist) {
+            if (addr.equals(aBlacklist.getNumber())) {
                 return true;
             }
         }

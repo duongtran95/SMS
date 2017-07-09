@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.InputFilter;
 import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,15 +13,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.trantrungduong95.truesms.CustomAdapter.DrawDialog;
-import com.example.trantrungduong95.truesms.MainActivity;
-import com.example.trantrungduong95.truesms.Presenter.SpamDB;
+import com.example.trantrungduong95.truesms.CustomAdapter.BlockAdapter;
+import com.example.trantrungduong95.truesms.Model.Block;
+import com.example.trantrungduong95.truesms.Presenter.SpamHandler;
 import com.example.trantrungduong95.truesms.R;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -31,22 +32,27 @@ import com.example.trantrungduong95.truesms.R;
 
 public class Fragment_Blacklist extends Fragment implements AdapterView.OnItemClickListener,AdapterView.OnItemLongClickListener{
     private ListView listView;
-    private ArrayAdapter<String> adapter;
-    private String[] BL;
+    private BlockAdapter blockAdapter;
+    List<Block> blockList = new ArrayList<Block>();
+    SpamHandler db;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_blacklist, container, false);
         setHasOptionsMenu(true);
+
+        db = new SpamHandler(getActivity());
+        //db.createDefaultBlocksIfNeed();
+
+        blockList = db.getAllBlocks();
+
         listView = (ListView) view.findViewById(R.id.conversations_list_blacklist);
-
-        BL = SpamDB.getBlacklist(getActivity());
-
         listView.setOnItemLongClickListener(this);
         listView.setOnItemClickListener(this);
 
-        adapter = new ArrayAdapter<>(getActivity(),android.R.layout.simple_list_item_1, BL);
-        listView.setAdapter(adapter);
+        blockAdapter = new BlockAdapter(getActivity(),R.layout.custom_block, blockList);
+        listView.setAdapter(blockAdapter);
+
         return view;
     }
 
@@ -64,12 +70,10 @@ public class Fragment_Blacklist extends Fragment implements AdapterView.OnItemCl
         builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(final DialogInterface dialog, final int which) {
-                Object item = parent.getItemAtPosition(position);
-                String value = item.toString();
-                SpamDB.toggleBlacklist(getActivity(),value);
-                BL = SpamDB.getBlacklist(getActivity());
-                adapter = new ArrayAdapter<>(getActivity(),android.R.layout.simple_list_item_1, BL);
-                listView.setAdapter(adapter);
+                db.deleteBlock(blockList.get(position));
+                blockList = db.getAllBlocks();
+                blockAdapter = new BlockAdapter(getActivity(),R.layout.custom_block, blockList);
+                listView.setAdapter(blockAdapter);
             }
         });
         builder.show();
@@ -104,10 +108,14 @@ public class Fragment_Blacklist extends Fragment implements AdapterView.OnItemCl
                     @Override
                     public void onClick(final DialogInterface dialog, final int which) {
                         if (!editText.getText().toString().equals("")) {
-                            SpamDB.toggleBlacklist(getActivity(), editText.getText().toString());
-                            BL = SpamDB.getBlacklist(getActivity());
-                            adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, BL);
-                            listView.setAdapter(adapter);
+
+                            Block block = new Block();
+                            block.setNumber(editText.getText().toString());
+                            db.addBlock(block);
+
+                            blockList = db.getAllBlocks();
+                            blockAdapter = new BlockAdapter(getActivity(),R.layout.custom_block, blockList);
+                            listView.setAdapter(blockAdapter);
                         }
                         else Toast.makeText(getActivity(), getActivity().getString(R.string.non_empty), Toast.LENGTH_SHORT).show();
 
@@ -123,15 +131,11 @@ public class Fragment_Blacklist extends Fragment implements AdapterView.OnItemCl
                 builder1.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(final DialogInterface dialog, final int which) {
-                        int i=BL.length;
-                        while (i >0){
-                            Log.d("t1000",BL[i-1]);
-                            SpamDB.toggleBlacklist(getActivity(),BL[i-1]);
-                            i--;
-                        }
-                        BL = SpamDB.getBlacklist(getActivity());
-                        adapter = new ArrayAdapter<>(getActivity(),android.R.layout.simple_list_item_1, BL);
-                        listView.setAdapter(adapter);
+                        db.deleteAllBlocks();
+
+                        blockList = db.getAllBlocks();
+                        blockAdapter = new BlockAdapter(getActivity(),R.layout.custom_block, blockList);
+                        listView.setAdapter(blockAdapter);
                     }
                 });
                 builder1.show();

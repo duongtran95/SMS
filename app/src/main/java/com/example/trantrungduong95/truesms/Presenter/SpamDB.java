@@ -1,3 +1,4 @@
+/*
 package com.example.trantrungduong95.truesms.Presenter;
 
 import android.content.ContentValues;
@@ -186,3 +187,4 @@ public class SpamDB {
     }
 
 }
+*/

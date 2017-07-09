@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="sender_name">SMS (TrueSMS)</string>
+	<string name="sender_name">Soạn tin nhắn</string>
+	<string name="blacklist_name">Danh sách chặn</string>
 	<string name="faq_">FAQ</string>
 	<string name="DATEFORMAT_details">dd.MM.yyyy kk:mm</string>
 	<string-array name="themes_values">

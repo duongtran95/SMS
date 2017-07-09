@@ -41,11 +41,11 @@ import com.example.trantrungduong95.truesms.Model.Conversation;
 import com.example.trantrungduong95.truesms.Model.Message;
 import com.example.trantrungduong95.truesms.Presenter.ComposeActivity;
 import com.example.trantrungduong95.truesms.Presenter.ConversationActivity;
-import com.example.trantrungduong95.truesms.Presenter.Fragment_.Fragment_Filterd;
+import com.example.trantrungduong95.truesms.Presenter.Fragment_.Fragment_Conv_Blacklist;
 import com.example.trantrungduong95.truesms.Presenter.NofReceiver;
 import com.example.trantrungduong95.truesms.Presenter.PopupActivity;
 import com.example.trantrungduong95.truesms.Presenter.SettingsOldActivity;
-import com.example.trantrungduong95.truesms.Presenter.SpamDB;
+import com.example.trantrungduong95.truesms.Presenter.SpamHandler;
 import com.example.trantrungduong95.truesms.Presenter.Utils;
 import com.example.trantrungduong95.truesms.Presenter.WidgetProvider;
 import com.example.trantrungduong95.truesms.Presenter.isRun;
@@ -196,8 +196,8 @@ public class SmsReceiver extends BroadcastReceiver {
                             }
                         }
                     }
-
-                    if (SpamDB.isBlacklisted(context, smsMessage[0].getOriginatingAddress())) {
+                    SpamHandler db =  new SpamHandler(context);
+                    if (db.isBlacklisted(smsMessage[0].getOriginatingAddress())) {
                         Log.d("Message from ", addr+ " blocked.");
                         //Toast.makeText(context, context.getString(R.string.block)+"", Toast.LENGTH_SHORT).show();
 
@@ -652,7 +652,8 @@ public class SmsReceiver extends BroadcastReceiver {
     private static void popup(Context context, String text,String addr){
         //Todo popup
         SharedPreferences prefs1 = PreferenceManager.getDefaultSharedPreferences(context);
-        if (!SpamDB.isBlacklisted(context, addr) && isRun.isApplicationBroughtToBackground(context)){
+        SpamHandler db =  new SpamHandler(context);
+        if (!db.isBlacklisted(addr) && isRun.isApplicationBroughtToBackground(context)){
             //backround
             if (prefs1.getBoolean(SettingsOldActivity.PREFS_POPUP, false)) {
                 Intent intent1 = new Intent(context, PopupActivity.class);
@@ -670,7 +671,8 @@ public class SmsReceiver extends BroadcastReceiver {
     //Filter
     public static boolean filter(Context context,String text,String addr){
         // length body > 50 and number whitout in contacts.
-        if (text.length()>0 && !checkNumberExits(context,addr) && !SpamDB.isBlacklisted(context, addr)) {
+        SpamHandler db = new SpamHandler(context);
+        if (text.length()>0 && !checkNumberExits(context,addr) && !db.isBlacklisted(addr)) {
             int i =0;
             // remove marks all
             String body = Utils.removeAccent(text);
@@ -682,7 +684,7 @@ public class SmsReceiver extends BroadcastReceiver {
             }
             if (arrayList.size() !=0) {
                 for (int a = 0; a < arrayList.size(); a++) {
-                    if (Fragment_Filterd.ReadFromfile("filter.txt", context).toLowerCase().contains(arrayList.get(a).toLowerCase())){
+                    if (Fragment_Conv_Blacklist.ReadFromfile("filter.txt", context).toLowerCase().contains(arrayList.get(a).toLowerCase())){
                         i++;
                     }
                 }

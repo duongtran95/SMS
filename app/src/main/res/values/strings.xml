@@ -19,6 +19,9 @@
     <string name="title_conversation_list" formatted="false">Hộp thư</string>
     <string name="title_Filterd" formatted="false">Lọc</string>
     <string name="filterd" formatted="false">Đã lọc tin nhắn rác</string>
+    <string name="content_filterd" formatted="false">Nội dung</string>
+    <string name="content_block" formatted="false">SDT</string>
+    <string name="title_Conv_Backlist" formatted="false">Hộp thư Chặn</string>
     <string name="title_Backlist" formatted="false">Chặn</string>
     <string name="block" formatted="false">Đã chặn tin nhắn rác</string>
     <string name="call" formatted="false">Gọi</string>

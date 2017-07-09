@@ -6,10 +6,11 @@
         android:id="@+id/conversations_list_blacklist"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:cacheColorHint="@color/transparent"
+
         android:clipToPadding="false"
         android:divider="@null"
         android:paddingBottom="8sp"
         android:paddingTop="8sp"
         android:scrollbarStyle="outsideOverlay" />
+<!--    android:cacheColorHint="@color/transparent"-->
 </LinearLayout>

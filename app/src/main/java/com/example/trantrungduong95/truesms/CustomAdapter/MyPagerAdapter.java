@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.example.trantrungduong95.truesms.Presenter.Fragment_.Fragment_Blacklist;
-import com.example.trantrungduong95.truesms.Presenter.Fragment_.Fragment_Filterd;
+import com.example.trantrungduong95.truesms.Presenter.Fragment_.Fragment_Conv_Blacklist;
 import com.example.trantrungduong95.truesms.R;
 
 
@@ -35,7 +35,7 @@ public class MyPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:// Fragment # 0 - This will show FirstFragment different title
-                return new Fragment_Filterd();
+                return new Fragment_Conv_Blacklist();
             case 1: // Fragment # 0 - This will show FirstFragment different title
                 return new Fragment_Blacklist();
             default:
@@ -48,7 +48,7 @@ public class MyPagerAdapter extends FragmentStatePagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             case 0:
-                return context.getString(R.string.title_Filterd);
+                return context.getString(R.string.title_Conv_Backlist);
             case 1:
                 return context.getString(R.string.title_Backlist);
         }

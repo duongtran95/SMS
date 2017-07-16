@@ -671,7 +671,7 @@ public class SmsReceiver extends BroadcastReceiver {
         }
     }
 
-    //Filter
+    //Filter sms
     public static boolean filter(Context context,String text,String addr){
 
         // get list filter
@@ -679,8 +679,8 @@ public class SmsReceiver extends BroadcastReceiver {
         List<Filter> filterList = new ArrayList<>();
         filterList=db.getAllFilters();
 
-        // length body > 50 and number whitout in contacts.
-        if (text.length()>0 && !checkNumberExits(context,addr) && !db.isBlacklisted(addr)) {
+        // length body > 25 and number whitout in contacts.
+        if (text.length()>25 && !checkNumberExits(context,addr) && !db.isBlacklisted(addr)) {
 
             // the number of occurrences
             int charF =0, wordF =0, pharseF=0;
@@ -723,11 +723,12 @@ public class SmsReceiver extends BroadcastReceiver {
                         pharseF++;
                     }
                 }
-
-                if ( charF > 1 && wordF > 1){
+                //char 2 and word 4
+                if ( charF > 1 && wordF > 3){
                     return true;
                 }
-                if (pharseF >0)
+                //pharse 3
+                if (pharseF >2)
                 {
                     return true;
                 }

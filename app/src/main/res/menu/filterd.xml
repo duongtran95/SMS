@@ -7,7 +7,7 @@
             android:icon="@drawable/item_blacklist"/>
         <item
             android:id="@+id/item_add_filter"
-            android:title="@string/title_Backlist"
+            android:title="@string/add_filter"
             app:showAsAction="ifRoom"
             android:icon="@drawable/item_add">
         <menu>

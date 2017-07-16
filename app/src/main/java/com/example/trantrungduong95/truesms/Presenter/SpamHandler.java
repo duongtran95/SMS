@@ -219,12 +219,12 @@ public class SpamHandler extends SQLiteOpenHelper {
     public void createDefaultFilterIfNeed()  {
         int count = this.getFiltersCount();
         if(count ==0 ) {
-            Filter filter = new Filter(0, "!","tao","tầm thường");
-            Filter filter1 = new Filter(1, "@","tầm","tồi tệ");
-            Filter filter2 = new Filter(2, "#","tu","từ tốn");
-            Filter filter3 = new Filter(3, "$","duong","tang tốc");
-            Filter filter4 = new Filter(4, "%","thế","tu tâm");
-            Filter filter5 = new Filter(5, "^","hung","tiền tài");
+            Filter filter = new Filter(0, "!","vip","cho vay");
+            Filter filter1 = new Filter(1, "@","[Hot]","mua ban");
+            Filter filter2 = new Filter(2, "#","[Vip]","bán sim");
+            Filter filter3 = new Filter(3, "$","(vip)","căn hộ");
+            Filter filter4 = new Filter(4, "%","[QC]","chung cư");
+            Filter filter5 = new Filter(5, "^","qc","trúng thưởng");
             this.addFilter(filter);
             this.addFilter(filter1);
             this.addFilter(filter2);

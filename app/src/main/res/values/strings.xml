@@ -213,10 +213,12 @@
     <string name="title_add_filter_hint">Nhập nội dung lọc !!!</string>
     <string name="non_empty">Không đươc để trống</string>
     <string name="blacklist">Đã chặn</string>
+    <string name="add_block">Thêm chặn</string>
     <string name="filter"> (Thư rác)</string>
     <string name="charr">Ký tự</string>
     <string name="word">Từ</string>
     <string name="pharse">Cụm từ</string>
+    <string name="add_filter">Thêm mẫu lọc</string>
     <string name="add_charr">Thêm ký tự</string>
     <string name="add_word">Thêm từ</string>
     <string name="add_pharse">Thêm cụm từ</string>

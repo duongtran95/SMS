@@ -1,0 +1,26 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_open_thread"
+        android:title="@string/menu_open_thread" />
+
+    <item
+        android:id="@+id/menu_call"
+        android:icon="@android:drawable/ic_menu_call"
+        android:title="@string/call"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/menu_delete"
+        android:icon="@android:drawable/ic_menu_delete"
+        android:title="@string/delete_message_"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/menu_copy"
+        android:title="@string/copy_text_" />
+
+    <item
+        android:id="@+id/menu_forward"
+        android:title="@string/menu_forward" />
+</menu>

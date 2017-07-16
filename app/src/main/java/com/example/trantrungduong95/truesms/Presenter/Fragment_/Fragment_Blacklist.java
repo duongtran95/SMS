@@ -19,6 +19,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.trantrungduong95.truesms.CustomAdapter.BlockAdapter;
+import com.example.trantrungduong95.truesms.MainActivity;
 import com.example.trantrungduong95.truesms.Model.Block;
 import com.example.trantrungduong95.truesms.Presenter.BlacklistActivity;
 import com.example.trantrungduong95.truesms.Presenter.SpamHandler;
@@ -32,24 +33,22 @@ import java.util.List;
  * Created by ngomi_000 on 6/1/2017.
  */
 
-public class Fragment_Blacklist extends Fragment implements AdapterView.OnItemClickListener,AdapterView.OnItemLongClickListener{
+public class Fragment_Blacklist extends Fragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
     private ListView listView;
     private BlockAdapter blockAdapter;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_blacklist, container, false);
         setHasOptionsMenu(true);
 
-        //db.createDefaultBlocksIfNeed();
-
         listView = (ListView) view.findViewById(R.id.list_blacklist);
 
         listView.setOnItemLongClickListener(this);
         listView.setOnItemClickListener(this);
 
-
-        blockAdapter = new BlockAdapter(getActivity(),R.layout.custom_block, ((BlacklistActivity) getActivity()).blockList);
+        blockAdapter = new BlockAdapter(getActivity(), R.layout.custom_block, ((BlacklistActivity) getActivity()).blockList);
         listView.setAdapter(blockAdapter);
 
         return view;
@@ -62,21 +61,37 @@ public class Fragment_Blacklist extends Fragment implements AdapterView.OnItemCl
 
     @Override
     public boolean onItemLongClick(final AdapterView<?> parent, final View view, final int position, final long id) {
-       AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(getActivity().getString(R.string.title_restore));
         builder.setMessage(getActivity().getString(R.string.message_restore));
         builder.setNegativeButton(android.R.string.no, null);
         builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(final DialogInterface dialog, final int which) {
-                ((BlacklistActivity) getActivity()).db.deleteBlock(((BlacklistActivity) getActivity()).blockList.get(position));
+                BlacklistActivity activity = (BlacklistActivity) getActivity();
+                activity.update_frg_1(activity.blockList.get(position).getNumber());
+                recover_msg(position);
 
-                ((BlacklistActivity) getActivity()).blockList.remove(((BlacklistActivity) getActivity()).blockList.get(position));
-                blockAdapter.notifyDataSetChanged();
             }
         });
         builder.show();
         return true;
+    }
+
+    private void recover_msg(int position) {
+        ((BlacklistActivity) getActivity()).db.deleteBlock(((BlacklistActivity) getActivity()).blockList.get(position));
+        ((BlacklistActivity) getActivity()).blockList.remove(((BlacklistActivity) getActivity()).blockList.get(position));
+        blockAdapter.notifyDataSetChanged();
+    }
+
+    public void update_list_phone(String number) {
+        BlacklistActivity myActivity = (BlacklistActivity) getActivity();
+        for (int i = 0; i < myActivity.blockList.size(); i++) {
+            if (myActivity.blockList.get(i).getNumber().equals(number)) {
+                recover_msg(i);
+                break;
+            }
+        }
     }
 
     @Override
@@ -93,7 +108,7 @@ public class Fragment_Blacklist extends Fragment implements AdapterView.OnItemCl
                 editText.setInputType(InputType.TYPE_CLASS_NUMBER);
 
                 int maxLength = 11;
-                editText.setFilters(new InputFilter[] {
+                editText.setFilters(new InputFilter[]{
                         new InputFilter.LengthFilter(maxLength)
                 });
 
@@ -112,8 +127,8 @@ public class Fragment_Blacklist extends Fragment implements AdapterView.OnItemCl
                             ((BlacklistActivity) getActivity()).db.addBlock(block);
                             ((BlacklistActivity) getActivity()).blockList.add(block);
                             blockAdapter.notifyDataSetChanged();
-                        }
-                        else Toast.makeText(getActivity(), getActivity().getString(R.string.non_empty), Toast.LENGTH_SHORT).show();
+                        } else
+                            Toast.makeText(getActivity(), getActivity().getString(R.string.non_empty), Toast.LENGTH_SHORT).show();
 
                     }
                 });
@@ -129,8 +144,8 @@ public class Fragment_Blacklist extends Fragment implements AdapterView.OnItemCl
                     public void onClick(final DialogInterface dialog, final int which) {
                         ((BlacklistActivity) getActivity()).db.deleteAllBlocks();
                         ((BlacklistActivity) getActivity()).blockList = ((BlacklistActivity) getActivity()).db.getAllBlocks();
-                        blockAdapter = new BlockAdapter(getActivity(),R.layout.custom_block, ((BlacklistActivity) getActivity()).blockList);
-                        listView.setAdapter(blockAdapter);
+                        ((BlacklistActivity) getActivity()).blockList.clear();
+                        blockAdapter.notifyDataSetChanged();
                     }
                 });
                 builder1.show();

@@ -612,12 +612,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                             block.setNumber(conv.getContact().getNumber());
                             db.addBlock(block);
                             conversationList.add(conv);
-
                             adapter.getBlacklist().add(block);
-
                             adapter.notifyDataSetChanged();
-                            //adapter.notifyDataSetInvalidated();
-                            //todo Hide view and push block list
                             break;
                         default:
                             break;
@@ -666,7 +662,6 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                 Toast.makeText(context, R.string.error_unknown, Toast.LENGTH_LONG).show();
             }
     }
-
 
     public String ChecknumberContact(String number){
         ArrayList<Contact> contacts = new ArrayList<Contact>();

@@ -28,16 +28,14 @@ import com.example.trantrungduong95.truesms.Presenter.SettingsOldActivity;
 import com.example.trantrungduong95.truesms.Presenter.SmileyParser;
 import com.example.trantrungduong95.truesms.Presenter.SpamHandler;
 import com.example.trantrungduong95.truesms.R;
-import com.example.trantrungduong95.truesms.Receiver.SmsReceiver;
 
 import java.util.List;
 
 // Adapter for the list of link Conversations.
-
 public class ConversationsAdapter extends ResourceCursorAdapter {
 
     //Tag
-    static String TAG = "ConversationsAdapter";
+    private String TAG = "ConversationsAdapter";
 
     //Cursor's sort.
     private String SORT = Calls.DATE + " DESC";
@@ -94,8 +92,7 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
         protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
             switch (token) {
                 case MESSAGE_LIST_QUERY_TOKEN:
-                    ConversationsAdapter.this.changeCursor(cursor);
-                    //ConversationsAdapter.this.mActivity.setProgressBarIndeterminateVisibility(Boolean.FALSE);
+                    changeCursor(cursor);
                     return;
                 default:
             }
@@ -119,28 +116,28 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
         textSize = SettingsOldActivity.getTextsize(activity);
         textColor = SettingsOldActivity.getTextcolor(activity);
 
-        Cursor cursor = null;
+        Cursor baseCursor = null;
         try {
-            cursor = cr.query(Conversation.URI_SIMPLE, Conversation.PROJECTION_SIMPLE, Conversation.COUNT + ">0", null, null);
+            baseCursor = cr.query(Conversation.URI_SIMPLE, Conversation.PROJECTION_SIMPLE, Conversation.COUNT + ">0", null, null);
         } catch (Exception e) {
-            Log.e("error getting conv", e+"");
+            Log.e("error getting conv", e + "");
         }
 
-        if (cursor != null) {
-            cursor.registerContentObserver(new ContentObserver(new Handler()) {
+        if (baseCursor != null) {
+            baseCursor.registerContentObserver(new ContentObserver(new Handler()) {
                 @Override
                 public void onChange(boolean selfChange) {
                     super.onChange(selfChange);
                     if (!selfChange) {
                         Log.d(TAG, "call startMsgListQuery();");
-                        ConversationsAdapter.this.startMsgListQuery();
+                        startMsgListQuery();
                         Log.d(TAG, "invalidate cache");
                         Conversation.invalidate();
                     }
                 }
             });
         }
-         startMsgListQuery();
+        startMsgListQuery();
     }
 
     //Start ConversationList query.
@@ -149,7 +146,6 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
         queryHandler.cancelOperation(MESSAGE_LIST_QUERY_TOKEN);
         try {
             // Kick off the new query
-            //mActivity.setProgressBarIndeterminateVisibility(Boolean.TRUE);
             queryHandler.startQuery(MESSAGE_LIST_QUERY_TOKEN, null, Conversation.URI_SIMPLE, Conversation.PROJECTION_SIMPLE, Conversation.COUNT + ">0", null, SORT);
         } catch (SQLiteException e) {
             Log.e(TAG, "error starting query", e);
@@ -161,6 +157,7 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
         Conversation conv = Conversation.getConversation(context, cursor, true); // false
         Contact contact = conv.getContact();
 
+        //conv.getAllNumberConv(context);
         ViewHolder holder = (ViewHolder) view.getTag();
         if (holder == null) {
             holder = new ViewHolder();
@@ -209,16 +206,17 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
         CharSequence text = conv.getBody();
 
         if (isBlocked(contact.getNumber())) {
-            //view.setLayoutParams(new LinearLayout.LayoutParams(10, 10));
-            //view.setVisibility(View.GONE);
+            view.setVisibility(View.GONE);
+            view.getLayoutParams().height = 1;
+
             //MainActivity.deleteMsg(conv.getUri(),context);
-            holder.tvPerson.setText(contact.getDisplayName()+" "+ context.getString(R.string.blacklist));
-        }
-        else if (!isBlocked(contact.getNumber()) && SmsReceiver.filter(context,text.toString(),contact.getNumber())){
-            holder.tvPerson.setText("");
-            holder.tvPerson.setText(contact.getDisplayName()+" "+ context.getString(R.string.filter));
-        }
-        else {
+            MainActivity.conversationList.add(conv);
+            //holder.tvPerson.setText(contact.getDisplayName() + " " + context.getString(R.string.blacklist));
+        /*} else if (!isBlocked(contact.getNumber()) && SmsReceiver.filter(context, text.toString(), contact.getNumber())) {
+            holder.tvPerson.setText(contact.getDisplayName() + " " + context.getString(R.string.filter));*/
+        } else {
+            view.setVisibility(View.VISIBLE);
+            view.getLayoutParams().height = 0;
             holder.tvPerson.setText(contact.getDisplayName());
         }
 
@@ -228,7 +226,6 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
         } else {
             holder.vRead.setVisibility(View.INVISIBLE);
         }
-
 
         if (text == null) {
             text = context.getString(R.string.mms_conversation);
@@ -253,7 +250,9 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
         } else {
             ivPresence.setVisibility(View.GONE);
         }
+
     }
+
 
     public boolean isBlocked(String addr) {
         if (addr == null) {
@@ -265,5 +264,9 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
             }
         }
         return false;
+    }
+
+    public List<Block> getBlacklist() {
+        return blacklist;
     }
 }

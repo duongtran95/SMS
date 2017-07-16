@@ -44,9 +44,7 @@ public class Message {
     private static int CAHCESIZE = 50;
 
     //Internal Cache.
-    private static LinkedHashMap<Integer, Message> CACHE
-            = new LinkedHashMap<>(
-            26, 0.9f, true);
+    private static LinkedHashMap<Integer, Message> CACHE = new LinkedHashMap<>(26, 0.9f, true);
 
     //INDEX: id.
     public static int INDEX_ID = 0;
@@ -157,7 +155,7 @@ public class Message {
     public static String[] SELECTION_READ = new String[]{"1"};
 
     // Cursor's sort, upside down.
-    public static String SORT_USD = Calls.DATE + " ASC";
+    public static String SORT_VN = Calls.DATE + " ASC";
 
     //Cursor's sort, normal.
     public String SORT_NORM = Calls.DATE + " DESC";
@@ -479,15 +477,13 @@ public class Message {
         if (contentIntent == null) {
             return null;
         }
-
         return new OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-
                 try {
-                    Log.d("save attachment: ", Message.this.id+"");
+                    Log.d("save attachment: ", id+"");
                     String fn = ATTACHMENT_FILE;
-                    Intent ci = Message.this.contentIntent;
+                    Intent ci = contentIntent;
                     String ct = ci.getType();
                     Log.d("content type: ", ct);
                     if (ct == null) {
@@ -528,8 +524,7 @@ public class Message {
                     } else {
                         fn += "ukn";
                     }
-                    File file = Message.this.createUniqueFile(
-                            Environment.getExternalStorageDirectory(), fn);
+                    File file = createUniqueFile(Environment.getExternalStorageDirectory(), fn);
                     //noinspection ConstantConditions
                     InputStream in = context.getContentResolver().openInputStream(ci.getData());
                     OutputStream out = new FileOutputStream(file);

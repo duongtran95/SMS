@@ -12,9 +12,6 @@ import java.util.concurrent.RejectedExecutionException;
 
 public class AsyncHelper extends AsyncTask<Void, Void, Void> {
 
-    //Tag
-    static String TAG = "AsyncTask";
-
     //link ConversationsAdapter to invalidate on new data.
     private static ConversationsAdapter adapter = null;
 
@@ -36,12 +33,12 @@ public class AsyncHelper extends AsyncTask<Void, Void, Void> {
 
      //Fill Conversations data. If needed: spawn threads.
      //sync fetch of information
-    public static void fillConversation(Context context, Conversation c, boolean sync) {
+    public static void fillConversation(Context context, Conversation conv, boolean sync) {
         //fillConversation
-        if (context == null || c == null || c.getThreadId() < 0) {
+        if (context == null || conv == null || conv.getThreadId() < 0) {
             return;
         }
-        AsyncHelper helper = new AsyncHelper(context, c);
+        AsyncHelper helper = new AsyncHelper(context, conv);
         if (sync) {
             helper.doInBackground((Void) null);
         } else {
@@ -58,11 +55,11 @@ public class AsyncHelper extends AsyncTask<Void, Void, Void> {
         if (conv == null) {
             return null;
         }
-        Log.d(TAG, "doInBackground()");
+        Log.d("doInBackground()","");
         try {
             changed = conv.getContact().update(context, true, MainActivity.showContactPhoto);
         } catch (NullPointerException e) {
-            Log.e(TAG, "error updating contact", e);
+            Log.e("error updating contact", e.getMessage());
         }
         return null;
     }

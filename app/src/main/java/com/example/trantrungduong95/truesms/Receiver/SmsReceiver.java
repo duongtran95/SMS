@@ -35,6 +35,7 @@ import android.widget.Toast;
 
 import com.example.trantrungduong95.truesms.BuildConfig;
 import com.example.trantrungduong95.truesms.Model.Contact;
+import com.example.trantrungduong95.truesms.Model.Filter;
 import com.example.trantrungduong95.truesms.Presenter.DefaultAndPermission;
 import com.example.trantrungduong95.truesms.MainActivity;
 import com.example.trantrungduong95.truesms.Model.Conversation;
@@ -52,6 +53,8 @@ import com.example.trantrungduong95.truesms.Presenter.isRun;
 import com.example.trantrungduong95.truesms.R;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -670,27 +673,64 @@ public class SmsReceiver extends BroadcastReceiver {
 
     //Filter
     public static boolean filter(Context context,String text,String addr){
-        // length body > 50 and number whitout in contacts.
+
+        // get list filter
         SpamHandler db = new SpamHandler(context);
+        List<Filter> filterList = new ArrayList<>();
+        filterList=db.getAllFilters();
+
+        // length body > 50 and number whitout in contacts.
         if (text.length()>0 && !checkNumberExits(context,addr) && !db.isBlacklisted(addr)) {
-            int i =0;
-            // remove marks all
-            String body = Utils.removeAccent(text);
+
+            // the number of occurrences
+            int charF =0, wordF =0, pharseF=0;
+
+            /*// remove marks all
+            String body = Utils.removeAccent(text);*/
             // Separation of words
             ArrayList<String> arrayList = new ArrayList<>();
-            StringTokenizer st = new StringTokenizer(body);
+            StringTokenizer st = new StringTokenizer(text);
             while (st.hasMoreTokens()) {
                 arrayList.add(st.nextToken());
             }
-            if (arrayList.size() !=0) {
-                for (int a = 0; a < arrayList.size(); a++) {
-                    if (Fragment_Conv_Blacklist.ReadFromfile("filter.txt", context).toLowerCase().contains(arrayList.get(a).toLowerCase())){
-                        i++;
+            //Checking number of occurrence
+            if (arrayList.size()!=0 && filterList.size() !=0) {
+                for (int a = 0; a < filterList.size(); a++) {
+                    for (int b =0; b <arrayList.size();  b++){
+                        if (filterList.get(a).getChar_() ==null){
+                            continue;
+                        }
+                        else if (Objects.equals(filterList.get(a).getChar_(), arrayList.get(b).toLowerCase()))
+                        {
+                            charF++;
+                        }
+
+                        if (filterList.get(a).getWord_() ==null){
+                            continue;
+                        }
+                        else if (Objects.equals(filterList.get(a).getWord_().toLowerCase(), arrayList.get(b).toLowerCase()))
+                        {
+                            wordF++;
+                        }
                     }
                 }
-            }
-            if (i >3){
-                return true;
+                for (int i =0;i<filterList.size();i++){
+                    if (filterList.get(i).getPharse_() ==null){
+                        continue;
+                    }
+                    else if (text.toLowerCase().contains(filterList.get(i).getPharse_().toLowerCase()))
+                    {
+                        pharseF++;
+                    }
+                }
+
+                if ( charF > 1 && wordF > 1){
+                    return true;
+                }
+                if (pharseF >0)
+                {
+                    return true;
+                }
             }
         }
         return false;

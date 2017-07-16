@@ -1,5 +1,6 @@
 package com.example.trantrungduong95.truesms.Model;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -10,6 +11,7 @@ import android.util.Log;
 import com.example.trantrungduong95.truesms.MainActivity;
 import com.example.trantrungduong95.truesms.Presenter.AsyncHelper;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 //Class holding a single conversation.
 
@@ -18,7 +20,7 @@ public class Conversation {
     private static int CACHESIZE = 50;
 
     //Internal Cache.
-    private static LinkedHashMap<Integer, Conversation> CACHE = new LinkedHashMap<>(26, 0.9f, true);
+    private static final LinkedHashMap<Integer, Conversation> CACHE = new LinkedHashMap<>(26, 0.9f, true);
 
     //link Uri to all threads.
     public static Uri URI_SIMPLE = Uri.parse("content://mms-sms/conversations").buildUpon().appendQueryParameter("simple", "true").build();
@@ -76,13 +78,10 @@ public class Conversation {
 
     private long lastUpdate = 0L;
 
-    /**
-     * Default constructor.
-     *
-     * @param context {@link Context}
-     * @param cursor  {@link Cursor} to read the data
-     * @param sync    fetch of information
-     */
+    public Conversation() {
+    }
+
+    //Default constructor. Sync fetch of information
     private Conversation(Context context, Cursor cursor, boolean sync) {
         threadId = cursor.getInt(INDEX_SIMPLE_ID);
         date = cursor.getLong(INDEX_SIMPLE_DATE);
@@ -94,13 +93,7 @@ public class Conversation {
         AsyncHelper.fillConversation(context, this, sync);
         lastUpdate = System.currentTimeMillis();
     }
-        /**
-         * Update data.
-         *
-         * @param context {@link Context}
-         * @param cursor  {@link Cursor} to read from.
-         * @param sync    fetch of information
-         */
+    //Update data. Sync fetch of information
     private void update(Context context, Cursor cursor, boolean sync) {
         Log.d("update", threadId+ ", "+ sync);
         if (cursor == null || cursor.isClosed()) {
@@ -125,14 +118,7 @@ public class Conversation {
         }
     }
 
-    /**
-     * Get a {@link Conversation}.
-     *
-     * @param context {@link Context}
-     * @param cursor  {@link Cursor} to read the data from
-     * @param sync    fetch of information
-     * @return {@link Conversation}
-     */
+    //Get a link Conversation.
     public static Conversation getConversation(Context context, Cursor cursor, boolean sync) {
         Log.d("getConversation", sync+"");
         synchronized (CACHE) {
@@ -157,14 +143,7 @@ public class Conversation {
         }
     }
 
-    /**
-     * Get a {@link Conversation}.
-     *
-     * @param context     {@link Context}
-     * @param threadId    threadId
-     * @param forceUpdate force an update of that {@link Conversation}
-     * @return {@link Conversation}
-     */
+    //Get a link Conversation. ForceUpdate force an update of that link Conversation
     public static Conversation getConversation(Context context, int threadId, boolean forceUpdate) {
         Log.d("getConversation", threadId+"");
         synchronized (CACHE) {
@@ -181,6 +160,27 @@ public class Conversation {
             }
             return ret;
         }
+    }
+
+    public static ArrayList<Block> getAllNumberConv(Context context){
+        ArrayList<Block> blockArrayList =  new ArrayList<>();
+        Uri uriSms = Uri.parse("content://sms/");
+        ContentResolver cr = context.getContentResolver();
+        Cursor c = cr.query(uriSms, null, null, null, null);
+        int totalSMS = c.getCount();
+        if (c.moveToFirst()) {
+            for (int i = 0; i < totalSMS; i++) {
+                Block block = new Block();
+                String id = c.getString(c.getColumnIndexOrThrow("_id"));
+                block.setId(Integer.parseInt(id));
+
+                String phone = c.getString(c.getColumnIndexOrThrow("address"));
+                block.setNumber(phone);
+                blockArrayList.add(block);
+            }
+            c.close();
+        }
+        return blockArrayList;
     }
 
     //Flush all cached conversations.
@@ -222,12 +222,12 @@ public class Conversation {
     public void setBody(String b) {
         body = b;
     }
+
     public int getRead() {
         return read;
     }
 
     //Set link Conversation's read status. Param status read status
-
     public void setRead(int status) {
         read = status;
     }

@@ -22,13 +22,13 @@ public abstract class ContactsWrapper {
     private String TAG = "ContactsWrapper";
 
     //Index of id/lookup key.
-    public int FILTER_INDEX_ID = 0;
+    private int FILTER_INDEX_ID = 0;
 
     //Index of name.
-    public int FILTER_INDEX_NAME = 1;
+    private int FILTER_INDEX_NAME = 1;
 
     //Index of number.
-    public int FILTER_INDEX_NUMBER = 2;
+    int FILTER_INDEX_NUMBER = 2;
 
     //Index of type.
     public int FILTER_INDEX_TYPE = 3;
@@ -46,7 +46,7 @@ public abstract class ContactsWrapper {
     public int CONTENT_INDEX_TYPE = 3;
 
     //Presence's state: unavailable.
-    public int PRESENCE_STATE_UNKNOWN = -1;
+    int PRESENCE_STATE_UNKNOWN = -1;
 
     //Presence's state: available.
     public static final int PRESENCE_STATE_AVAILABLE = 5;

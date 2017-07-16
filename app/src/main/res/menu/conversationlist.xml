@@ -7,10 +7,15 @@
         app:showAsAction="ifRoom"
         android:title="@string/search" />
     <item
-        android:id="@+id/item_filterd_blacklist"
+        android:id="@+id/item_blacklist"
         android:icon="@drawable/filterd_blacklist"
         app:showAsAction="ifRoom"
-        android:title="@string/search" />
+        android:title="@string/title_Conv_Backlist" />
+    <item
+        android:id="@+id/item_filterd"
+        android:icon="@drawable/filterd_blacklist"
+        app:showAsAction="ifRoom"
+        android:title="@string/title_Conv_Filterd" />
     <item
         android:id="@+id/item_settings"
         android:title="@string/settings"

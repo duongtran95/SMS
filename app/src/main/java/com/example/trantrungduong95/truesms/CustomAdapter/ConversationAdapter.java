@@ -88,10 +88,8 @@ public class ConversationAdapter extends ResourceCursorAdapter {
         Button btnImport;
     }
 
-
-
-    public ConversationAdapter(ConversationActivity c, Uri u) {
-        super(c, R.layout.conversation_item, getCursor(c.getContentResolver(), u), true);
+    public ConversationAdapter(ConversationActivity c, Uri uri) {
+        super(c, R.layout.conversation_item, getCursor(c.getContentResolver(), uri), true);
         mActivity = c;
         backgroundDrawableIn = SettingsOldActivity.getBubblesIn(c);
         backgroundDrawableOut = SettingsOldActivity.getBubblesOut(c);
@@ -101,68 +99,58 @@ public class ConversationAdapter extends ResourceCursorAdapter {
         showEmoticons = SettingsOldActivity.showEmoticons(c);
 
         // Thread id
-        int threadId = -1;
-        if (u == null || u.getLastPathSegment() == null) {
+        int threadId;
+        if (uri == null || uri.getLastPathSegment() == null) {
             threadId = -1;
         } else {
-            threadId = Integer.parseInt(u.getLastPathSegment());
+            threadId = Integer.parseInt(uri.getLastPathSegment());
         }
         Conversation conv = Conversation.getConversation(c, threadId, false);
 
-        // Address
-        String address = null;
-
-        //Name
-        String name = null;
         if (conv == null) {
-            address = null;
-            name = null;
             displayName = null;
         } else {
             Contact contact = conv.getContact();
-            address = contact.getNumber();
-            name = contact.getName();
             displayName = contact.getDisplayName();
         }
     }
 
-    private static Cursor getCursor(ContentResolver cr, Uri u) {
-        Cursor[] c = new Cursor[]{null, null};
+    private static Cursor getCursor(ContentResolver cr, Uri uri) {
+        Cursor[] cursors = new Cursor[]{null, null};
 
         int tid = -1;
         try {
-            tid = Integer.parseInt(u.getLastPathSegment());
+            tid = Integer.parseInt(uri.getLastPathSegment());
         } catch (Exception e) {
             //error parsing uri
         }
 
         try {
-            c[0] = cr.query(u, Message.PROJECTION_JOIN, WHERE, null, null);
+            cursors[0] = cr.query(uri, Message.PROJECTION_JOIN, WHERE, null, null);
         } catch (NullPointerException e) {
             //error query:
-            c[0] = null;
+            cursors[0] = null;
         } catch (SQLiteException e) {
            //error getting messages
         }
 
         String[] sel = new String[]{String.valueOf(tid)};
         try {
-            c[1] = cr.query(Uri.parse("content://sms/"), Message.PROJECTION_SMS, WHERE_DRAFT, sel,
-                    Message.SORT_USD);
+            cursors[1] = cr.query(Uri.parse("content://sms/"), Message.PROJECTION_SMS, WHERE_DRAFT, sel, Message.SORT_VN);
         } catch (NullPointerException e) {
             //error query
-            c[1] = null;
+            cursors[1] = null;
         } catch (SQLiteException e) {
             //error getting drafts
         }
 
-        if (c[1] == null || c[1].getCount() == 0) {
-            return c[0];
+        if (cursors[1] == null || cursors[1].getCount() == 0) {
+            return cursors[0];
         }
-        if (c[0] == null || c[0].getCount() == 0) {
-            return c[1];
+        if (cursors[0] == null || cursors[0].getCount() == 0) {
+            return cursors[1];
         }
-        return new MergeCursor(c);
+        return new MergeCursor(cursors);
     }
 
     @Override
@@ -222,7 +210,7 @@ public class ConversationAdapter extends ResourceCursorAdapter {
             case Message.SMS_IN:
             case Message.MMS_IN:
             default:
-                holder.tvPerson.setText(displayName + subject);
+                holder.tvPerson.setText(displayName +" "+ subject);
                 try {
                     holder.vLayout.setBackgroundResource(backgroundDrawableIn);
                 } catch (OutOfMemoryError e) {

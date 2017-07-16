@@ -2,9 +2,27 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
         <item
-            android:id="@+id/item_add_filterd"
-            android:title="@string/title_menu_add_filterd"
+            android:id="@+id/item_delete_all_filter"
+            android:title="@string/delete_all_filter"
+            android:icon="@drawable/item_blacklist"/>
+        <item
+            android:id="@+id/item_add_filter"
+            android:title="@string/title_Backlist"
             app:showAsAction="ifRoom"
-            android:icon="@drawable/item_add"/>
-
+            android:icon="@drawable/item_add">
+        <menu>
+                <item
+                    android:id="@+id/item_char"
+                    android:title="@string/add_charr"
+                    android:orderInCategory="100" />
+                <item
+                    android:id="@+id/item_word"
+                    android:title="@string/add_word"
+                    android:orderInCategory="100" />
+                <item
+                    android:id="@+id/item_pharse"
+                    android:title="@string/add_pharse"
+                    android:orderInCategory="100" />
+        </menu>
+        </item>
 </menu>

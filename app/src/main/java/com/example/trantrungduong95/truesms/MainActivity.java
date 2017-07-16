@@ -53,6 +53,7 @@ import com.example.trantrungduong95.truesms.Presenter.AsyncHelper;
 import com.example.trantrungduong95.truesms.Presenter.BlacklistActivity;
 import com.example.trantrungduong95.truesms.Presenter.ConversationActivity;
 import com.example.trantrungduong95.truesms.Presenter.DefaultAndPermission;
+import com.example.trantrungduong95.truesms.Presenter.FilterActivity;
 import com.example.trantrungduong95.truesms.Presenter.SettingsNewActivity;
 import com.example.trantrungduong95.truesms.Presenter.SettingsOldActivity;
 import com.example.trantrungduong95.truesms.Presenter.SpamHandler;
@@ -61,6 +62,7 @@ import com.example.trantrungduong95.truesms.Receiver.SmsReceiver;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OnItemClickListener, OnItemLongClickListener {
     //Tag
@@ -121,6 +123,9 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
 
     //db
     private SpamHandler db = new SpamHandler(this);
+
+    public static List<Conversation> conversationList = new ArrayList<Conversation>();
+
 
 
     @Override
@@ -507,9 +512,13 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                 deleteMessages(this, Uri.parse("content://sms/"), R.string.delete_threads_,
                         R.string.delete_threads_question, null);
                 return true;
-            case R.id.item_filterd_blacklist:
+            case R.id.item_blacklist:
                 Intent intent_blacklist = new Intent(this, BlacklistActivity.class);
                 startActivity(intent_blacklist);
+                return true;
+            case R.id.item_filterd:
+                Intent intent_item_filterd = new Intent(this, FilterActivity.class);
+                startActivity(intent_item_filterd);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -599,12 +608,15 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                                             null);
                             break;
                         case WHICH_MARK_SPAM:
-                            /*addToOrRemoveFromSpamlist(MainActivity.this, conv.getContact().getNumber());
-                            deleteMsg(target,MainActivity.this);*/
                             Block block =  new Block();
                             block.setNumber(conv.getContact().getNumber());
                             db.addBlock(block);
+                            conversationList.add(conv);
 
+                            adapter.getBlacklist().add(block);
+
+                            adapter.notifyDataSetChanged();
+                            //adapter.notifyDataSetInvalidated();
                             //todo Hide view and push block list
                             break;
                         default:
@@ -636,7 +648,6 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
             return DateFormat.getTimeFormat(context).format(t);
         }
     }
-
     // delete uri
     public static void deleteMsg(Uri target,Context context){
                     try {
@@ -655,6 +666,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                 Toast.makeText(context, R.string.error_unknown, Toast.LENGTH_LONG).show();
             }
     }
+
 
     public String ChecknumberContact(String number){
         ArrayList<Contact> contacts = new ArrayList<Contact>();

@@ -75,15 +75,6 @@
             android:layout_centerHorizontal="true"/>
 
         <Button
-            android:id="@+id/btn_download_msg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:text="@string/download_"
-            android:visibility="gone"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/body"/>
-        <Button
             android:id="@+id/btn_import_contact"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -92,5 +83,15 @@
             android:visibility="gone"
             android:layout_centerHorizontal="true"
             android:layout_below="@id/body"/>
+
+        <Button
+            android:id="@+id/btn_download_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/body"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center_vertical"
+            android:text="@string/download_"
+            android:visibility="gone" />
     </RelativeLayout>
 </LinearLayout>

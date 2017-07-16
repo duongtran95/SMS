@@ -17,10 +17,12 @@
     <string name="new_messages_" formatted="false">Các tin nhắn mới</string>
     <string name="new_messages" formatted="false">%d tin nhắn chưa đọc.</string>
     <string name="title_conversation_list" formatted="false">Hộp thư</string>
-    <string name="title_Filterd" formatted="false">Lọc</string>
     <string name="filterd" formatted="false">Đã lọc tin nhắn rác</string>
     <string name="content_filterd" formatted="false">Nội dung</string>
     <string name="content_block" formatted="false">SDT</string>
+    <string name="title_Conv_Filterd" formatted="false">Hộp thư Lọc</string>
+    <string name="title_Filterd" formatted="false">Lọc</string>
+
     <string name="title_Conv_Backlist" formatted="false">Hộp thư Chặn</string>
     <string name="title_Backlist" formatted="false">Chặn</string>
     <string name="block" formatted="false">Đã chặn tin nhắn rác</string>
@@ -200,12 +202,27 @@
     <string name="title_restore">Khôi phục</string>
     <string name="message_restore">Bạn có muốn khôi phục số điện thoại này không?</string>
     <string name="title_restore_hint">Khôi phục tất cả</string>
-    <string name="title_menu_add_blacklist">Thêm danh sách đen</string>
+    <string name="title_add_blacklist">Thêm danh sách đen</string>
     <string name="title_menu_add_filterd">Thêm mẫu lọc</string>
+    <string name="title_add_filterd_char">Thêm mẫu lọc ký tự</string>
+    <string name="title_add_filterd_word">Thêm mẫu lọc từ</string>
+    <string name="title_add_filterd_pharse">Thêm mẫu lọc cùm từ</string>
     <string name="count">SL</string>
     <string name="title_add_blacklit">Thêm SDT chặn</string>
     <string name="title_add_blacklit_hint">Bạn có muốn thêm SDT vào danh sách chặn không?</string>
+    <string name="title_add_filter_hint">Nhập nội dung lọc !!!</string>
     <string name="non_empty">Không đươc để trống</string>
     <string name="blacklist">Đã chặn</string>
     <string name="filter"> (Thư rác)</string>
+    <string name="charr">Ký tự</string>
+    <string name="word">Từ</string>
+    <string name="pharse">Cụm từ</string>
+    <string name="add_charr">Thêm ký tự</string>
+    <string name="add_word">Thêm từ</string>
+    <string name="add_pharse">Thêm cụm từ</string>
+    <string name="delete_filter">Xóa mẫu lọc</string>
+    <string name="confirm_delete_filter">Bạn có muốn xóa mẫu lọc này không?</string>
+    <string name="delete_all_filter">Xóa tất cả mẫu lọc</string>
+    <string name="confirm_all_delete_filter">Bạn có muốn xóa tất cả mẫu lọc này không?</string>
+
 </resources>

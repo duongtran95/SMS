@@ -1,4 +1,4 @@
-package com.example.trantrungduong95.truesms.Presenter;
+package com.example.trantrungduong95.truesms.Presenter.Activity_;
 
 import android.content.Intent;
 import android.os.Build;
@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import com.example.trantrungduong95.truesms.MainActivity;
+import com.example.trantrungduong95.truesms.Presenter.SettingsNewActivity;
+import com.example.trantrungduong95.truesms.Presenter.SettingsOldActivity;
 import com.example.trantrungduong95.truesms.R;
 
 // Display About Activity.

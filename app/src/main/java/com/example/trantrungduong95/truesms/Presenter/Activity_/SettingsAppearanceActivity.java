@@ -1,4 +1,4 @@
-package com.example.trantrungduong95.truesms.Presenter;
+package com.example.trantrungduong95.truesms.Presenter.Activity_;
 
 import android.app.Activity;
 import android.content.Context;
@@ -8,15 +8,16 @@ import android.preference.PreferenceActivity;
 import android.view.MenuItem;
 
 import com.example.trantrungduong95.truesms.MainActivity;
+import com.example.trantrungduong95.truesms.Presenter.IPreferenceContainer;
+import com.example.trantrungduong95.truesms.Presenter.SettingsOldActivity;
 import com.example.trantrungduong95.truesms.R;
-
-public class SettingsBehaviorActivity extends PreferenceActivity implements
+public class SettingsAppearanceActivity extends PreferenceActivity implements
         IPreferenceContainer {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.prefs_behavior);
+        addPreferencesFromResource(R.xml.prefs_appearance);
         SettingsOldActivity.registerOnPreferenceClickListener(this);
     }
 

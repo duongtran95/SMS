@@ -23,8 +23,7 @@ import com.example.trantrungduong95.truesms.Model.Block;
 import com.example.trantrungduong95.truesms.Model.Contact;
 import com.example.trantrungduong95.truesms.Model.Conversation;
 import com.example.trantrungduong95.truesms.Model.Wrapper.ContactsWrapper;
-import com.example.trantrungduong95.truesms.Presenter.BlacklistActivity;
-import com.example.trantrungduong95.truesms.Presenter.ConversationActivity;
+import com.example.trantrungduong95.truesms.Presenter.Activity_.BlacklistActivity;
 import com.example.trantrungduong95.truesms.R;
 
 

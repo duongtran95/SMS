@@ -1,4 +1,4 @@
-package com.example.trantrungduong95.truesms.Presenter;
+package com.example.trantrungduong95.truesms.Presenter.Activity_;
 
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
@@ -18,7 +18,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
@@ -41,6 +40,10 @@ import com.example.trantrungduong95.truesms.Model.Contact;
 import com.example.trantrungduong95.truesms.Model.Conversation;
 import com.example.trantrungduong95.truesms.Model.Message;
 import com.example.trantrungduong95.truesms.Model.Wrapper.ContactsWrapper;
+import com.example.trantrungduong95.truesms.Presenter.Converter;
+import com.example.trantrungduong95.truesms.Presenter.SettingsNewActivity;
+import com.example.trantrungduong95.truesms.Presenter.SettingsOldActivity;
+import com.example.trantrungduong95.truesms.Presenter.Utils;
 import com.example.trantrungduong95.truesms.R;
 
 public class ConversationActivity extends AppCompatActivity implements AdapterView.OnItemClickListener,

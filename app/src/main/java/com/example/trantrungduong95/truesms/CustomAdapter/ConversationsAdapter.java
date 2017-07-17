@@ -158,6 +158,7 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
         Contact contact = conv.getContact();
 
         //conv.getAllNumberConv(context);
+
         ViewHolder holder = (ViewHolder) view.getTag();
         if (holder == null) {
             holder = new ViewHolder();
@@ -209,7 +210,6 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
             view.setVisibility(View.GONE);
             view.getLayoutParams().height = 1;
 
-            //MainActivity.deleteMsg(conv.getUri(),context);
             MainActivity.conversationList.add(conv);
             //holder.tvPerson.setText(contact.getDisplayName() + " " + context.getString(R.string.blacklist));
         /*} else if (!isBlocked(contact.getNumber()) && SmsReceiver.filter(context, text.toString(), contact.getNumber())) {

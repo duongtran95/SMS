@@ -30,7 +30,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.GET_TASKS" />
     <application
-        android:name=".Presenter.DefaultAndPermission"
+        android:name=".Presenter.Activity_.DefaultAndPermission"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -59,15 +59,15 @@
         </activity>
         <activity android:name=".Presenter.SettingsOldActivity" />
         <activity android:name=".Presenter.SettingsNewActivity" />
-        <activity android:name=".Presenter.SettingsAppearanceActivity" />
-        <activity android:name=".Presenter.SettingsBehaviorActivity" />
+        <activity android:name=".Presenter.Activity_.SettingsAppearanceActivity" />
+        <activity android:name=".Presenter.Activity_.SettingsBehaviorActivity" />
         <activity android:name=".Presenter.SettingsNofActivity" />
         <activity
-            android:name=".Presenter.AboutActivity"
+            android:name=".Presenter.Activity_.AboutActivity"
             android:theme="@style/Theme.TrueSMS"
             />
         <activity
-            android:name=".Presenter.ConversationActivity"
+            android:name=".Presenter.Activity_.ConversationActivity"
             android:launchMode="singleTop"
             android:theme="@style/Theme.TrueSMS_Light"
 
@@ -96,7 +96,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Presenter.ComposeActivity"
+            android:name=".Presenter.Activity_.ComposeActivity"
             android:label="@string/sender_name"
             android:launchMode="singleTop"
             android:theme="@style/Theme.TrueSMS_Light"
@@ -115,18 +115,18 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Presenter.PopupActivity"
+            android:name=".Presenter.Activity_.PopupActivity"
             android:excludeFromRecents="true"
             android:screenOrientation="user"
             android:taskAffinity=""
             android:theme="@style/AppThemeLightDialog"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".Presenter.BlacklistActivity"
+            android:name=".Presenter.Activity_.BlacklistActivity"
             android:theme="@style/Theme.TrueSMS_Light">
         </activity>
         <activity
-            android:name=".Presenter.FilterActivity"
+            android:name=".Presenter.Activity_.FilterActivity"
             android:theme="@style/Theme.TrueSMS_Light">
         </activity>
         <receiver

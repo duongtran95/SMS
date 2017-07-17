@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.trantrungduong95.truesms.Presenter.ConversationActivity">
+    tools:context="com.example.trantrungduong95.truesms.Presenter.Activity_.ConversationActivity">
 
     <ListView
         android:id="@+id/conversation_list"

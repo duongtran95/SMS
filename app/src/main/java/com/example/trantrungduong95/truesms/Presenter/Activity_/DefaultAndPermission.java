@@ -1,4 +1,4 @@
-package com.example.trantrungduong95.truesms.Presenter;
+package com.example.trantrungduong95.truesms.Presenter.Activity_;
 
 import android.Manifest;
 import android.app.Activity;
@@ -25,6 +25,7 @@ import android.view.View.OnClickListener;
 import android.widget.Toast;
 
 import com.example.trantrungduong95.truesms.BuildConfig;
+import com.example.trantrungduong95.truesms.Presenter.Activity_.ComposeActivity;
 import com.example.trantrungduong95.truesms.R;
 
 public class DefaultAndPermission extends Application {

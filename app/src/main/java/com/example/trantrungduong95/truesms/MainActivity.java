@@ -50,10 +50,10 @@ import com.example.trantrungduong95.truesms.Model.Message;
 import com.example.trantrungduong95.truesms.Model.Search;
 import com.example.trantrungduong95.truesms.Model.Wrapper.ContactsWrapper;
 import com.example.trantrungduong95.truesms.Presenter.AsyncHelper;
-import com.example.trantrungduong95.truesms.Presenter.BlacklistActivity;
-import com.example.trantrungduong95.truesms.Presenter.ConversationActivity;
-import com.example.trantrungduong95.truesms.Presenter.DefaultAndPermission;
-import com.example.trantrungduong95.truesms.Presenter.FilterActivity;
+import com.example.trantrungduong95.truesms.Presenter.Activity_.BlacklistActivity;
+import com.example.trantrungduong95.truesms.Presenter.Activity_.ConversationActivity;
+import com.example.trantrungduong95.truesms.Presenter.Activity_.DefaultAndPermission;
+import com.example.trantrungduong95.truesms.Presenter.Activity_.FilterActivity;
 import com.example.trantrungduong95.truesms.Presenter.SettingsNewActivity;
 import com.example.trantrungduong95.truesms.Presenter.SettingsOldActivity;
 import com.example.trantrungduong95.truesms.Presenter.SpamHandler;
@@ -125,8 +125,6 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
     private SpamHandler db = new SpamHandler(this);
 
     public static List<Conversation> conversationList = new ArrayList<Conversation>();
-
-
 
     @Override
     public void onStart() {
@@ -400,7 +398,6 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         getMenuInflater().inflate(R.menu.conversationlist, menu);
         return true;
     }
-
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         mSearchAction = menu.findItem(R.id.action_search);
@@ -612,6 +609,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                             block.setNumber(conv.getContact().getNumber());
                             db.addBlock(block);
                             conversationList.add(conv);
+
                             adapter.getBlacklist().add(block);
                             adapter.notifyDataSetChanged();
                             break;
@@ -685,4 +683,6 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         phones.close();
         return contacts;
     }
+
+
 }

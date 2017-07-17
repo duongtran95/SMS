@@ -13,20 +13,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.trantrungduong95.truesms.CustomAdapter.BlockAdapter;
+import com.example.trantrungduong95.truesms.CustomAdapter.ConversationsAdapter;
 import com.example.trantrungduong95.truesms.MainActivity;
 import com.example.trantrungduong95.truesms.Model.Block;
-import com.example.trantrungduong95.truesms.Presenter.BlacklistActivity;
-import com.example.trantrungduong95.truesms.Presenter.SpamHandler;
+import com.example.trantrungduong95.truesms.Presenter.Activity_.BlacklistActivity;
 import com.example.trantrungduong95.truesms.R;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -127,6 +123,7 @@ public class Fragment_Blacklist extends Fragment implements AdapterView.OnItemCl
                             ((BlacklistActivity) getActivity()).db.addBlock(block);
                             ((BlacklistActivity) getActivity()).blockList.add(block);
                             blockAdapter.notifyDataSetChanged();
+
                         } else
                             Toast.makeText(getActivity(), getActivity().getString(R.string.non_empty), Toast.LENGTH_SHORT).show();
 

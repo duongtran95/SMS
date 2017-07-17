@@ -4,8 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.example.trantrungduong95.truesms.Presenter.DefaultAndPermission;
-import com.example.trantrungduong95.truesms.Receiver.SmsReceiver;
+import com.example.trantrungduong95.truesms.Presenter.Activity_.DefaultAndPermission;
 
 //Listen for new mms.
 public class MmsReceiver extends BroadcastReceiver {

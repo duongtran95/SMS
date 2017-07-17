@@ -19,19 +19,17 @@ import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.trantrungduong95.truesms.Presenter.DefaultAndPermission;
+import com.example.trantrungduong95.truesms.Presenter.Activity_.DefaultAndPermission;
 import com.example.trantrungduong95.truesms.MainActivity;
 import com.example.trantrungduong95.truesms.Model.Contact;
 import com.example.trantrungduong95.truesms.Model.Conversation;
 import com.example.trantrungduong95.truesms.Model.Message;
-import com.example.trantrungduong95.truesms.Presenter.ConversationActivity;
+import com.example.trantrungduong95.truesms.Presenter.Activity_.ConversationActivity;
 import com.example.trantrungduong95.truesms.Presenter.Converter;
 import com.example.trantrungduong95.truesms.Presenter.MessageProvider;
 import com.example.trantrungduong95.truesms.Presenter.SettingsOldActivity;
 import com.example.trantrungduong95.truesms.Presenter.SmileyParser;
 import com.example.trantrungduong95.truesms.R;
-
-import java.util.ArrayList;
 
 // Adapter for the list of link Conversation.
 public class ConversationAdapter extends ResourceCursorAdapter {

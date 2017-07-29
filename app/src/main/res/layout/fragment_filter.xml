@@ -11,16 +11,19 @@
             android:id="@+id/btnChar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/button_round"
             android:text="@string/charr" />
         <Button
             android:id="@+id/btnWord"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/button_round"
             android:text="@string/word" />
         <Button
             android:id="@+id/btnPharse"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/button_round"
             android:text="@string/pharse" />
     </LinearLayout>
     <ListView

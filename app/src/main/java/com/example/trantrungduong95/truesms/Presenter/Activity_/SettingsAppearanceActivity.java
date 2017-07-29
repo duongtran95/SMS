@@ -9,7 +9,6 @@ import android.view.MenuItem;
 
 import com.example.trantrungduong95.truesms.MainActivity;
 import com.example.trantrungduong95.truesms.Presenter.IPreferenceContainer;
-import com.example.trantrungduong95.truesms.Presenter.SettingsOldActivity;
 import com.example.trantrungduong95.truesms.R;
 public class SettingsAppearanceActivity extends PreferenceActivity implements
         IPreferenceContainer {

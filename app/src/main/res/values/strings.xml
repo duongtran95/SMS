@@ -2,155 +2,160 @@
 <resources>
     <string name="app_name">TrueSMS</string>
     <string name="title_search">Nhập tìm</string>
-    <string name="nameSearch">Tên, SDT:</string>
+    <string name="nameSearch">Tên:</string>
+    <string name="nameSearch1">SDT:</string>
     <string name="bodySearch">Nội dung: </string>
     <string name="ringtone_defaultvalue">content://settings/system/notification_sound</string>
     <string name="listReference_theme_light">light</string>
-    <string name="about_" formatted="false">Thông tin</string>
-    <string name="about_hint" formatted="false">Giới thiệu về ứng dụng</string>
-    <string name="faq_hint" formatted="false">Một số mẹo và thủ thuật, cách thiết lập ứng dụng này.</string>
-    <string name="feedback_" formatted="false">Phản hồi</string>
-    <string name="feedback_hint" formatted="false">Báo cáo lỗi, yêu cầu tính năng ...</string>
-    <string name="settings" formatted="false">Cài đặt</string>
-    <string name="new_message_" formatted="false">Tin nhắn mới</string>
-    <string name="new_message" formatted="false">1 tin nhắn chưa đọc.</string>
-    <string name="new_messages_" formatted="false">Các tin nhắn mới</string>
-    <string name="new_messages" formatted="false">%d tin nhắn chưa đọc.</string>
-    <string name="title_conversation_list" formatted="false">Hộp thư</string>
-    <string name="filterd" formatted="false">Đã lọc tin nhắn rác</string>
-    <string name="content_filterd" formatted="false">Nội dung</string>
-    <string name="content_block" formatted="false">SDT</string>
-    <string name="title_Conv_Filterd" formatted="false">Hộp thư Lọc</string>
-    <string name="title_Filterd" formatted="false">Lọc</string>
-
-    <string name="title_Conv_Backlist" formatted="false">Hộp thư Chặn</string>
-    <string name="title_Backlist" formatted="false">Chặn</string>
-    <string name="block" formatted="false">Đã chặn tin nhắn rác</string>
-    <string name="call" formatted="false">Gọi</string>
-    <string name="reply" formatted="false">Trả lời</string>
-    <string name="send_" formatted="false">Gửi</string>
-    <string name="notification_" formatted="false">Thông báo</string>
-    <string name="notification_enable_" formatted="false">Bật thông báo</string>
-    <string name="notification_enable_hint" formatted="false">Bật thông báo khi nhận</string>
-    <string name="receive_vibrate_" formatted="false">Rung</string>
-    <string name="receive_vibrate_hint" formatted="false">Rung khi nhận</string>
-    <string name="receive_vibrate_mode_" formatted="false">Chế độ rung</string>
-    <string name="receive_sound_" formatted="false">Âm thanh</string>
-    <string name="receive_sound_hint" formatted="false">Âm thanh khi nhận</string>
-    <string name="receive_led_color_" formatted="false">Màu LED</string>
-    <string name="receive_led_flash_" formatted="false">Chế độ LED</string>
-    <string name="receive_led_flash_hint" formatted="false">Đặt nháy Led</string>
-    <string name="receive_no_text_" formatted="false">Ẩn người gửi / văn bản</string>
-    <string name="receive_no_text_hint" formatted="false">Ẩn người gửi / văn bản trong thông báo.</string>
-    <string name="behavior_" formatted="false">Chung</string>
-    <string name="appearance_and_behavior_" formatted="false">Hiện thị &amp; Chung</string>
-    <string name="appearance_" formatted="false">Hiển thị</string>
-    <string name="theme_" formatted="false">Giao diện</string>
-    <string name="textsize_" formatted="false">Kích cỡ chữ</string>
-    <string name="textsize_hint" formatted="false">Kích thước chữ bằng pixel; Để trống để mặc định.</string>
-    <string name="textcolor_" formatted="false">Màu chữ</string>
-    <string name="textcolor_hint" formatted="false">Màu văn bản.</string>
-    <string name="textcolor_ignore_conv_" formatted="false">Bỏ qua màu văn bản cho cuộc hội thoại.</string>
-    <string name="textcolor_ignore_conv_hint" formatted="false">Bỏ qua màu văn bản trong danh sách các cuộc hội thoại.</string>
-    <string name="show_contact_photo_" formatted="false">Hiển thị ảnh</string>
-    <string name="show_contact_photo_hint" formatted="false">Hiển thị ảnh của người liên hệ trong danh sách cuộc trò chuyện.</string>
-    <string name="show_emoticons_" formatted="false">Hiển thị biểu tượng cảm xúc</string>
-    <string name="show_emoticons_hint" formatted="false">Hiển thị biểu tượng cảm xúc trong tin nhắn.</string>
-    <string name="hide_restore_" formatted="false">Ẩn nút "khôi phục lại tin nhắn cuối cùng"</string>
-    <string name="hide_restore_hint" formatted="false">Ẩn nút "khôi phục lại tin nhắn cuối cùng" trong danh sách tin nhắn.</string>
-    <string name="hide_widget_label_" formatted="false">Ẩn nhãn của tiện ích con</string>
-    <string name="hide_widget_label_hint" formatted="false">Ẩn nhãn của widget.</string>
-    <string name="hide_delete_all_threads_" formatted="false">Ẩn xóa tất cả tin nhắn</string>
-    <string name="hide_delete_all_threads_hint" formatted="false">Ẩn xóa tất cả tin nhắn trong cuộc hội thoại.</string>
-    <string name="hide_message_count_" formatted="false">Ẩn số tin nhắn</string>
-    <string name="hide_message_count_hint" formatted="false">Ẩn số lượng thư trên danh sách cuộc hội thoại.</string>
-    <string name="show_full_date_" formatted="false">Hiển thị ngày đầy đủ</string>
-    <string name="show_full_date_hint" formatted="false">Hiển thị ngày và giờ đầy đủ trên mỗi tin nhắn.</string>
-    <string name="me" formatted="false">Tôi</string>
-    <string name="view_contact_" formatted="false">Xem danh bạ</string>
-    <string name="add_contact_" formatted="false">Thêm vào danh bạ</string>
-    <string name="view_thread_" formatted="false">Xem tin nhắn</string>
-    <string name="mark_block_" formatted="false">Chặn số điện thoại</string>
-    <string name="filter_spam_" formatted="false">Đánh dấu Spam</string>
-    <string name="dont_filter_spam_" formatted="false">Xoá khỏi Danh sách đen</string>
-    <string name="delete_message_" formatted="false">Xóa tin nhắn</string>
-    <string name="delete_thread_" formatted="false">Xóa cuộc hội thoại</string>
-    <string name="forward_" formatted="false">Chuyển tiếp</string>
-    <string name="send_draft_" formatted="false">Gửi nháp</string>
-    <string name="copy_text_" formatted="false">Sao chép tin nhắn</string>
-    <string name="view_details_" formatted="false">Xem chi tiết tin nhắn</string>
-    <string name="delete_threads_" formatted="false">Xóa tất cả tin nhắn</string>
-    <string name="mark_read_" formatted="false">Đánh dấu đọc</string>
-    <string name="mark_unread_" formatted="false">Đánh dấu chưa đọc</string>
-    <string name="message_options_" formatted="false">Tùy chọn tin nhắn</string>
-    <string name="delete_message_question" formatted="false">Bạn có thực sự muốn xóa tin nhắn này?</string>
-    <string name="delete_thread_question" formatted="false">Bạn có thực sự muốn xóa <b>tất cả thư trong cuộc hội thoại này</b>?</string>
-    <string name="delete_threads_question" formatted="false">Bạn có thực sự muốn xóa <b>tất cả thư</b>?</string>
-    <string name="from_" formatted="false">Từ:</string>
-    <string name="to_" formatted="false">Đến:</string>
-    <string name="to_hint" formatted="false">Tên và số điện thoại</string>
-    <string name="type_" formatted="false">Kiểu:</string>
-    <string name="sent_" formatted="false">Gởi:</string>
-    <string name="received_" formatted="false">Đã nhận:</string>
-    <string name="view_mms" formatted="false">Xem MMS</string>
-    <string name="mms_conversation" formatted="false">&lt; Nội dung MMS &gt;</string>
-    <string name="import_contact_" formatted="false">Nhập liên hệ</string>
-    <string name="download_" formatted="false">Tải về</string>
-    <string name="downloading_" formatted="false">Đang tải về..</string>
-    <string name="error_conv_null" formatted="false">Lỗi nhận cuộc trò chuyện từ DB!</string>
-    <string name="error_sending_failed" formatted="false">Gửi tin nhắn thất bại</string>
-    <string name="sending_successfully" formatted="false">Gửi tin nhắn thành công</string>
-    <string name="text_hint" formatted="false">Text</string>
-    <string name="restore_" formatted="false">Khôi phục tin nhắn cuối cùng</string>
-    <string name="attachment_saved" formatted="false">Đã lưu tệp đính kèm trên thẻ SD dưới dạng:</string>
-    <string name="attachment_not_saved" formatted="false">Không thể lưu tệp đính kèm.</string>
-    <string name="notification_icon_" formatted="false">Biểu tượng thông báo</string>
-    <string name="notification_default_" formatted="false">Ảnh mặc định</string>
-    <string name="notification_red_" formatted="false">Red (đỏ)</string>
-    <string name="notification_black_" formatted="false">Black (đen)</string>
-    <string name="notification_green_" formatted="false">Green (Xanh lá)</string>
-    <string name="notification_yellow_" formatted="false">Yellow (Vàng</string>
-    <string name="notification_blue_" formatted="false">Blue (Xanh da trời)</string>
-    <string name="bubbles_in_" formatted="false">Bong bóng nhận</string>
-    <string name="bubbles_in_hint" formatted="false">Bong bóng cho các thư đến</string>
-    <string name="bubbles_out_" formatted="false">Bong bóng gửi</string>
-    <string name="bubbles_out_hint" formatted="false">Bong bóng cho thư đi</string>
-    <string name="bubbles_nothing" formatted="false">Tắt bong bóng </string>
-    <string name="bubbles_plain_dark_gray" formatted="false">Màu xám đậm</string>
-    <string name="bubbles_plain_light_gray" formatted="false">Màu xám nhạt</string>
-    <string name="bubbles_old_turquoise_left" formatted="false">Màu ngọc lam tối trái</string>
-    <string name="bubbles_old_turquoise_right" formatted="false">Màu ngọc lam tối phải</string>
-    <string name="bubbles_old_green_left" formatted="false">xanh lá tối trái</string>
-    <string name="bubbles_old_green_right" formatted="false">Xanh lá tốiphải</string>
-    <string name="bubbles_blue_left" formatted="false">Xanh dương trái</string>
-    <string name="bubbles_blue_right" formatted="false">Xanh dương phải</string>
-    <string name="bubbles_blue2_left" formatted="false">Xanh dương 2 trái</string>
-    <string name="bubbles_blue2_right" formatted="false">Xanh dương 2 phải</string>
-    <string name="bubbles_brown_left" formatted="false">Nâu trái</string>
-    <string name="bubbles_brown_right" formatted="false">Nâu phải</string>
-    <string name="bubbles_gray_left" formatted="false">Xám trái</string>
-    <string name="bubbles_gray_right" formatted="false">Xám phải</string>
-    <string name="bubbles_green_left" formatted="false">Xanh lá trái</string>
-    <string name="bubbles_green_right" formatted="false">xánh lá phải</string>
-    <string name="bubbles_green2_left" formatted="false">Xanh lá 2 trái</string>
-    <string name="bubbles_green2_right" formatted="false">Xanh lá 2 phải</string>
-    <string name="bubbles_orange_left" formatted="false">Cam trái</string>
-    <string name="bubbles_orange_right" formatted="false">Cam phải</string>
-    <string name="bubbles_pink_left" formatted="false">Hồng trái</string>
-    <string name="bubbles_pink_right" formatted="false">Hồng phải</string>
-    <string name="bubbles_purple_left" formatted="false">Tím trái</string>
-    <string name="bubbles_purple_right" formatted="false">Tím phải</string>
-    <string name="bubbles_white_left" formatted="false">Trắng trái</string>
-    <string name="bubbles_white_right" formatted="false">Trắng phải</string>
-    <string name="bubbles_yellow_left" formatted="false">Vàng trái</string>
-    <string name="bubbles_yellow_right" formatted="false">Vàng phải</string>
-    <string name="decode_decimal_ncr_" formatted="false">Giải mã Decimal NCR</string>
-    <string name="decode_decimal_ncr_hint" formatted="false">Một số nhà cung cấp cung cấp tin nhắn unicode được mã hoá bằng chữ số thập phân NCR (&amp;#0000;). Chọn để tự động giải mã các thực thể như vậy.</string>
-    <string name="activate_sender_" formatted="false">Kích hoạt người gửi</string>
-    <string name="activate_sender_hint" formatted="false">Kích hoạt người gửi tin nhắn của TrueSMS.</string>
-    <string name="show_target_app_" formatted="false">Hiển thị ứng dụng</string>
-    <string name="show_target_app_hint" formatted="false">Hiển thị Ứng dụng được sử dụng để gửi.</string>
-    <string name="error_start_mms_download" formatted="false">Lỗi khi bắt đầu tải xuống MMS</string>
+    <string name="about_">Thông tin</string>
+    <string name="about_a">Giới thiệu ứng dụng</string>
+    <string name="about_hint">Luận văn tốt nghiệp</string>
+    <string name="about_author">Author: Trần Trung Dương</string>
+    <string name="about_version">Version: v1.0.0</string>
+    <string name="about_date">25/7/2017</string>
+    <string name="faq_hint">Một số mẹo và thủ thuật, cách thiết lập ứng dụng này.</string>
+    <string name="feedback_">Phản hồi</string>
+    <string name="feedback_hint">Báo cáo lỗi, yêu cầu tính năng…</string>
+    <string name="settings">Cài đặt</string>
+    <string name="new_message_">Tin nhắn mới</string>
+    <string name="new_message">1 tin nhắn chưa đọc.</string>
+    <string name="new_messages_">Các tin nhắn mới</string>
+    <string name="new_messages">%d tin nhắn chưa đọc.</string>
+    <string name="title_conversation_list">Hộp thư</string>
+    <string name="filterd">Đã lọc tin nhắn rác</string>
+    <string name="content_filterd">Key: </string>
+    <string name="content_block">SDT</string>
+    <string name="title_Conv_Filterd">Hộp thư Lọc</string>
+    <string name="title_Filterd">Lọc</string>
+    <string name="title_Conv_Backlist">Hộp thư Chặn</string>
+    <string name="title_Backlist">Chặn</string>
+    <string name="block">Đã chặn tin nhắn rác</string>
+    <string name="call">Gọi</string>
+    <string name="reply">Trả lời</string>
+    <string name="send_">Gửi</string>
+    <string name="notification_">Thông báo</string>
+    <string name="notification_enable_">Bật thông báo</string>
+    <string name="notification_enable_hint">Bật thông báo khi nhận</string>
+    <string name="receive_vibrate_">Rung</string>
+    <string name="receive_vibrate_hint">Rung khi nhận</string>
+    <string name="receive_vibrate_mode_">Chế độ rung</string>
+    <string name="receive_sound_">Âm thanh</string>
+    <string name="receive_sound_hint">Âm thanh khi nhận</string>
+    <string name="receive_led_color_">Màu LED</string>
+    <string name="receive_led_flash_">Chế độ LED</string>
+    <string name="receive_led_flash_hint">Đặt nháy LED</string>
+    <string name="receive_no_text_">Ẩn người gửi / văn bản</string>
+    <string name="receive_no_text_hint">Ẩn người gửi / văn bản trong thông báo.</string>
+    <string name="behavior_">Chung</string>
+    <string name="appearance_and_behavior_">Hiện thị &amp; Chung</string>
+    <string name="appearance_">Hiển thị</string>
+    <string name="theme_">Giao diện</string>
+    <string name="textsize_">Kích cỡ chữ</string>
+    <string name="textsize_hint">Kích thước chữ bằng pixel; Để trống để mặc định.</string>
+    <string name="textcolor_">Màu chữ</string>
+    <string name="textcolor_hint">Màu văn bản.</string>
+    <string name="textcolor_ignore_conv_">Bỏ qua màu văn bản cho cuộc hội thoại.</string>
+    <string name="textcolor_ignore_conv_hint">Bỏ qua màu văn bản trong danh sách các cuộc hội thoại.</string>
+    <string name="show_contact_photo_">Hiển thị ảnh</string>
+    <string name="show_contact_photo_hint">Hiển thị ảnh của người liên hệ trong danh sách cuộc trò chuyện.</string>
+    <string name="show_emoticons_">Hiển thị biểu tượng cảm xúc</string>
+    <string name="show_emoticons_hint">Hiển thị biểu tượng cảm xúc trong tin nhắn.</string>
+    <string name="hide_restore_">Ẩn nút "khôi phục lại tin nhắn cuối cùng"</string>
+    <string name="hide_restore_hint">Ẩn nút "khôi phục lại tin nhắn cuối cùng" trong danh sách tin nhắn.</string>
+    <string name="hide_widget_label_">Ẩn nhãn của tiện ích con</string>
+    <string name="hide_widget_label_hint">Ẩn nhãn của widget.</string>
+    <string name="hide_delete_all_threads_">Ẩn xóa tất cả tin nhắn</string>
+    <string name="hide_delete_all_threads_hint">Ẩn xóa tất cả tin nhắn trong cuộc hội thoại.</string>
+    <string name="hide_message_count_">Ẩn số tin nhắn</string>
+    <string name="hide_message_count_hint">Ẩn số lượng thư trên danh sách cuộc hội thoại.</string>
+    <string name="show_full_date_">Hiển thị ngày đầy đủ</string>
+    <string name="show_full_date_hint">Hiển thị ngày và giờ đầy đủ trên mỗi tin nhắn.</string>
+    <string name="me">Me</string>
+    <string name="view_contact_">Xem danh bạ</string>
+    <string name="add_contact_">Thêm vào danh bạ</string>
+    <string name="view_thread_">Xem tin nhắn</string>
+    <string name="mark_block_">Chặn số điện thoại</string>
+    <string name="filter_spam_">Đánh dấu Spam</string>
+    <string name="dont_filter_spam_">Xoá khỏi Danh sách đen</string>
+    <string name="delete_message_">Xóa tin nhắn</string>
+    <string name="delete_thread_">Xóa cuộc hội thoại</string>
+    <string name="forward_">Chuyển tiếp</string>
+    <string name="send_draft_">Gửi nháp</string>
+    <string name="copy_text_">Sao chép tin nhắn</string>
+    <string name="copy_text_paste">Paste</string>
+    <string name="view_details_">Xem chi tiết tin nhắn</string>
+    <string name="delete_threads_">Xóa tất cả tin nhắn</string>
+    <string name="mark_read_">Đánh dấu đọc</string>
+    <string name="mark_unread_">Đánh dấu chưa đọc</string>
+    <string name="message_options_">Tùy chọn tin nhắn</string>
+    <string name="delete_message_question">Bạn có thực sự muốn xóa tin nhắn này?</string>
+    <string name="delete_thread_question">Bạn có thực sự muốn xóa <b>tất cả thư trong cuộc hội thoại này</b>?</string>
+    <string name="delete_threads_question">Bạn có thực sự muốn xóa <b>tất cả thư</b>?</string>
+    <string name="from_">Từ:</string>
+    <string name="to_">Đến:</string>
+    <string name="to_hint">Tên và số điện thoại</string>
+    <string name="type_">Kiểu:</string>
+    <string name="sent_">Gởi:</string>
+    <string name="received_">Đã nhận:</string>
+    <string name="view_mms">Xem MMS</string>
+    <string name="mms_conversation">&lt; Nội dung MMS &gt;</string>
+    <string name="import_contact_">Nhập liên hệ</string>
+    <string name="download_">Tải về</string>
+    <string name="downloading_">Đang tải về..</string>
+    <string name="error_conv_null">Lỗi nhận cuộc trò chuyện từ DB!</string>
+    <string name="error_sending_failed">Gửi tin nhắn thất bại</string>
+    <string name="sending_successfully">Gửi tin nhắn thành công</string>
+    <string name="text_hint">Text</string>
+    <string name="restore_">Khôi phục tin nhắn cuối cùng</string>
+    <string name="attachment_saved">Đã lưu tệp đính kèm trên thẻ SD dưới dạng:</string>
+    <string name="attachment_not_saved">Không thể lưu tệp đính kèm.</string>
+    <string name="notification_icon_">Biểu tượng thông báo</string>
+    <string name="notification_default_">Ảnh mặc định</string>
+    <string name="notification_red_">Red (đỏ)</string>
+    <string name="notification_black_">Black (đen)</string>
+    <string name="notification_green_">Green (Xanh lá)</string>
+    <string name="notification_yellow_">Yellow (Vàng</string>
+    <string name="notification_blue_">Blue (Xanh da trời)</string>
+    <string name="bubbles_in_">Bong bóng nhận</string>
+    <string name="bubbles_in_hint">Bong bóng cho các thư đến</string>
+    <string name="bubbles_out_">Bong bóng gửi</string>
+    <string name="bubbles_out_hint">Bong bóng cho thư đi</string>
+    <string name="bubbles_nothing">Tắt bong bóng </string>
+    <string name="bubbles_plain_dark_gray">Màu xám đậm</string>
+    <string name="bubbles_plain_light_gray">Màu xám nhạt</string>
+    <string name="bubbles_old_turquoise_left">Màu ngọc lam tối</string>
+    <string name="bubbles_old_turquoise_right">Màu ngọc lam tối</string>
+    <string name="bubbles_old_green_left">xanh lá tối</string>
+    <string name="bubbles_old_green_right">Xanh lá tối</string>
+    <string name="bubbles_blue_left">Xanh dương</string>
+    <string name="bubbles_blue_right">Xanh dương</string>
+    <string name="bubbles_blue2_left">Xanh dương 2</string>
+    <string name="bubbles_blue2_right">Xanh dương 2</string>
+    <string name="bubbles_brown_left">Nâu</string>
+    <string name="bubbles_brown_right">Nâu</string>
+    <string name="bubbles_gray_left">Xám</string>
+    <string name="bubbles_gray_right">Xám</string>
+    <string name="bubbles_green_left">Xanh lá</string>
+    <string name="bubbles_green_right">xánh lá</string>
+    <string name="bubbles_green2_left">Xanh lá 2</string>
+    <string name="bubbles_green2_right">Xanh lá 2</string>
+    <string name="bubbles_orange_left">Cam</string>
+    <string name="bubbles_orange_right">Cam</string>
+    <string name="bubbles_pink_left">Hồng</string>
+    <string name="bubbles_pink_right">Hồng</string>
+    <string name="bubbles_purple_left">Tím</string>
+    <string name="bubbles_purple_right">Tím</string>
+    <string name="bubbles_white_left">Trắng</string>
+    <string name="bubbles_white_right">Trắng</string>
+    <string name="bubbles_yellow_left">Vàng</string>
+    <string name="bubbles_yellow_right">Vàng</string>
+    <string name="decode_decimal_ncr_">Giải mã Decimal NCR</string>
+    <string name="decode_decimal_ncr_hint">Một số nhà cung cấp cung cấp tin nhắn unicode được mã hoá bằng chữ số thập phân NCR (&amp;#0000;). Chọn để tự động giải mã các thực thể như vậy.</string>
+    <string name="activate_sender_">Kích hoạt người gửi</string>
+    <string name="activate_sender_hint">Kích hoạt người gửi tin nhắn của TrueSMS.</string>
+    <string name="show_target_app_">Hiển thị ứng dụng</string>
+    <string name="show_target_app_hint">Hiển thị Ứng dụng được sử dụng để gửi.</string>
+    <string name="error_start_mms_download">Lỗi khi bắt đầu tải xuống MMS</string>
     <string-array name="themes">
         <item>Black</item>
         <item>Light</item>
@@ -173,48 +178,59 @@
         <item>Dài liên tục</item>
         <item>Lúc dài lúc ngắn</item>
     </string-array>
-    <string name="reset" formatted="false">Reset</string>
-    <string name="author_" formatted="false">Tác giả:</string>
-    <string name="mobile_only_" formatted="false">Chỉ số điện thoại di động</string>
-    <string name="mobile_only_hint" formatted="false">Chỉ đề xuất số điện thoại di động cho người nhận</string>
-    <string name="edit_short_text_" formatted="false">Chỉnh sửa dưới dạng tin nhắn ngắn</string>
-    <string name="edit_short_text_hint" formatted="false">Xem xét nhập một tin nhắn ngắn. Bàn phím thường thay thế nút nhập với nụ cười nếu bật.</string>
-    <string name="not_default_app" formatted="false">TrueSMS không phải là ứng dụng SMS mặc định</string>
-    <string name="not_default_app_message" formatted="false">TrueSMS cần phải là ứng dụng SMS mặc định để hoạt động bình thường</string>
-    <string name="forwarded_sms_clean_" formatted="false">Chuyển tiếp</string>
-    <string name="forwarded_sms_clean_hint" formatted="false">Dải người gửi trong nhận sms theo "([0-9a-zA-Z] +):" và sử dụng số này làm người gửi.</string>
-    <string name="error_unknown" formatted="false">Lỗi không rõ</string>
-    <string name="permissions_" formatted="false">Quyền</string>
-    <string name="permissions_read_phone_state" formatted="false">Đọc trạng thái điện thoại: sự cho phép này là cần thiết để lấy số điện thoại của bạn từ thiết bị. Số điện thoại được sử dụng làm người gửi cho thư đi. \n Ứng dụng vẫn hoạt động khi quyền này bị từ chối.</string>
-    <string name="permissions_read_contacts" formatted="false">Đọc địa chỉ liên hệ: cấp phép này là cần thiết để giải quyết số điện thoại cho số liên lạc và tự động điền tên và số trong trường nhập của người nhận. \n Ứng dụng không hoạt động nếu không có sự cho phép này.</string>
-    <string name="permissions_read_sms" formatted="false">Đọc SMS: quyền này là cần thiết để đọc SMS từ cơ sở dữ liệu của điện thoại. \n Ứng dụng không hoạt động mà không có sự cho phép này.</string>
-    <string name="permissions_write_sms" formatted="false">Viết tin nhắn SMS: sự cho phép này là cần thiết để đánh dấu SMS là đã đọc hoặc để xóa tin nhắn. \n Ứng dụng vẫn hoạt động với một số khi giấy phép này bị từ chối.</string>
-    <string name="permissions_send_sms" formatted="false">Gửi SMS: cấp phép này là cần thiết để gửi SMS. \n Ứng dụng vẫn hoạt động khi quyền này bị từ chối. Bạn sẽ cần sử dụng một ứng dụng khác để gửi qua.</string>
-    <string name="permissions_write_external_storage" formatted="false">Viết lưu trữ bên ngoài: sự cho phép này là cần thiết để lưu phương tiện truyền thông mms vào bộ nhớ ngoài. \n Ứng dụng vẫn hoạt động khi quyền này bị từ chối.</string>
-    <string name="search" formatted="false">Tìm kiếm</string>
+    <string name="reset">Reset</string>
+    <string name="author_">Tác giả:</string>
+    <string name="mobile_only_">Chỉ số điện thoại di động</string>
+    <string name="mobile_only_hint">Chỉ đề xuất số điện thoại di động cho người nhận</string>
+    <string name="edit_short_text_">Chỉnh sửa dưới dạng tin nhắn ngắn</string>
+    <string name="edit_short_text_hint">Xem xét nhập một tin nhắn ngắn. Bàn phím thường thay thế nút nhập với nụ cười nếu bật.</string>
+    <string name="not_default_app">TrueSMS không phải là ứng dụng SMS mặc định</string>
+    <string name="not_default_app_message">TrueSMS cần phải là ứng dụng SMS mặc định để hoạt động bình thường</string>
+    <string name="forwarded_sms_clean_">Chuyển tiếp</string>
+    <string name="forwarded_sms_clean_hint">Dải người gửi trong nhận sms theo "([0–9a-zA-Z] +):" và sử dụng số này làm người gửi.</string>
+    <string name="error_unknown">Lỗi không rõ</string>
+    <string name="permissions_">Quyền</string>
+    <string name="permissions_read_phone_state">Đọc trạng thái điện thoại: sự cho phép này là cần thiết để lấy số điện thoại của bạn từ thiết bị. Số điện thoại được sử dụng làm người gửi cho thư đi. \n Ứng dụng vẫn hoạt động khi quyền này bị từ chối.</string>
+    <string name="permissions_read_contacts">Đọc địa chỉ liên hệ: cấp phép này là cần thiết để giải quyết số điện thoại cho số liên lạc và tự động điền tên và số trong trường nhập của người nhận. \n Ứng dụng không hoạt động nếu không có sự cho phép này.</string>
+    <string name="permissions_read_sms">Đọc SMS: quyền này là cần thiết để đọc SMS từ cơ sở dữ liệu của điện thoại. \n Ứng dụng không hoạt động mà không có sự cho phép này.</string>
+    <string name="permissions_write_sms">Viết tin nhắn SMS: sự cho phép này là cần thiết để đánh dấu SMS là đã đọc hoặc để xóa tin nhắn. \n Ứng dụng vẫn hoạt động với một số khi giấy phép này bị từ chối.</string>
+    <string name="permissions_send_sms">Gửi SMS: cấp phép này là cần thiết để gửi SMS. \n Ứng dụng vẫn hoạt động khi quyền này bị từ chối. Bạn sẽ cần sử dụng một ứng dụng khác để gửi qua.</string>
+    <string name="permissions_write_external_storage">Viết lưu trữ bên ngoài: sự cho phép này là cần thiết để lưu phương tiện truyền thông mms vào bộ nhớ ngoài. \n Ứng dụng vẫn hoạt động khi quyền này bị từ chối.</string>
+    <string name="search">Tìm kiếm</string>
+    <string name="option_menu_filter">Tùy chọn</string>
     <string name="hint_contacts">Nhập người nhận</string>
     <string name="hint_reply">Soạn tin</string>
     <string name="hint_count">count: </string>
     <string name="menu_open_thread">Mở cuộc hội thoại</string>
     <string name="menu_forward">Chuyển tiếp tin nhắn</string>
+    <string name="menu_close">Đóng</string>
     <string name="receive_popup_">Popup</string>
     <string name="receive_popup_hint">Bật tắt Popup.</string>
     <string name="title_restore">Khôi phục</string>
     <string name="message_restore">Bạn có muốn khôi phục số điện thoại này không?</string>
+    <string name="message_restore_all">Bạn có muốn khôi phục tất cả này không?</string>
     <string name="title_restore_hint">Khôi phục tất cả</string>
     <string name="title_add_blacklist">Thêm danh sách đen</string>
     <string name="title_menu_add_filterd">Thêm mẫu lọc</string>
     <string name="title_add_filterd_char">Thêm mẫu lọc ký tự</string>
     <string name="title_add_filterd_word">Thêm mẫu lọc từ</string>
-    <string name="title_add_filterd_pharse">Thêm mẫu lọc cùm từ</string>
+    <string name="title_add_filterd_pharse">Thêm mẫu lọc cụm từ</string>
+    <string name="title_edit_filterd_char">Sửa mẫu lọc ký tự</string>
+    <string name="title_edit_filterd_word">Sửa mẫu lọc từ</string>
+    <string name="title_edit_filterd_pharse">Sửa mẫu lọc cụm từ</string>
+    
     <string name="count">SL</string>
     <string name="title_add_blacklit">Thêm SDT chặn</string>
     <string name="title_add_blacklit_hint">Bạn có muốn thêm SDT vào danh sách chặn không?</string>
     <string name="title_add_filter_hint">Nhập nội dung lọc !!!</string>
+    <string name="title_edit_filter_hint">Sửa nội dung lọc !!!</string>
     <string name="non_empty">Không đươc để trống</string>
     <string name="blacklist">Đã chặn</string>
     <string name="add_block">Thêm chặn</string>
     <string name="filter"> (Thư rác)</string>
+    <string name="filter_content">Thư rác…</string>
+    <string name="filter_edit">Sửa</string>
+    <string name="filter_delete">Xóa</string>
     <string name="charr">Ký tự</string>
     <string name="word">Từ</string>
     <string name="pharse">Cụm từ</string>
@@ -226,5 +242,6 @@
     <string name="confirm_delete_filter">Bạn có muốn xóa mẫu lọc này không?</string>
     <string name="delete_all_filter">Xóa tất cả mẫu lọc</string>
     <string name="confirm_all_delete_filter">Bạn có muốn xóa tất cả mẫu lọc này không?</string>
-
+    <string name="show">Hiển thị</string>
+    <string name="goFilterd">Đến hộp thư lọc</string>
 </resources>

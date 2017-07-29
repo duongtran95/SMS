@@ -46,7 +46,6 @@
             android:id="@+id/addr"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:singleLine="true"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_toLeftOf="@+id/inout"/>
@@ -59,7 +58,6 @@
             android:layout_below="@+id/addr"
             android:layout_toLeftOf="@+id/pending"
             android:autoLink="all"
-            android:singleLine="false"
             android:text="@+id/body" />
 
         <ImageView
@@ -93,5 +91,16 @@
             android:layout_gravity="center_vertical"
             android:text="@string/download_"
             android:visibility="gone" />
+        <Button
+            android:id="@+id/btn_show"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/body"
+            android:layout_alignParentRight= "true"
+            android:text="@string/show"
+            android:textColor="@color/colorPrimaryDark"
+            android:background="@drawable/button_round"
+            android:visibility="gone" />
+
     </RelativeLayout>
 </LinearLayout>

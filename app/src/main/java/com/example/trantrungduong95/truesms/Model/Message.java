@@ -38,7 +38,7 @@ public class Message {
     public static Bitmap BITMAP_PLAY = Bitmap.createBitmap(1, 1, Config.RGB_565);
 
     //Filename for saved attachments.
-    public String ATTACHMENT_FILE = "mms.";
+    private String ATTACHMENT_FILE = "mms.";
 
     //Cache size.
     private static int CAHCESIZE = 50;
@@ -68,16 +68,16 @@ public class Message {
     public static int INDEX_BODY = 6;
 
     //INDEX: subject.
-    public int INDEX_SUBJECT = 7;
+    private int INDEX_SUBJECT = 7;
 
     //INDEX: m_type.
-    public int INDEX_MTYPE = 8;
+    private int INDEX_MTYPE = 8;
 
     //INDEX: mid.
-    public int INDEX_MID = 1;
+    private int INDEX_MID = 1;
 
     //INDEX: content type.
-    public int INDEX_CT = 2;
+    private int INDEX_CT = 2;
 
     //Cursor's projection.
     public static String[] PROJECTION = { //
@@ -139,7 +139,7 @@ public class Message {
     private Uri URI_PARTS = Uri.parse("content://mms/part/");
 
     //Cursor's projection for parts.
-    public String[] PROJECTION_PARTS = { //
+    private String[] PROJECTION_PARTS = { //
             "_id", // 0
             "mid", // 1
             "ct", // 2
@@ -210,9 +210,12 @@ public class Message {
     //Is this message a MMS?
     private boolean isMms;
 
-     //context link Context to spawn the link SmileyParser.
+    public Message() {
+    }
+
+    //context link Context to spawn the link SmileyParser.
      //link Cursor to read the data
-    private Message(Context context, Cursor cursor) {
+    public Message(Context context, Cursor cursor) {
         id = cursor.getInt(INDEX_ID);  // GEtLong
         threadId = cursor.getLong(INDEX_THREADID);
         date = cursor.getLong(INDEX_DATE);

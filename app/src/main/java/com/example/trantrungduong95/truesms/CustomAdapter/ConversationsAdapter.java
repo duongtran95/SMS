@@ -8,7 +8,9 @@ import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.CallLog.Calls;
@@ -22,13 +24,16 @@ import com.example.trantrungduong95.truesms.MainActivity;
 import com.example.trantrungduong95.truesms.Model.Block;
 import com.example.trantrungduong95.truesms.Model.Contact;
 import com.example.trantrungduong95.truesms.Model.Conversation;
+import com.example.trantrungduong95.truesms.Model.Test;
 import com.example.trantrungduong95.truesms.Model.Wrapper.ContactsWrapper;
 import com.example.trantrungduong95.truesms.Presenter.Converter;
-import com.example.trantrungduong95.truesms.Presenter.SettingsOldActivity;
+import com.example.trantrungduong95.truesms.Presenter.Activity_.SettingsOldActivity;
 import com.example.trantrungduong95.truesms.Presenter.SmileyParser;
 import com.example.trantrungduong95.truesms.Presenter.SpamHandler;
 import com.example.trantrungduong95.truesms.R;
+import com.example.trantrungduong95.truesms.Receiver.SmsReceiver;
 
+import java.util.ArrayList;
 import java.util.List;
 
 // Adapter for the list of link Conversations.
@@ -84,7 +89,7 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
     private class BackgroundQueryHandler extends AsyncQueryHandler {
 
         //A helper class to help make handling asynchronous link ContentResolver queries easier.
-        public BackgroundQueryHandler(ContentResolver contentResolver) {
+        private BackgroundQueryHandler(ContentResolver contentResolver) {
             super(contentResolver);
         }
 
@@ -157,8 +162,6 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
         Conversation conv = Conversation.getConversation(context, cursor, true); // false
         Contact contact = conv.getContact();
 
-        //conv.getAllNumberConv(context);
-
         ViewHolder holder = (ViewHolder) view.getTag();
         if (holder == null) {
             holder = new ViewHolder();
@@ -203,17 +206,9 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
         } else {
             holder.ivPhoto.setVisibility(View.GONE);
         }
-        // body
-        CharSequence text = conv.getBody();
-
         if (isBlocked(contact.getNumber())) {
             view.setVisibility(View.GONE);
             view.getLayoutParams().height = 1;
-
-            MainActivity.conversationList.add(conv);
-            //holder.tvPerson.setText(contact.getDisplayName() + " " + context.getString(R.string.blacklist));
-        /*} else if (!isBlocked(contact.getNumber()) && SmsReceiver.filter(context, text.toString(), contact.getNumber())) {
-            holder.tvPerson.setText(contact.getDisplayName() + " " + context.getString(R.string.filter));*/
         } else {
             view.setVisibility(View.VISIBLE);
             view.getLayoutParams().height = 0;
@@ -227,6 +222,9 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
             holder.vRead.setVisibility(View.INVISIBLE);
         }
 
+        // body
+        CharSequence text = conv.getBody();
+
         if (text == null) {
             text = context.getString(R.string.mms_conversation);
         }
@@ -235,6 +233,14 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
         }
         if (showEmoticons) {
             text = SmileyParser.getInstance(context).addSmileySpans(text);
+        }
+        if (SmsReceiver.filter(context, text.toString(), contact.getNumber())) {
+            text = context.getString(R.string.filter_content);
+            holder.tvBody.setTextColor(Color.RED);
+        } else {
+            if (col != 0) {
+                holder.tvBody.setTextColor(col);
+            } else holder.tvBody.setTextColor(Color.GRAY);
         }
         holder.tvBody.setText(text);
 
@@ -252,7 +258,6 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
         }
 
     }
-
 
     public boolean isBlocked(String addr) {
         if (addr == null) {

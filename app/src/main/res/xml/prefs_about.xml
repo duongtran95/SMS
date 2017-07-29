@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="@string/about_">
+    <!--<PreferenceCategory android:title="@string/about_">
         <PreferenceScreen android:title="@string/about_"
-            android:summary="@string/about_hint">
+            android:summary="@string/about_a">
             <intent android:action="android.intent.action.MAIN"
-                android:targetPackage="com.example.trantrungduong95.truesms"
-                android:targetClass="com.example.trantrungduong95.truesms.Presenter.AboutActivity"/>
+                android:targetPackage="com.example.trantrungduong95.truesms.Presenter.Activity_"
+                android:targetClass="com.example.trantrungduong95.truesms.Presenter.Activity_.AboutActivity"/>
         </PreferenceScreen>
         <PreferenceScreen android:title="@string/feedback_"
                           android:summary="@string/feedback_hint">
             <intent android:action="android.intent.action.VIEW"
                     android:data="https://google.com"/>
         </PreferenceScreen>
-    </PreferenceCategory>
+    </PreferenceCategory>-->
 </PreferenceScreen>

@@ -251,7 +251,7 @@ public class ContactsWrapperNew extends ContactsWrapper {
         // mNumber
         String number = contact.mNumber;
         boolean changedNameAndNumber = false;
-        if (rid > 0L && (!loadOnly || number == null)) {
+        if (rid > 0 && (!loadOnly || number == null)) {
             Cursor cursor = cr.query(ContentUris.withAppendedId(CANONICAL_ADDRESS, rid),
                     null, null, null, null);
             if (cursor.moveToFirst()) {
@@ -267,7 +267,7 @@ public class ContactsWrapperNew extends ContactsWrapper {
         }
 
         // mName + mPersonId + mLookupKey + mPresenceState + mPresenceText
-        if (number != null && (!loadOnly || contact.mName == null || contact.mPersonId < 0L)) {
+        if (number != null && (!loadOnly || contact.mName == null || contact.mPersonId < 0)) {
             String n = PhoneNumberUtils.toCallerIDMinMatch(number);
             if (!TextUtils.isEmpty(n)) {
                 String selection = CALLER_ID_SELECTION.replace("+", n);
@@ -327,7 +327,7 @@ public class ContactsWrapperNew extends ContactsWrapper {
     private byte[] loadAvatarData(Context context, Contact contact) {
         byte[] data = null;
 
-        if (contact.mPersonId <= 0L || contact.mAvatar != null) {
+        if (contact.mPersonId <= 0 || contact.mAvatar != null) {
             return null;
         }
 

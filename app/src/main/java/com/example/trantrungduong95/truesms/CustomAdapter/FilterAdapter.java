@@ -8,12 +8,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.example.trantrungduong95.truesms.Model.Block;
 import com.example.trantrungduong95.truesms.Model.Filter;
-import com.example.trantrungduong95.truesms.Presenter.SettingsOldActivity;
+import com.example.trantrungduong95.truesms.Presenter.Activity_.SettingsOldActivity;
 import com.example.trantrungduong95.truesms.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -67,7 +65,7 @@ public class FilterAdapter extends ArrayAdapter<Filter> {
         if (col != 0) {
             holder.content.setTextColor(col);
         }
-        holder.stt.setText(String.valueOf(filter.getId_()));
+        //holder.stt.setText(String.valueOf(filter.getId_()));
         holder.content.setTextSize(24);
         if (type==0) {
             if (filter.getChar_()==null)

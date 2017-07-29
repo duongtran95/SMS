@@ -213,7 +213,7 @@ public class ContactsWrapperOld extends ContactsWrapper {
         // mNumber
         String number = contact.mNumber;
         boolean changedNameAndNumber = false;
-        if (rid > 0L && (!loadOnly || number == null)) {
+        if (rid > 0 && (!loadOnly || number == null)) {
             Cursor cursor = cr.query(ContentUris.withAppendedId(CANONICAL_ADDRESS, rid),
                     null, null, null, null);
             if (cursor.moveToFirst()) {
@@ -229,7 +229,7 @@ public class ContactsWrapperOld extends ContactsWrapper {
         }
 
         // mName + mPersonId + mLookupKey + mPresenceState
-        if (number != null && (!loadOnly || contact.mName == null || contact.mPersonId < 0L)) {
+        if (number != null && (!loadOnly || contact.mName == null || contact.mPersonId < 0)) {
             String n = PhoneNumberUtils.stripSeparators(number);
             if (!TextUtils.isEmpty(n)) {
                 boolean withpresence = true;
@@ -278,12 +278,12 @@ public class ContactsWrapperOld extends ContactsWrapper {
         // mPresenceText;
         contact.mPresenceText = null;
 
-        if (contact.mLookupKey == null && contact.mPersonId >= 0L) {
+        if (contact.mLookupKey == null && contact.mPersonId >= 0) {
             contact.mLookupKey = String.valueOf(contact.mPersonId);
             changed = true;
         }
 
-        if (loadAvatar && contact.mPersonId >= 0L) {
+        if (loadAvatar && contact.mPersonId >= 0) {
             // mAvatar[Data];
             Bitmap b = this.loadContactPhoto(context, this.getContactUri(contact.mPersonId));
             if (b == null) {

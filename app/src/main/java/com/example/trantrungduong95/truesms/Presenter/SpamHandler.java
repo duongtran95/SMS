@@ -14,10 +14,6 @@ import com.example.trantrungduong95.truesms.Model.Filter;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by ngomi_000 on 7/9/2017.
- */
-// todo loi db
 public class SpamHandler extends SQLiteOpenHelper {
     // All Static variables
     // Database Version
@@ -219,37 +215,37 @@ public class SpamHandler extends SQLiteOpenHelper {
     public void createDefaultFilterIfNeed()  {
         int count = this.getFiltersCount();
         if(count ==0 ) {
-            Filter filter17 = new Filter(0, null,"vip",null);
-            Filter filter18 = new Filter(1, null,"[Hot]",null);
-            Filter filter19 = new Filter(2, null,"[Vip]",null);
-            Filter filter20 = new Filter(3, null,"(vip)",null);
-            Filter filter21 = new Filter(4, null,"[QC]",null);
-            Filter filter22 = new Filter(5, null,"lg",null);
-            Filter filter23 = new Filter(6, null,"km",null);
-            Filter filter24 = new Filter(7, null,"hot",null);
-            Filter filter25 = new Filter(8, null,"kq",null);
-            Filter filter26 = new Filter(9, null,"sim",null);
-            Filter filter27 = new Filter(10, null,"l/h",null);
-            Filter filter28 = new Filter(11, null,"loto",null);
-            Filter filter29 = new Filter(12, null,"Tbao",null);
+            Filter filter = new Filter(0, null,"vip",null);
+            Filter filter1 = new Filter(1, null,"[Hot]",null);
+            Filter filter2 = new Filter(2, null,"[Vip]",null);
+            Filter filter3 = new Filter(3, null,"qc",null);
+            Filter filter4 = new Filter(4, null,"[QC]",null);
+            Filter filter5 = new Filter(5, null,"lh",null);
+            Filter filter6 = new Filter(6, null,"km",null);
+            Filter filter7 = new Filter(7, null,"hot",null);
+            Filter filter8 = new Filter(8, null,"kq",null);
+            Filter filter9 = new Filter(9, null,"sim",null);
+            Filter filter10 = new Filter(10, null,"l/h",null);
+            Filter filter11 = new Filter(11, null,"loto",null);
+            Filter filter12 = new Filter(12, null,"Tbao",null);
 
-            Filter filter = new Filter(13, null,null,"cho vay");
-            Filter filter1 = new Filter(14, null,null,"mua ban");
-            Filter filter2 = new Filter(15, null,null,"bán sim");
-            Filter filter3 = new Filter(16, null,null,"căn hộ");
-            Filter filter4 = new Filter(17, null,null,"chung cư");
-            Filter filter5 = new Filter(18, null,null,"trúng thưởng");
-            Filter filter6 = new Filter(19, null,null,"thông báo");
-            Filter filter7 = new Filter(20, null,null,"chúc mừng");
-            Filter filter8 = new Filter(21, null,null,"khuyến mại");
-            Filter filter9 = new Filter(22, null,null,"bán đất");
-            Filter filter10 = new Filter(23, null,null,"bán nhà");
-            Filter filter11 = new Filter(24, null,null,"miễn phí");
-            Filter filter12 = new Filter(25, null,null,"quảng cáo");
-            Filter filter13 = new Filter(26, null,null,"siêu hot");
-            Filter filter14 = new Filter(27, null,null,"siêu rẻ");
-            Filter filter15 = new Filter(28, null,null,"may mắn");
-            Filter filter16 = new Filter(29, null,null,"(miễn phí");
+            Filter filter13 = new Filter(13, null,null,"cho vay");
+            Filter filter14 = new Filter(14, null,null,"mua ban");
+            Filter filter15 = new Filter(15, null,null,"bán sim");
+            Filter filter16 = new Filter(16, null,null,"căn hộ");
+            Filter filter17 = new Filter(17, null,null,"chung cư");
+            Filter filter18 = new Filter(18, null,null,"trúng thưởng");
+            Filter filter19 = new Filter(19, null,null,"thông báo");
+            Filter filter20 = new Filter(20, null,null,"chúc mừng");
+            Filter filter21 = new Filter(21, null,null,"khuyến mại");
+            Filter filter22 = new Filter(22, null,null,"bán đất");
+            Filter filter23 = new Filter(23, null,null,"bán nhà");
+            Filter filter24 = new Filter(24, null,null,"miễn phí");
+            Filter filter25 = new Filter(25, null,null,"quảng cáo");
+            Filter filter26 = new Filter(26, null,null,"siêu hot");
+            Filter filter27 = new Filter(27, null,null,"siêu rẻ");
+            Filter filter28 = new Filter(28, null,null,"may mắn");
+            Filter filter29 = new Filter(29, null,null,"(miễn phí)");
 
             this.addFilter(filter);
             this.addFilter(filter1);
@@ -366,10 +362,10 @@ public class SpamHandler extends SQLiteOpenHelper {
         values.put(KEY_CHAR, filter.getChar_());
         values.put(KEY_WORD, filter.getWord_());
         values.put(KEY_PHARSE, filter.getPharse_());
-
         // updating row
-        return db.update(TABLE_FILTER, values, KEY_IDF + " = ?",
+        int editid = db.update(TABLE_FILTER, values, KEY_IDF + " = ?",
                 new String[]{String.valueOf(filter.getId_())});
+        return editid;
     }
 
     public void deleteFilter(Filter filter) {

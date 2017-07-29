@@ -57,14 +57,14 @@
                 <data android:mimeType="vnd.android-dir/mms-sms" />
             </intent-filter>
         </activity>
-        <activity android:name=".Presenter.SettingsOldActivity" />
-        <activity android:name=".Presenter.SettingsNewActivity" />
+        <activity android:name=".Presenter.Activity_.SettingsOldActivity" />
+        <activity android:name=".Presenter.Activity_.SettingsNewActivity" />
         <activity android:name=".Presenter.Activity_.SettingsAppearanceActivity" />
         <activity android:name=".Presenter.Activity_.SettingsBehaviorActivity" />
-        <activity android:name=".Presenter.SettingsNofActivity" />
+        <activity android:name=".Presenter.Activity_.SettingsNofActivity" />
         <activity
-            android:name=".Presenter.Activity_.AboutActivity"
-            android:theme="@style/Theme.TrueSMS"
+            android:name=".Presenter.AboutActivity"
+            android:theme="@style/Theme.TrueSMS_Light"
             />
         <activity
             android:name=".Presenter.Activity_.ConversationActivity"
@@ -74,9 +74,7 @@
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
-
                 <data
                     android:host="0"
                     android:mimeType="vnd.android-dir/mms-sms"

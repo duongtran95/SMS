@@ -9,10 +9,9 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.example.trantrungduong95.truesms.Model.Block;
-import com.example.trantrungduong95.truesms.Presenter.SettingsOldActivity;
+import com.example.trantrungduong95.truesms.Presenter.Activity_.SettingsOldActivity;
 import com.example.trantrungduong95.truesms.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

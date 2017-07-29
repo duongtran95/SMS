@@ -4,7 +4,8 @@
         <item
             android:id="@+id/item_delete_all_filter"
             android:title="@string/delete_all_filter"
-            android:icon="@drawable/item_blacklist"/>
+            app:showAsAction="ifRoom"
+            android:icon="@drawable/ic_delete"/>
         <item
             android:id="@+id/item_add_filter"
             android:title="@string/add_filter"

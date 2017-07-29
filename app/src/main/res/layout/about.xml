@@ -5,7 +5,30 @@
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:textSize="@dimen/edit_text_search"
         android:layout_height="wrap_content"
         android:text="@string/about_hint" />
+    <TextView
+        android:id="@+id/txtVersion"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:textSize="@dimen/edit_text_search"
+        android:layout_height="wrap_content"
+        android:text="@string/about_version" />
+    <TextView
+        android:id="@+id/txtAuthor"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:textSize="@dimen/edit_text_search"
+        android:layout_height="wrap_content"
+        android:text="@string/about_author" />
+    <TextView
+        android:id="@+id/txtDateFinish"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:textSize="@dimen/edit_text_search"
+        android:layout_height="wrap_content"
+        android:text="@string/about_date" />
 </LinearLayout>

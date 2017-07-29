@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.trantrungduong95.truesms.CustomAdapter.ConversationsAdapter;
+import com.example.trantrungduong95.truesms.CustomAdapter.FragmentBlacklistAdapter;
 import com.example.trantrungduong95.truesms.MainActivity;
 import com.example.trantrungduong95.truesms.Model.Conversation;
 

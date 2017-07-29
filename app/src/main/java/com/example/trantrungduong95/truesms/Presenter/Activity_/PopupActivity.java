@@ -1,13 +1,16 @@
 package com.example.trantrungduong95.truesms.Presenter.Activity_;
 
 import android.app.PendingIntent;
+import android.content.ClipboardManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.CallLog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.telephony.SmsManager;
@@ -24,8 +27,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-import com.example.trantrungduong95.truesms.CustomAdapter.MobilePhoneAdapter;
+import com.example.trantrungduong95.truesms.CustomAdapter.PhoneAdapter;
+import com.example.trantrungduong95.truesms.MainActivity;
+import com.example.trantrungduong95.truesms.Model.Conversation;
 import com.example.trantrungduong95.truesms.Model.Message;
+import com.example.trantrungduong95.truesms.Presenter.Converter;
 import com.example.trantrungduong95.truesms.R;
 import com.example.trantrungduong95.truesms.Receiver.SmsReceiver;
 
@@ -40,6 +46,12 @@ public class PopupActivity extends AppCompatActivity implements View.OnClickList
     private String phoneNo, text;
     private boolean flag = false;
 
+    //copy Clipboard
+    @SuppressWarnings("deprecation")
+    private ClipboardManager clipboard;
+
+    private Conversation conv;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +61,10 @@ public class PopupActivity extends AppCompatActivity implements View.OnClickList
         Bundle extras = getIntent().getExtras();
         String body = extras.getString("body");
         phoneNo = extras.getString("addr");
+
+        // Conversation
+        conv = getConvFilter();
+
         // Content popup
         content = (TextView) findViewById(R.id.content_popup);
         content.setText(body);
@@ -56,6 +72,7 @@ public class PopupActivity extends AppCompatActivity implements View.OnClickList
         count_reply = (TextView) findViewById(R.id.content_count);
         reply_compose = (EditText) findViewById(R.id.compose_reply_text);
 
+        clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         reply_compose.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -78,6 +95,9 @@ public class PopupActivity extends AppCompatActivity implements View.OnClickList
         vSend.setOnClickListener(this);
         View vAttachment = findViewById(R.id.compose_icon);
         vAttachment.setOnClickListener(this);
+        View vPasteContent = findViewById(R.id.paste_content);
+        vPasteContent.setOnClickListener(this);
+
     }
     private void reloadToolbar() {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -90,24 +110,82 @@ public class PopupActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
+    public Conversation getConvFilter() {
+        Conversation conv = new Conversation();
+        Cursor c = null;
+        try {
+            c = this.getContentResolver().query(Conversation.URI_SIMPLE, Conversation.PROJECTION_SIMPLE, Conversation.COUNT + ">0", null, null);
+        } catch (Exception e) {
+            Log.e("error getting conv", e + "");
+        }
+
+        int totalSMS = 0;
+        if (c != null) {
+            totalSMS = c.getCount();
+        }
+        if (c != null && c.moveToFirst()) {
+            for (int i = 0; i < totalSMS; i++) {
+                conv = Conversation.getConversation(this, c, true);
+                      if (conv.getContact().getNumber().equals(phoneNo)) {
+                          return conv;
+                      }
+                c.moveToNext();
+            }
+            c.close();
+        }
+        return conv;
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.popup, menu);
         return true;
     }
-//Todo On click options menu
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_open_thread:
+                startActivity(MainActivity.getComposeIntent(this, phoneNo));
                 return true;
             case R.id.menu_call:
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:" + phoneNo));
+                startActivity(intent);
                 return true;
             case R.id.menu_delete:
+                MainActivity.deleteMessages(this, getUriSMS().getUri(),
+                        R.string.delete_message_, R.string.delete_message_question, this);
+
                 return true;
             case R.id.menu_copy:
+                TextView pasteC = (TextView) findViewById(R.id.paste_content);
+                pasteC.setVisibility(View.VISIBLE);
+                ClipboardManager cm = (ClipboardManager) this
+                        .getSystemService(Context.CLIPBOARD_SERVICE);
+                if (SettingsOldActivity.decodeDecimalNCR(this)) {
+                    cm.setText(Converter.convertDecNCR2Char(getUriSMS().getBody()));
+                } else {
+                    cm.setText(getUriSMS().getBody());
+                }
                 return true;
             case R.id.menu_forward:
+                int resId;
+                resId = R.string.forward_;
+                intent = MainActivity.getComposeIntent(this, null);
+                CharSequence text;
+                if (SettingsOldActivity.decodeDecimalNCR(this)) {
+
+                    text = Converter.convertDecNCR2Char(content.getText().toString());
+                } else {
+                    text = content.getText().toString();
+                }
+                intent.putExtra(Intent.EXTRA_TEXT, text);
+                intent.putExtra("sms_body", text);
+                startActivity(Intent.createChooser(intent, this.getString(resId)));
+                return true;
+
+            case R.id.menu_close:
+                finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -134,22 +212,52 @@ public class PopupActivity extends AppCompatActivity implements View.OnClickList
                     flag = false;
                 }
                 return;
+            case R.id.paste_content:
+                TextView pasteC = (TextView) findViewById(R.id.paste_content);
+                pasteC.setVisibility(View.INVISIBLE);
+
+                final CharSequence content = clipboard.getText();
+                reply_compose.setText(content);
+                return;
             default:
                 break;
         }
     }
 
-    /**
-     * Send a message.
-     *
-     * @return true, if message was sent
-     */
+    private Message getUriSMS(){
+        Message message = new Message();
+        Uri URI_SMS = Uri.parse("content://sms/");
+        String SORT = CallLog.Calls.DATE + " DESC";
+        Cursor c = null;
+        try {
+            c = getContentResolver().query
+                    (URI_SMS, Message.PROJECTION, Message.SELECTION_READ_UNREAD, Message.SELECTION_UNREAD, SORT);
+        } catch (Exception e) {
+            Log.e("error getting conv", e + "");
+        }
+        int totalSMS = 0;
+        if (c != null) {
+            totalSMS = c.getCount();
+        }
+        if (c != null && c.moveToFirst()) {
+            for (int i = 0; i < totalSMS; i++) {
+                message = Message.getMessage(this,c);
+                if (message.getBody().equals(conv.getBody())) {
+                    return message;
+                }
+                c.moveToNext();
+            }
+            c.close();
+        }
+        return message;
+    }
+
     public boolean send() {
         if (TextUtils.isEmpty(phoneNo) || TextUtils.isEmpty(text)) {
             return false;
         }
         for (String r : phoneNo.split(",")) {
-            r = MobilePhoneAdapter.cleanRecipient(r);
+            r = PhoneAdapter.cleanRecipient(r);
             if (TextUtils.isEmpty(r)) {
                 Log.w("skip empty recipient: ", r);
                 continue;
@@ -158,11 +266,13 @@ public class PopupActivity extends AppCompatActivity implements View.OnClickList
                 send(r, text);
             } catch (Exception e) {
                 Log.e("unable to send msg: ", phoneNo, e);
-                Toast.makeText(this, R.string.error_sending_failed, Toast.LENGTH_LONG).show();
+                //Toast.makeText(this, R.string.error_sending_failed, Toast.LENGTH_LONG).show();
             }
         }
+        //true, if message was sent
         return true;
     }
+
     private void send(String recipient, String message) {
         Log.d("text: ", recipient);
 
@@ -219,5 +329,6 @@ public class PopupActivity extends AppCompatActivity implements View.OnClickList
             }
         }
     }
+
 }
 

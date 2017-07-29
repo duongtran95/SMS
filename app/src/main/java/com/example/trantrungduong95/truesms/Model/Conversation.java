@@ -76,9 +76,18 @@ public class Conversation {
 
     private int count = -1;
 
-    private long lastUpdate = 0L;
+    private long lastUpdate = 0;
 
     public Conversation() {
+    }
+
+    public Conversation( int threadId, Contact contact, long date, String body, int read, int count) {
+        this.threadId = threadId;
+        this.contact = contact;
+        this.date = date;
+        this.body = body;
+        this.read = read;
+        this.count = count;
     }
 
     //Default constructor. Sync fetch of information

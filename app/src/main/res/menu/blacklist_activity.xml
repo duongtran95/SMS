@@ -10,5 +10,4 @@
         android:id="@+id/item_settings_blacklist_filterd"
         android:title="@string/settings"
         android:icon="@android:drawable/ic_menu_preferences"/>
-
 </menu>

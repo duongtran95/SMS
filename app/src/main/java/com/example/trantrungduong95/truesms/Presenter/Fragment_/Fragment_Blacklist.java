@@ -2,10 +2,12 @@ package com.example.trantrungduong95.truesms.Presenter.Fragment_;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.InputFilter;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,20 +20,17 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.trantrungduong95.truesms.CustomAdapter.BlockAdapter;
-import com.example.trantrungduong95.truesms.CustomAdapter.ConversationsAdapter;
-import com.example.trantrungduong95.truesms.MainActivity;
+import com.example.trantrungduong95.truesms.CustomAdapter.FragmentBlacklistAdapter;
 import com.example.trantrungduong95.truesms.Model.Block;
+import com.example.trantrungduong95.truesms.Model.Conversation;
 import com.example.trantrungduong95.truesms.Presenter.Activity_.BlacklistActivity;
 import com.example.trantrungduong95.truesms.R;
 
-
-/**
- * Created by ngomi_000 on 6/1/2017.
- */
+import java.util.ArrayList;
 
 public class Fragment_Blacklist extends Fragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
     private ListView listView;
-    private BlockAdapter blockAdapter;
+    public static BlockAdapter blockAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -67,7 +66,6 @@ public class Fragment_Blacklist extends Fragment implements AdapterView.OnItemCl
                 BlacklistActivity activity = (BlacklistActivity) getActivity();
                 activity.update_frg_1(activity.blockList.get(position).getNumber());
                 recover_msg(position);
-
             }
         });
         builder.show();
@@ -93,6 +91,7 @@ public class Fragment_Blacklist extends Fragment implements AdapterView.OnItemCl
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         getActivity().getMenuInflater().inflate(R.menu.blacklist, menu);
+        menu.removeItem(R.id.action_search);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -124,6 +123,16 @@ public class Fragment_Blacklist extends Fragment implements AdapterView.OnItemCl
                             ((BlacklistActivity) getActivity()).blockList.add(block);
                             blockAdapter.notifyDataSetChanged();
 
+                            if (isExits(editText.getText().toString()) != null) {
+                                Conversation a = isExits(editText.getText().toString());
+                                Fragment_Conv_Blacklist.conversationArrayList.clear();
+
+                                Fragment_Conv_Blacklist.conversationArrayList = getConvBlacklist();
+                                Fragment_Conv_Blacklist.fragmentBlacklistAdapter = new FragmentBlacklistAdapter
+                                        (getActivity(), R.layout.conversationlist_item, Fragment_Conv_Blacklist.conversationArrayList);
+                                Fragment_Conv_Blacklist.listView.setAdapter(Fragment_Conv_Blacklist.fragmentBlacklistAdapter);
+                            }
+
                         } else
                             Toast.makeText(getActivity(), getActivity().getString(R.string.non_empty), Toast.LENGTH_SHORT).show();
 
@@ -131,24 +140,84 @@ public class Fragment_Blacklist extends Fragment implements AdapterView.OnItemCl
                 });
                 builder.show();
                 return true;
-            case R.id.item_restore_blacklist: // start settings activity
-                AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
-                builder1.setTitle(getActivity().getString(R.string.title_restore));
-                builder1.setMessage(getActivity().getString(R.string.message_restore));
-                builder1.setNegativeButton(android.R.string.no, null);
-                builder1.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(final DialogInterface dialog, final int which) {
-                        ((BlacklistActivity) getActivity()).db.deleteAllBlocks();
-                        ((BlacklistActivity) getActivity()).blockList = ((BlacklistActivity) getActivity()).db.getAllBlocks();
-                        ((BlacklistActivity) getActivity()).blockList.clear();
-                        blockAdapter.notifyDataSetChanged();
-                    }
-                });
-                builder1.show();
-                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    //Update mailbox block when added.
+    public Conversation isExits(String addr) {
+        if (addr == null) {
+            return null;
+        }
+        for (Conversation conv : getConv()) {
+            if (conv.getContact().getNumber().equals(addr)) {
+                return conv;
+            }
+        }
+        return null;
+    }
+
+    public ArrayList<Conversation> getConv() {
+        ArrayList<Conversation> conversationArrayList = new ArrayList<>();
+        Cursor c = null;
+        try {
+            c = getActivity().getContentResolver().query(Conversation.URI_SIMPLE, Conversation.PROJECTION_SIMPLE, Conversation.COUNT + ">0", null, null);
+        } catch (Exception e) {
+            Log.e("error getting conv", e + "");
+        }
+
+        int totalSMS = 0;
+        if (c != null) {
+            totalSMS = c.getCount();
+        }
+        if (c != null && c.moveToFirst()) {
+            for (int i = 0; i < totalSMS; i++) {
+                Conversation conv = Conversation.getConversation(getActivity(), c, true);
+                conversationArrayList.add(conv);
+                c.moveToNext();
+            }
+            c.close();
+        }
+        return conversationArrayList;
+    }
+
+    public ArrayList<Conversation> getConvBlacklist(/*ArrayList<Conversation> convList*/) {
+        ArrayList<Conversation> convList = new ArrayList<>();
+        Cursor c = null;
+        try {
+            c = getActivity().getContentResolver().query(Conversation.URI_SIMPLE, Conversation.PROJECTION_SIMPLE, Conversation.COUNT + ">0", null, null);
+        } catch (Exception e) {
+            Log.e("error getting conv", e + "");
+        }
+
+        int totalSMS = 0;
+        if (c != null) {
+            totalSMS = c.getCount();
+        }
+        if (c != null && c.moveToFirst()) {
+            for (int i = 0; i < totalSMS; i++) {
+                Conversation conv = Conversation.getConversation(getActivity(), c, true);
+                if (isBlocked(conv.getContact().getNumber())) {
+                    convList.add(conv);
+                }
+                c.moveToNext();
+            }
+            c.close();
+        }
+        return convList;
+    }
+
+    public boolean isBlocked(String addr) {
+        if (addr == null) {
+            return false;
+        }
+        for (Block aBlacklist : ((BlacklistActivity) getActivity()).blockList) {
+            if (addr.equals(aBlacklist.getNumber())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

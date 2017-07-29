@@ -11,6 +11,7 @@ import android.database.MergeCursor;
 import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -25,11 +26,13 @@ import com.example.trantrungduong95.truesms.Model.Contact;
 import com.example.trantrungduong95.truesms.Model.Conversation;
 import com.example.trantrungduong95.truesms.Model.Message;
 import com.example.trantrungduong95.truesms.Presenter.Activity_.ConversationActivity;
+import com.example.trantrungduong95.truesms.Presenter.Activity_.FilterActivity;
 import com.example.trantrungduong95.truesms.Presenter.Converter;
 import com.example.trantrungduong95.truesms.Presenter.MessageProvider;
-import com.example.trantrungduong95.truesms.Presenter.SettingsOldActivity;
+import com.example.trantrungduong95.truesms.Presenter.Activity_.SettingsOldActivity;
 import com.example.trantrungduong95.truesms.Presenter.SmileyParser;
 import com.example.trantrungduong95.truesms.R;
+import com.example.trantrungduong95.truesms.Receiver.SmsReceiver;
 
 // Adapter for the list of link Conversation.
 public class ConversationAdapter extends ResourceCursorAdapter {
@@ -84,11 +87,16 @@ public class ConversationAdapter extends ResourceCursorAdapter {
         Button btnDownload;
 
         Button btnImport;
+
+        Button btnShow;
     }
 
-    public ConversationAdapter(ConversationActivity c, Uri uri) {
+    private boolean flag1;
+
+    public ConversationAdapter(ConversationActivity c, Uri uri,boolean flag) {
         super(c, R.layout.conversation_item, getCursor(c.getContentResolver(), uri), true);
         mActivity = c;
+        flag1 = flag;
         backgroundDrawableIn = SettingsOldActivity.getBubblesIn(c);
         backgroundDrawableOut = SettingsOldActivity.getBubblesOut(c);
         textSize = SettingsOldActivity.getTextsize(c);
@@ -168,13 +176,14 @@ public class ConversationAdapter extends ResourceCursorAdapter {
             holder.ivInOut = (ImageView) view.findViewById(R.id.inout);
             holder.btnDownload = (Button) view.findViewById(R.id.btn_download_msg);
             holder.btnImport = (Button) view.findViewById(R.id.btn_import_contact);
+            holder.btnShow = (Button) view.findViewById(R.id.btn_show);
             view.setTag(holder);
         }
 
         if (textSize > 0) {
             holder.tvBody.setTextSize(textSize);
         }
-        int col = textColor;
+        final int col = textColor;
         if (col != 0) {
             holder.tvPerson.setTextColor(col);
             holder.tvBody.setTextColor(col);
@@ -276,10 +285,44 @@ public class ConversationAdapter extends ResourceCursorAdapter {
         } else {
             holder.btnDownload.setVisibility(View.GONE);
         }
+
         if (text == null) {
             holder.tvBody.setVisibility(View.INVISIBLE);
             holder.btnImport.setVisibility(View.GONE);
-        } else {
+        }
+        else if (flag1 &&!SmsReceiver.filter(context, text.toString(), message.getAddress(context))){
+            view.setVisibility(View.GONE);
+            view.getLayoutParams().height = 1;
+
+        }
+        else if (SmsReceiver.filter(context, text.toString(), message.getAddress(context))) {
+            holder.tvBody.setText(context.getString(R.string.filter_content));
+            holder.btnShow.setVisibility(View.VISIBLE);
+            final String t = text.toString();
+            final ViewHolder finalHolder = holder;
+            holder.btnShow.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    finalHolder.btnShow.setText(context.getString(R.string.goFilterd));
+                    finalHolder.tvBody.setText(t);
+                    finalHolder.btnShow.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(context, FilterActivity.class);
+                            context.startActivity(intent);
+                        }
+                    });
+                }
+            });
+            if (flag1) {
+                view.setVisibility(View.VISIBLE);
+                view.getLayoutParams().height = 0;
+                holder.tvBody.setText(t);
+                holder.btnShow.setVisibility(View.GONE);
+            }
+        }
+        else {
+            holder.btnShow.setVisibility(View.GONE);
             if (convertNCR) {
                 text = Converter.convertDecNCR2Char(text);
             }
@@ -303,8 +346,7 @@ public class ConversationAdapter extends ResourceCursorAdapter {
                             context.startActivity(i);
                         } catch (ActivityNotFoundException e) {
                             //activity not found (text/x-vcard)
-                            Toast.makeText(context, "Activity not found: text/x-vcard",
-                                    Toast.LENGTH_LONG).show();
+                            Toast.makeText(context, "Activity not found: text/x-vcard", Toast.LENGTH_LONG).show();
                         }
                     }
                 });

@@ -13,6 +13,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
@@ -21,8 +22,10 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
+import android.provider.CallLog;
 import android.provider.CallLog.Calls;
 import android.provider.ContactsContract;
 import android.provider.Telephony;
@@ -34,17 +37,23 @@ import android.util.TypedValue;
 import android.widget.Toast;
 
 import com.example.trantrungduong95.truesms.BuildConfig;
+import com.example.trantrungduong95.truesms.CustomAdapter.FragmentBlacklistAdapter;
+import com.example.trantrungduong95.truesms.CustomAdapter.FragmentFilterdAdapter;
+import com.example.trantrungduong95.truesms.Model.Block;
 import com.example.trantrungduong95.truesms.Model.Contact;
 import com.example.trantrungduong95.truesms.Model.Filter;
+import com.example.trantrungduong95.truesms.Model.Test;
 import com.example.trantrungduong95.truesms.Presenter.Activity_.DefaultAndPermission;
 import com.example.trantrungduong95.truesms.MainActivity;
 import com.example.trantrungduong95.truesms.Model.Conversation;
 import com.example.trantrungduong95.truesms.Model.Message;
 import com.example.trantrungduong95.truesms.Presenter.Activity_.ComposeActivity;
 import com.example.trantrungduong95.truesms.Presenter.Activity_.ConversationActivity;
+import com.example.trantrungduong95.truesms.Presenter.Fragment_.Fragment_Conv_Blacklist;
+import com.example.trantrungduong95.truesms.Presenter.Fragment_.Fragment_Conv_Filter;
 import com.example.trantrungduong95.truesms.Presenter.NofReceiver;
 import com.example.trantrungduong95.truesms.Presenter.Activity_.PopupActivity;
-import com.example.trantrungduong95.truesms.Presenter.SettingsOldActivity;
+import com.example.trantrungduong95.truesms.Presenter.Activity_.SettingsOldActivity;
 import com.example.trantrungduong95.truesms.Presenter.SpamHandler;
 import com.example.trantrungduong95.truesms.Presenter.WidgetProvider;
 import com.example.trantrungduong95.truesms.Presenter.isRun;
@@ -52,7 +61,6 @@ import com.example.trantrungduong95.truesms.R;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -105,13 +113,15 @@ public class SmsReceiver extends BroadcastReceiver {
     private static int NOTIFICATION_ID_NEW = 1;
 
     //Last unread message's date.
-    private static long lastUnreadDate = 0L;
+    private static long lastUnreadDate = 0;
 
     //Last unread message's body.
     private static String lastUnreadBody = null;
 
     //Red lights.
     public static int RED = 0xFFFF0000;
+
+    public static String sdt;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -135,7 +145,7 @@ public class SmsReceiver extends BroadcastReceiver {
         PowerManager.WakeLock wakelock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
         wakelock.acquire();
         //"got wakelock"
-        Log.d("got intent: ", action);
+        Log.d("got intent:",action);
         try {
             Log.d("sleep", SLEEP+"");
             Thread.sleep(SLEEP);
@@ -144,6 +154,8 @@ public class SmsReceiver extends BroadcastReceiver {
             e.printStackTrace();
         }
         String text;
+        String addr;
+
         if (ComposeActivity.MESSAGE_SENT_ACTION.equals(action)) {
             handleSent(context, intent, receiver.getResultCode());
         } else {
@@ -160,6 +172,7 @@ public class SmsReceiver extends BroadcastReceiver {
                     smsMessage[i] = SmsMessage.createFromPdu((byte[]) messages[i]);
                 }
                 text = null;
+                addr = null;
                 if (lengthMsg > 0) {
                     // concatenate multipart SMS body
                     StringBuilder sbt = new StringBuilder();
@@ -167,13 +180,17 @@ public class SmsReceiver extends BroadcastReceiver {
                         sbt.append(smsMessage[i].getMessageBody());
                     }
                     text = sbt.toString();
-                    String addr = smsMessage[0].getDisplayOriginatingAddress();
 
-                    //todo filter
-                    //filter
+                    //String addr = smsMessage[0].getDisplayOriginatingAddress();
+                    addr = smsMessage[0].getDisplayOriginatingAddress();
+                    sdt = addr;
+
+/*                    //filter
                     if (filter(context,text,addr)){
-                        Toast.makeText(context, context.getString(R.string.filterd)+"", Toast.LENGTH_SHORT).show();
-                    }
+                        //silent = true;
+                        //Toast.makeText(context, context.getString(R.string.filterd)+"", Toast.LENGTH_SHORT).show();
+
+                    }*/
 
                     //todo popup
                     //popup
@@ -200,9 +217,8 @@ public class SmsReceiver extends BroadcastReceiver {
                     SpamHandler db =  new SpamHandler(context);
                     if (db.isBlacklisted(smsMessage[0].getOriginatingAddress())) {
                         Log.d("Message from ", addr+ " blocked.");
-                        //Toast.makeText(context, context.getString(R.string.block)+"", Toast.LENGTH_SHORT).show();
-
                         silent = true;
+                        //Toast.makeText(context, context.getString(R.string.block)+"", Toast.LENGTH_SHORT).show();
                     } else {
                         Log.d("Message from ", addr+ " NOT blocked.");
                     }
@@ -214,22 +230,73 @@ public class SmsReceiver extends BroadcastReceiver {
                         values.put("body", text);
                         context.getContentResolver().insert(Uri.parse("content://sms/inbox"), values);
                         Log.d("Insert SMS into db: ", addr+ ", "+ text);
+
+                        // Update new messages in the block mailboxes
+                        if (db.isBlacklisted(smsMessage[0].getOriginatingAddress())) {
+                            if (Fragment_Conv_Blacklist.listView != null) {
+                                Fragment_Conv_Blacklist.conversationArrayList.clear();
+                                Fragment_Conv_Blacklist.conversationArrayList = SmsReceiver.getConvBlacklist(context);
+                                Fragment_Conv_Blacklist.fragmentBlacklistAdapter = new FragmentBlacklistAdapter
+                                        (context, R.layout.conversationlist_item, Fragment_Conv_Blacklist.conversationArrayList);
+                                Fragment_Conv_Blacklist.listView.setAdapter(Fragment_Conv_Blacklist.fragmentBlacklistAdapter);
+                            }
+                        }
+
+                        // Update new messages in the filter mailboxes
+                        if (filter(context,text,smsMessage[0].getOriginatingAddress())){
+                            if (Fragment_Conv_Filter.listView != null) {
+                                Fragment_Conv_Filter.conversationArrayList.clear();
+                                Fragment_Conv_Filter.conversationArrayList = SmsReceiver.getConvFilter(context);
+                                Fragment_Conv_Filter.fragmentFilterdAdapter = new FragmentFilterdAdapter
+                                        (context,R.layout.conversationlist_item, Fragment_Conv_Filter.conversationArrayList);
+                                Fragment_Conv_Filter.listView.setAdapter(Fragment_Conv_Filter.fragmentFilterdAdapter);
+                            }
+                        }
                     }
                 }
                 updateNotificationsWithNewText(context, text, silent);
             } else if (ACTION_MMS_OLD.equals(action) || ACTION_MMS_MEW.equals(action)) {
                 text = MMS_BODY;
                 // TODO API19+ MMS code
-                updateNotificationsWithNewText(context, text, silent);
+                updateNotificationsWithNewText(context, text, /*silent*/true);
             }
         }
         wakelock.release();
         //wakelock released
     }
 
+    private static Message getUriSMS(Context context, String text){
+        Message message = new Message();
+        Uri URI_SMS = Uri.parse("content://sms/");
+        String SORT = CallLog.Calls.DATE + " DESC";
+        Cursor c = null;
+        try {
+            c = context.getContentResolver().query
+                    (URI_SMS, Message.PROJECTION, Message.SELECTION_READ_UNREAD, Message.SELECTION_UNREAD, SORT);
+        } catch (Exception e) {
+            Log.e("error getting conv", e + "");
+        }
+        int totalSMS = 0;
+        if (c != null) {
+            totalSMS = c.getCount();
+        }
+        if (c != null && c.moveToFirst()) {
+            for (int i = 0; i < totalSMS; i++) {
+                message = Message.getMessage(context,c);
+                if (message.getBody().equals(text)) {
+                    return message;
+                }
+                c.moveToNext();
+            }
+            c.close();
+        }
+        return message;
+    }
+
     private static void updateNotificationsWithNewText(Context context, String text, boolean silent) {
         if (silent) {
             //ignore notifications for silent text
+            MainActivity.markRead(context,getUriSMS(context,text).getUri(),1);
             return;
         }
 
@@ -252,22 +319,11 @@ public class SmsReceiver extends BroadcastReceiver {
         }
     }
 
-    /**
-     * Get unread SMS.
-     *
-     * @param cr   {@link ContentResolver} to query
-     * @param text text of the last assumed unread message
-     * @return [thread id (-1 if there are more), number of unread messages (-1 if text does not
-     * match newest message)]
-     */
-    private static int[] getUnreadSMS(ContentResolver cr, String text) {
+    //thread id (-1 if there are more), number of unread messages (-1 if text does not* match newest message)
+    private static int[] getUnreadSMS(ContentResolver cr, String text,Context context) {
         Log.d("getUnreadSMS(cr, ", text+ ")");
         Cursor cursor = cr.query(URI_SMS, Message.PROJECTION, Message.SELECTION_READ_UNREAD, Message.SELECTION_UNREAD, SORT);
-
-        //Cursor cursor = cr.query(URI_SMS, null, null, null, null);
-
-        if (cursor == null || cursor.isClosed() || cursor.getCount() == 0 || !cursor
-                .moveToFirst()) {
+        if (cursor == null || cursor.isClosed() || cursor.getCount() == 0 || !cursor.moveToFirst()) {
             if (text != null) { // try again!
                 if (cursor != null && !cursor.isClosed()) {
                     cursor.close();
@@ -293,6 +349,7 @@ public class SmsReceiver extends BroadcastReceiver {
             lastUnreadBody = t;
         }
         int tid = cursor.getInt(Message.INDEX_THREADID);
+
         while (cursor.moveToNext() && tid > -1) {
             // check if following messages are from the same thread
             if (tid != cursor.getInt(Message.INDEX_THREADID)) {
@@ -300,25 +357,23 @@ public class SmsReceiver extends BroadcastReceiver {
             }
         }
         int count = cursor.getCount();
+
+        if (sdt !=null && isBlocked(sdt,context)) {
+            count--;
+            Log.e("23455",count+"");
+        }
+        //todo handle nof sms blocked
         if (!cursor.isClosed()) {
             cursor.close();
         }
         return new int[]{tid, count};
     }
 
-    /**
-     * Get unread MMS.
-     *
-     * @param cr   {@link ContentResolver} to query
-     * @param text text of the last assumed unread message
-     * @return [thread id (-1 if there are more), number of unread messages]
-     */
-    private static int[] getUnreadMMS(ContentResolver cr, String text) {
+    //thread id (-1 if there are more), number of unread messages
+    private static int[] getUnreadMMS(ContentResolver cr, String text, Context context) {
         Log.d("getUnreadMMS(cr, ", text+ ")");
-        Cursor cursor = cr.query(URI_MMS, Message.PROJECTION_READ, Message.SELECTION_READ_UNREAD,
-                Message.SELECTION_UNREAD, null);
-        if (cursor == null || cursor.isClosed() || cursor.getCount() == 0 || !cursor
-                .moveToFirst()) {
+        Cursor cursor = cr.query(URI_MMS, Message.PROJECTION_READ, Message.SELECTION_READ_UNREAD, Message.SELECTION_UNREAD, null);
+        if (cursor == null || cursor.isClosed() || cursor.getCount() == 0 || !cursor.moveToFirst()) {
             if (MMS_BODY.equals(text)) {
                 if (cursor != null && !cursor.isClosed()) {
                     cursor.close();
@@ -347,35 +402,32 @@ public class SmsReceiver extends BroadcastReceiver {
             }
         }
         int count = cursor.getCount();
+        if (sdt !=null && isBlocked(sdt,context)) {
+            count--;
+            Log.e("23455",count+"");
+        }
         if (!cursor.isClosed()) {
             cursor.close();
         }
         return new int[]{tid, count};
     }
 
-    /**
-     * Get unread messages (MMS and SMS).
-     *
-     * @param cr   {@link ContentResolver} to query
-     * @param text text of the last assumed unread message
-     * @return [thread id (-1 if there are more), number of unread messages (-1 if text does not
-     * match newest message)]
-     */
-    private static int[] getUnread(ContentResolver cr, String text) {
+    //thread id (-1 if there are more), number of unread messages (-1 if text does not* match newest message
+    private static int[] getUnread(ContentResolver cr, String text, Context context) {
         try {
             Log.d("getUnread(cr, ", text+ ")");
             lastUnreadBody = null;
-            lastUnreadDate = 0L;
+            lastUnreadDate = 0;
             String t = text;
             if (MMS_BODY.equals(t)) {
                 t = null;
             }
-            int[] retSMS = getUnreadSMS(cr, t);
+            int[] retSMS = getUnreadSMS(cr, t,context);
             if (retSMS[ID_COUNT] == -1) {
                 // return to retry
                 return new int[]{-1, -1};
             }
-            int[] retMMS = getUnreadMMS(cr, text);
+            int[] retMMS = getUnreadMMS(cr, text,context);
             if (retMMS[ID_COUNT] == -1) {
                 // return to retry
                 return new int[]{-1, -1};
@@ -394,15 +446,9 @@ public class SmsReceiver extends BroadcastReceiver {
         }
     }
 
-    /**
-     * Update new message {@link Notification}.
-     *
-     * @param context {@link Context}
-     * @param text    text of the last assumed unread message
-     * @return number of unread messages
-     */
+    //Update new message
     public static int updateNewMessageNotification(Context context, String text) {
-        Log.d("updNewMsgNoti(", context+ ","+ text+ ")");
+        Log.d("updNewMsgNof(", context+ ","+ text+ ")");
         NotificationManager mNotificationMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean enableNotifications = prefs.getBoolean(SettingsOldActivity.PREFS_NOTIFICATION_ENABLE, true);
@@ -412,19 +458,17 @@ public class SmsReceiver extends BroadcastReceiver {
             mNotificationMgr.cancelAll();
             //no notification needed!
         }
-        int[] status = getUnread(context.getContentResolver(), text);
+        int[] status = getUnread(context.getContentResolver(), text,context);
         int tcount = status[ID_COUNT];
         int tid = status[ID_TID];
-
-        // FIXME l is always -1..
-        Log.d( "l: ", tcount+"");
-        if (tcount < 0) {
+        if (tcount < 0 ) {
             return tcount;
         }
 
         if (enableNotifications && (text != null || tcount == 0)) {
             mNotificationMgr.cancel(NOTIFICATION_ID_NEW);
         }
+
         Uri uri;
         PendingIntent pIntent;
         if (tcount == 0) {
@@ -440,7 +484,6 @@ public class SmsReceiver extends BroadcastReceiver {
                 uri = Uri.parse(ConversationActivity.URI + tid);
                 i = new Intent(Intent.ACTION_VIEW, uri, context, ConversationActivity.class);
                 pIntent = PendingIntent.getActivity(context, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
-
                 if (enableNotifications) {
                     Conversation conv = Conversation.getConversation(context, tid, true);
                     if (conv != null) {
@@ -486,7 +529,7 @@ public class SmsReceiver extends BroadcastReceiver {
                             nb.setContentText(context.getString(R.string.new_messages, tcount));
                             nb.setContentIntent(pIntent);
                         }
-                        if (showPhoto )// just for the speeeeed)
+                        if (showPhoto )// just for the speeeeed
                         {
                             try {
                                 conv.getContact().update(context, false, true);
@@ -560,7 +603,10 @@ public class SmsReceiver extends BroadcastReceiver {
         }
         Log.d("return ", tcount+ " (2)");
         //noinspection ConstantConditions
-        AppWidgetManager.getInstance(context).updateAppWidget(new ComponentName(context, WidgetProvider.class), WidgetProvider.getRemoteViews(context, tcount, pIntent));
+        AppWidgetManager.getInstance(context).updateAppWidget
+                (new ComponentName(context, WidgetProvider.class), WidgetProvider.getRemoteViews(context, tcount, pIntent));
+
+        //number of unread messages
         return tcount;
     }
 
@@ -636,7 +682,6 @@ public class SmsReceiver extends BroadcastReceiver {
         Uri uri = intent.getData();
         Log.d("sent message: ", uri+ ", rc: "+ resultCode);
         if (uri == null) {
-            //handleSent(null)
             return;
         }
 
@@ -651,7 +696,7 @@ public class SmsReceiver extends BroadcastReceiver {
 
     //Popup
     private static void popup(Context context, String text,String addr){
-        //Todo popup
+        //Todo popup2
         SharedPreferences prefs1 = PreferenceManager.getDefaultSharedPreferences(context);
         SpamHandler db =  new SpamHandler(context);
         if (!db.isBlacklisted(addr) && isRun.isApplicationBroughtToBackground(context)){
@@ -674,14 +719,10 @@ public class SmsReceiver extends BroadcastReceiver {
 
         // get list filter
         SpamHandler db = new SpamHandler(context);
-        List<Filter> filterList = new ArrayList<>();
-        filterList=db.getAllFilters();
+        List<Filter> filterList =db.getAllFilters();
 
         // length body > 25 and number whitout in contacts.
-        if (text.length()>25 && !checkNumberExits(context,addr) && !db.isBlacklisted(addr)) {
-
-            // the number of occurrences
-            int charF =0, wordF =0, pharseF=0;
+        if (text.length()>0 && !checkNumberExits(context,addr) && !db.isBlacklisted(addr)) {
 
             /*// remove marks all
             String body = Utils.removeAccent(text);*/
@@ -693,40 +734,18 @@ public class SmsReceiver extends BroadcastReceiver {
             }
             //Checking number of occurrence
             if (arrayList.size()!=0 && filterList.size() !=0) {
-                for (int a = 0; a < filterList.size(); a++) {
-                    for (int b =0; b <arrayList.size();  b++){
-                        if (filterList.get(a).getChar_() ==null){
-                            continue;
-                        }
-                        else if (Objects.equals(filterList.get(a).getChar_(), arrayList.get(b).toLowerCase()))
-                        {
-                            charF++;
-                        }
 
-                        if (filterList.get(a).getWord_() ==null){
-                            continue;
-                        }
-                        else if (Objects.equals(filterList.get(a).getWord_().toLowerCase(), arrayList.get(b).toLowerCase()))
-                        {
-                            wordF++;
-                        }
-                    }
-                }
-                for (int i =0;i<filterList.size();i++){
-                    if (filterList.get(i).getPharse_() ==null){
-                        continue;
-                    }
-                    else if (text.toLowerCase().contains(filterList.get(i).getPharse_().toLowerCase()))
-                    {
-                        pharseF++;
-                    }
-                }
-                //char 2 and word 4
-                if ( charF > 1 && wordF > 3){
+                // the number of occurrences
+                //char 2 and word 2
+                if (charF(arrayList,filterList) >= 2 && wordF(arrayList,filterList) >= 2){
                     return true;
                 }
-                //pharse 3
-                if (pharseF >2)
+                // word 4
+                if (wordF(arrayList,filterList) >= 4){
+                    return true;
+                }
+                //pharse 2
+                if (pharseF(filterList,text) >=2)
                 {
                     return true;
                 }
@@ -734,10 +753,53 @@ public class SmsReceiver extends BroadcastReceiver {
         }
         return false;
     }
-    private static boolean checkNumberExits(Context context, String s){
-        ArrayList<Contact> contacts = new ArrayList<Contact>();
-        contacts = getAllContacts(context);
-        for (int i = 0;i<contacts.size();i++){
+
+    private static int charF(ArrayList<String> arrayList, List<Filter> filterList) {
+        int charF = 0;
+        for (int a = 0; a < filterList.size(); a++) {
+            for (int b = 0; b < arrayList.size(); b++) {
+                if (filterList.get(a).getChar_() == null) {
+                    continue;
+                } else if (filterList.get(a).getChar_().equals(arrayList.get(b).toLowerCase())) {
+                    charF++;
+                }
+            }
+        }
+        //Log.e("charF", charF+"");
+        return charF;
+    }
+
+    private static int wordF(ArrayList<String> arrayList, List<Filter> filterList) {
+        int wordF = 0;
+        for (int a = 0; a < filterList.size(); a++) {
+            for (int b = 0; b < arrayList.size(); b++) {
+                if (filterList.get(a).getWord_() == null) {
+                    continue;
+                } else if (filterList.get(a).getWord_().toLowerCase().equals(arrayList.get(b).toLowerCase())) {
+                    wordF++;
+                }
+            }
+        }
+        //Log.e("wordF", wordF+"");
+        return wordF;
+    }
+
+    private static int pharseF(List<Filter> filterList, String text) {
+        int pharseF = 0;
+        for (int i = 0; i < filterList.size(); i++) {
+            if (filterList.get(i).getPharse_() == null) {
+                continue;
+            } else if (text.toLowerCase().contains(filterList.get(i).getPharse_().toLowerCase())) {
+                pharseF++;
+            }
+        }
+        //Log.e("pharseF", pharseF+"");
+        return pharseF;
+    }
+
+    private static boolean checkNumberExits(Context context, String s) {
+        ArrayList<Contact> contacts = getAllContacts(context);
+        for (int i = 0; i < contacts.size(); i++) {
             if (contacts.get(i).getNumber().equals(s))
                 return true;
         }
@@ -747,13 +809,117 @@ public class SmsReceiver extends BroadcastReceiver {
     public static ArrayList<Contact> getAllContacts(Context context) {
         Cursor phones = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
         ArrayList<Contact> contacts = new ArrayList<Contact>();
-        while (phones.moveToNext()) {
-            String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-            String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-            Contact contact = new Contact(phoneNumber, name);
-            contacts.add(contact);
+        if (phones != null) {
+            while (phones.moveToNext()) {
+                String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+                String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                Contact contact = new Contact(phoneNumber, name);
+                contacts.add(contact);
+            }
+            phones.close();
         }
-        phones.close();
         return contacts;
+    }
+    public static boolean isBlocked(String addr, Context context) {
+        SpamHandler db = new SpamHandler(context);
+        List<Block> blockList = db.getAllBlocks();
+        if (addr == null) {
+            return false;
+        }
+        for (Block aBlacklist : blockList) {
+            if (addr.equals(aBlacklist.getNumber())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static ArrayList<Conversation> getConvBlacklist(Context context) {
+        ArrayList<Conversation> convList = new ArrayList<>();
+        Cursor cursor = null;
+        try {
+            cursor = context.getContentResolver().query(Conversation.URI_SIMPLE, Conversation.PROJECTION_SIMPLE, Conversation.COUNT + ">0", null, null);
+        } catch (Exception e) {
+            Log.e("error getting conv", e + "");
+        }
+        int totalSMS = 0;
+        if (cursor != null) {
+            totalSMS = cursor.getCount();
+        }
+        if (cursor != null && cursor.moveToFirst()) {
+            for (int i = 0; i < totalSMS; i++) {
+                Conversation conv = Conversation.getConversation(context, cursor, true);
+                if (isBlocked(conv.getContact().getNumber(),context))
+                {
+                    convList.add(conv);
+                }
+                cursor.moveToNext();
+            }
+            cursor.close();
+        }
+        return convList;
+    }
+
+    public static ArrayList<Test> ReadFilterMailbox(Context context) {
+        ArrayList<Test> messages = new ArrayList<>();
+        Uri uriSms = Uri.parse("content://sms/");
+        ContentResolver cr = context.getContentResolver();
+        Cursor c = cr.query(uriSms, null, null, null, null);
+
+        int totalSMS = c.getCount();
+        if (c.moveToFirst()) {
+            for (int i = 0; i < totalSMS; i++) {
+
+                Test message = new Test();
+                String id = c.getString(c.getColumnIndexOrThrow("_id"));
+                message.setId(Integer.parseInt(id));
+                String phone = c.getString(c.getColumnIndexOrThrow("address"));
+                message.setNumber(phone);
+
+                String body = c.getString(c.getColumnIndexOrThrow("body"));
+                message.setBody_(body);
+                long date = c.getLong(c.getColumnIndexOrThrow("date"));
+                message.setDate_(date);
+
+
+                if (SmsReceiver.filter(context,body,phone) && !isBlocked(phone,context)) {
+                    messages.add(message);
+                }
+                c.moveToNext();
+            }
+            c.close();
+        }
+        return messages;
+    }
+
+    public static ArrayList<Conversation> getConvFilter(Context context) {
+        ArrayList<Test> messages = ReadFilterMailbox(context);
+        ArrayList<Conversation> conversationFilter = new ArrayList<>();
+        Cursor c = null;
+        try {
+            c = context.getContentResolver().query(Conversation.URI_SIMPLE, Conversation.PROJECTION_SIMPLE, Conversation.COUNT + ">0", null, null);
+        } catch (Exception e) {
+            Log.e("error getting conv", e + "");
+        }
+
+        int totalSMS = 0;
+        if (c != null) {
+            totalSMS = c.getCount();
+        }
+        if (c != null && c.moveToFirst()) {
+            for (int i = 0; i < totalSMS; i++) {
+                Conversation conv = Conversation.getConversation(context, c, true);
+                for (int j = 0; j < messages.size(); j++) {
+                    if (conv.getContact().getNumber().equals(messages.get(j).getNumber())) {
+                        conv.setBody(messages.get(j).getBody_());
+                        conversationFilter.add(conv);
+                        break;
+                    }
+                }
+                c.moveToNext();
+            }
+            c.close();
+        }
+        return conversationFilter;
     }
 }

@@ -2,6 +2,7 @@ package com.example.trantrungduong95.truesms.Presenter.Activity_;
 
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -25,6 +26,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -41,8 +43,6 @@ import com.example.trantrungduong95.truesms.Model.Conversation;
 import com.example.trantrungduong95.truesms.Model.Message;
 import com.example.trantrungduong95.truesms.Model.Wrapper.ContactsWrapper;
 import com.example.trantrungduong95.truesms.Presenter.Converter;
-import com.example.trantrungduong95.truesms.Presenter.SettingsNewActivity;
-import com.example.trantrungduong95.truesms.Presenter.SettingsOldActivity;
 import com.example.trantrungduong95.truesms.Presenter.Utils;
 import com.example.trantrungduong95.truesms.R;
 
@@ -51,14 +51,11 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
 
     private String TAG = "ConversationActivity";
 
-    public String copyMsg = "";
-
     //ContactsWrapper
     private ContactsWrapper WRAPPER = ContactsWrapper.getInstance();
 
     //Number of items.
     private int WHICH_N = 8;
-
     //
     private final int WHICH_VIEW_CONTACT = 0;
 
@@ -122,7 +119,13 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
     //True, to update Contact's photo.
     private boolean needContactUpdate = false;
 
+    //copy Clipboard
+    @SuppressWarnings("deprecation")
+    private ClipboardManager clipboard;
+
     private boolean flag = false;
+
+    private boolean flag1 = false;
 
     //Get ListView.
     private ListView getListView() {
@@ -154,6 +157,8 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
 
         etText = (EditText) findViewById(R.id.compose_reply_text);
 
+        clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+
         parseIntent(getIntent());
 
         ListView list = getListView();
@@ -167,6 +172,10 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
         View vAttachment = findViewById(R.id.compose_icon);
         vAttachment.setOnClickListener(this);
         vAttachment.setOnLongClickListener(this);
+
+        View vPasteContent = findViewById(R.id.paste_content);
+        vPasteContent.setOnClickListener(this);
+        vPasteContent.setOnLongClickListener(this);
 
         // TextWatcher updating char count on writing.
         final TextView count_reply = (TextView) findViewById(R.id.content_count);
@@ -210,6 +219,35 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
         }
         needContactUpdate = true;
 
+        if (intent.getExtras() !=null) {
+            flag1 = intent.getExtras().getBoolean("flag");
+        }
+
+        if (intent.getExtras() !=null) {
+            ImageView sendSMS = findMenuItemView(R.id.send_SMS);
+            ImageView attachment = findMenuItemView(R.id.compose_icon);
+            if (intent.getExtras().getBoolean("turnOffCompose")) {
+                etText.setEnabled(true);
+                if (sendSMS != null) {
+                    sendSMS.setEnabled(true);
+                }
+                if (attachment != null) {
+                    attachment.setEnabled(true);
+                }
+            }
+            else {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(etText.getWindowToken(),0);
+                etText.setEnabled(false);
+                if (sendSMS != null) {
+                    sendSMS.setEnabled(false);
+                }
+                if (attachment != null) {
+                    attachment.setEnabled(false);
+                }
+
+            }
+        }
         uri = intent.getData();
         if (uri != null) {
             if (!uri.toString().startsWith(URI)) {
@@ -218,7 +256,7 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
         } else {
             long tid = intent.getLongExtra("thread_id", -1);
             uri = Uri.parse(URI + tid);
-            if (tid < 0L) {
+            if (tid < 0) {
                 try {
                     startActivity(MainActivity.getComposeIntent(this, null));
                 } catch (ActivityNotFoundException e) {
@@ -248,7 +286,7 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
         ListView lv = getListView();
         lv.setStackFromBottom(true);
 
-        ConversationAdapter adapter = new ConversationAdapter(this, uri);
+        ConversationAdapter adapter = new ConversationAdapter(this, uri,flag1);
         setListAdapter(adapter);
 
         updateHeader(contact);
@@ -371,7 +409,7 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
         super.onResume();
 
         ListView lv = getListView();
-        lv.setAdapter(new ConversationAdapter(this, uri));
+        lv.setAdapter(new ConversationAdapter(this, uri,flag1));
         markedUnread = false;
 
         Intent i;
@@ -446,10 +484,13 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                // app icon in Action Bar clicked; go home
+/*                // app icon in Action Bar clicked; go home
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
+                startActivity(intent);*/
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(etText.getWindowToken(), 0);
+                finish();
                 return true;
             case R.id.item_delete_thread:
                 MainActivity.deleteMessages(this, uri, R.string.delete_thread_,
@@ -569,7 +610,15 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
                         startActivity(Intent.createChooser(i, context.getString(resId)));
                         break;
                     case WHICH_COPY_TEXT:
-                        copyMsg = m.getBody().toString();
+                        TextView pasteC = (TextView) findViewById(R.id.paste_content);
+                        pasteC.setVisibility(View.VISIBLE);
+                        ClipboardManager cm = (ClipboardManager) context
+                                .getSystemService(Context.CLIPBOARD_SERVICE);
+                        if (SettingsOldActivity.decodeDecimalNCR(context)) {
+                            cm.setText(Converter.convertDecNCR2Char(m.getBody()));
+                        } else {
+                            cm.setText(m.getBody());
+                        }
                         break;
                     case WHICH_VIEW_DETAILS:
                         int t = m.getType();
@@ -638,6 +687,13 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
                     flag = false;
                 }
                 return;
+            case R.id.paste_content:
+                TextView pasteC = (TextView) findViewById(R.id.paste_content);
+                pasteC.setVisibility(View.INVISIBLE);
+
+                final CharSequence content = clipboard.getText();
+                etText.setText(content);
+                return;
             default:
                 // should never happen
         }
@@ -690,11 +746,13 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
             //noinspection ConstantConditions
             PreferenceManager.getDefaultSharedPreferences(this).edit().putString(SettingsOldActivity.PREFS_BACKUPLASTTEXT, etText.getText().toString()).commit();
             etText.setText("");
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(etText.getWindowToken(), 0);
 
         } catch (ActivityNotFoundException | NullPointerException e) {
             //unable to launch sender app
             Log.e("unable to launch sender", e.getMessage());
-            Toast.makeText(this, R.string.error_sending_failed, Toast.LENGTH_LONG).show();
+            //Toast.makeText(this, R.string.error_sending_failed, Toast.LENGTH_LONG).show();
         }
     }
 }

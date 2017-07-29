@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.RemoteViews;
 
+import com.example.trantrungduong95.truesms.Presenter.Activity_.SettingsOldActivity;
 import com.example.trantrungduong95.truesms.R;
 import com.example.trantrungduong95.truesms.Receiver.SmsReceiver;
 
@@ -20,8 +21,7 @@ public class WidgetProvider extends AppWidgetProvider {
     }
 
     //Get link RemoteViews. Count number of unread messages
-    public static RemoteViews getRemoteViews(Context context, int count,
-                                             PendingIntent pIntent) {
+    public static RemoteViews getRemoteViews(Context context, int count, PendingIntent pIntent) {
         SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
         views.setTextViewText(R.id.text1, String.valueOf(count));

@@ -22,7 +22,7 @@ import com.example.trantrungduong95.truesms.R;
 
 import java.util.List;
 
-public class FragmentBlacklistAdapter extends ArrayAdapter<Conversation> {
+public class FragmentFilterdAdapter extends ArrayAdapter<Conversation> {
     private Context context;
     private int layoutResourceId;
     private List<Conversation> conversations;
@@ -37,13 +37,14 @@ public class FragmentBlacklistAdapter extends ArrayAdapter<Conversation> {
 
     private ContactsWrapper WRAPPER = ContactsWrapper.getInstance();
 
-    public FragmentBlacklistAdapter(Context context, int layoutResourceId, List<Conversation> conversations) {
+    public FragmentFilterdAdapter(Context context, int layoutResourceId, List<Conversation> conversations) {
         super(context, layoutResourceId, conversations);
         this.layoutResourceId = layoutResourceId;
         this.context = context;
         this.conversations = conversations;
 
         defaultContactAvatar = context.getResources().getDrawable(R.drawable.contact_blue);
+
         convertNCR = SettingsOldActivity.decodeDecimalNCR(context);
         showEmoticons = SettingsOldActivity.showEmoticons(context);
         textSize = SettingsOldActivity.getTextsize(context);
@@ -55,9 +56,8 @@ public class FragmentBlacklistAdapter extends ArrayAdapter<Conversation> {
         View view = convertView;
         ConversationsHolder holder = null;
 
-        if(view == null)
-        {
-            LayoutInflater inflater = /*((Activity)context).getLayoutInflater();*/ LayoutInflater.from(context);
+        if (view == null) {
+            LayoutInflater inflater = /*((Activity) context).getLayoutInflater()*/LayoutInflater.from(context);
             view = inflater.inflate(layoutResourceId, parent, false);
 
             holder = new ConversationsHolder();
@@ -68,10 +68,8 @@ public class FragmentBlacklistAdapter extends ArrayAdapter<Conversation> {
             holder.ivPhoto = (ImageView) view.findViewById(R.id.photo);
             holder.vRead = view.findViewById(R.id.read);
             view.setTag(holder);
-        }
-        else
-        {
-            holder = (ConversationsHolder)view.getTag();
+        } else {
+            holder = (ConversationsHolder) view.getTag();
         }
 
         Conversation conversation = conversations.get(position);
@@ -126,6 +124,7 @@ public class FragmentBlacklistAdapter extends ArrayAdapter<Conversation> {
         if (showEmoticons) {
             text = SmileyParser.getInstance(context).addSmileySpans(text);
         }
+        //todo show sms filtered last
         holder.tvBody.setText(text);
 
         // date

@@ -165,7 +165,7 @@ public class Contact {
 	}
 
 	public Uri getUri() {
-		if (this.mContactUri == null && this.mPersonId > 0L) {
+		if (this.mContactUri == null && this.mPersonId > 0) {
 			this.mContactUri = ContactsWrapper.getInstance().getContactUri(this.mPersonId);
 		}
 		return this.mContactUri;

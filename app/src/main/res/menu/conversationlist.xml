@@ -4,25 +4,44 @@
     <item
         android:id="@+id/action_search"
         android:icon="@drawable/ic_search"
-        app:showAsAction="ifRoom"
-        android:title="@string/search" />
+        android:title="@string/search"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/item_blacklist"
         android:icon="@drawable/filterd_blacklist"
-        app:showAsAction="ifRoom"
-        android:title="@string/title_Conv_Backlist" />
+        android:title="@string/title_Conv_Backlist"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/item_filterd"
         android:icon="@drawable/filterd_blacklist"
-        app:showAsAction="ifRoom"
-        android:title="@string/title_Conv_Filterd" />
-    <item
-        android:id="@+id/item_settings"
-        android:title="@string/settings"
-        android:icon="@android:drawable/ic_menu_preferences"/>
+        android:title="@string/title_Conv_Filterd"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/item_delete_all_threads"
-        android:title="@string/delete_threads_"
-        android:icon="@android:drawable/ic_menu_delete"/>
+        android:icon="@android:drawable/ic_menu_delete"
+        android:title="@string/delete_threads_" />
+    <item
+        android:id="@+id/item_settings"
+        android:icon="@drawable/ic_setting"
+        android:title="@string/settings" />
+    <item
+        android:id="@+id/item_about"
+        android:icon="@drawable/ic_about"
+        android:title="@string/about_">
+        <menu>
+            <item
+                android:id="@+id/item_about_c"
+                android:orderInCategory="100"
+                android:title="@string/about_" />
+            <item
+                android:id="@+id/item_feedback"
+                android:orderInCategory="100"
+                android:title="@string/feedback_" />
+        </menu>
+    </item>
 
+    <item
+        android:id="@+id/item_close"
+        android:icon="@drawable/ic_close"
+        android:title="@string/menu_close" />
 </menu>

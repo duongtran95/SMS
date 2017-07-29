@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.trantrungduong95.truesms.Model.Search;
 import com.example.trantrungduong95.truesms.R;
@@ -22,13 +23,13 @@ public class ConversationSearchAdapter extends ArrayAdapter<Search> implements F
 	private Filter conversationFilter;
 	private List<Search> origConversationList;
 
-	public ConversationSearchAdapter(List<Search> conversationList, Context ctx) {
-		super(ctx, R.layout.conversation_item, conversationList);
+	public ConversationSearchAdapter(List<Search> conversationList, Context context) {
+		super(context, R.layout.conversation_item, conversationList);
 		this.conversationList = conversationList;
-		this.context = ctx;
+		this.context = context;
 		this.origConversationList = conversationList;
 	}
-	
+
 	public int getCount() {
 		return conversationList.size();
 	}
@@ -45,7 +46,7 @@ public class ConversationSearchAdapter extends ArrayAdapter<Search> implements F
 		View v = convertView;
 
 		ConversationHolder holder = new ConversationHolder();
-		
+
 		// First let's verify the convertView is not null
 		if (convertView == null) {
 			// This a new view we inflate the new layout
@@ -54,36 +55,46 @@ public class ConversationSearchAdapter extends ArrayAdapter<Search> implements F
 			// Now we can fill the layout with the right values
 			TextView nameSearch = (TextView) v.findViewById(R.id.name_search);
 			TextView bodySearch = (TextView) v.findViewById(R.id.body_search);
-
-
+			TextView textView3 = (TextView) v.findViewById(R.id.textView3);
 			holder.conversationNameView = nameSearch;
 			holder.bodyView = bodySearch;
-			
+			holder.textView3 = textView3;
 			v.setTag(holder);
 		}
-		else 
+		else
 			holder = (ConversationHolder) v.getTag();
 
 		Search p = conversationList.get(position);
-		holder.conversationNameView.setText(p.getNum());
-		holder.bodyView.setText(p.getContent());
 
+		if (p.getNum().matches("[-+]?\\d*\\.?\\d+"))
+		{
+			//True Only numbers
+			holder.conversationNameView.setText(p.getNum());
+			holder.textView3.setText(context.getString(R.string.nameSearch1));
+		}
+		else {
+			holder.conversationNameView.setText(p.getNum());
+			holder.textView3.setText(context.getString(R.string.nameSearch));
+		}
+
+		holder.bodyView.setText(p.getContent());
 		return v;
 	}
 
 	public void resetData() {
 		conversationList = origConversationList;
 	}
-	
-	
+
+
 	/* *********************************
-	 * We use the holder pattern        
+	 * We use the holder pattern
 	 * It makes the view faster and avoid finding the component
 	 * **********************************/
-	
+
 	private static class ConversationHolder {
 		TextView conversationNameView;
 		TextView bodyView;
+		TextView textView3;
 	}
 
 	/*

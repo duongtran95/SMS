@@ -11,8 +11,8 @@
             android:title="@string/notification_">
         <extra android:name="resource" android:value="prefs_notification"/>
     </header>
-    <header android:fragment="com.example.trantrungduong95.truesms.Presenter.HeaderPreferenceFragment"
+<!--    <header android:fragment="com.example.trantrungduong95.truesms.Presenter.HeaderPreferenceFragment"
             android:title="@string/about_">
         <extra android:name="resource" android:value="prefs_about"/>
-    </header>
+    </header>-->
 </preference-headers>

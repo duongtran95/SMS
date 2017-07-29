@@ -20,20 +20,6 @@
             android:clipChildren="false"
             android:clipToPadding="false"
             android:foreground="@drawable/ab_shadow">
-
-<!--            <ListView
-                android:id="@+id/popup_messages"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:cacheColorHint="@color/white_pure"
-                android:clipChildren="false"
-                android:clipToPadding="false"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
-                android:paddingTop="8dp"
-                android:scrollbarStyle="outsideOverlay"
-                android:stackFromBottom="true"
-                android:transcriptMode="alwaysScroll" />-->
             <TextView
                 android:id="@+id/content_popup"
                 android:layout_width="300dp"

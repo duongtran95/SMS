@@ -1,4 +1,4 @@
-package com.example.trantrungduong95.truesms.Presenter;
+package com.example.trantrungduong95.truesms.Presenter.Activity_;
 
 import android.app.Activity;
 import android.app.AlertDialog.Builder;
@@ -11,7 +11,6 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.SimpleAdapter;
@@ -19,12 +18,12 @@ import android.widget.Toast;
 
 import com.example.trantrungduong95.truesms.CustomAdapter.DrawDialog;
 import com.example.trantrungduong95.truesms.MainActivity;
+import com.example.trantrungduong95.truesms.Presenter.IPreferenceContainer;
+import com.example.trantrungduong95.truesms.Presenter.Utils;
 import com.example.trantrungduong95.truesms.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.regex.PatternSyntaxException;
-
 //Setting
 public class SettingsOldActivity extends PreferenceActivity implements IPreferenceContainer {
     //Preference's name: vibrate on receive.
@@ -113,15 +112,6 @@ public class SettingsOldActivity extends PreferenceActivity implements IPreferen
 
     //Preference's name: forward sms sender.
     public static String PREFS_FORWARD_SMS_CLEAN = "forwarded_sms_clean";
-
-    //Preference's name: prefix regular expression.
-    private static String PREFS_REGEX = "regex";
-
-    //Preference's name: prefix replace.
-    private static String PREFS_REPLACE = "replace";
-
-    //Number of regular expressions.
-    private static int PREFS_REGEX_COUNT = 3;
 
     //Default color.
     private static int BLACK = 0xff000000;
@@ -247,7 +237,7 @@ public class SettingsOldActivity extends PreferenceActivity implements IPreferen
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.prefs_appearance_behavior);
-        addPreferencesFromResource(R.xml.prefs_about);
+        //addPreferencesFromResource(R.xml.prefs_about);
 
         registerOnPreferenceClickListener(this);
     }
@@ -255,7 +245,6 @@ public class SettingsOldActivity extends PreferenceActivity implements IPreferen
 
      //Register link OnPreferenceClickListener.
     // param pc link IPreferenceContainer.
-
     public static void registerOnPreferenceClickListener(final IPreferenceContainer pc) {
         Preference p = pc.findPreference(PREFS_NOTIFICATION_ICON);
         if (p != null) {
@@ -424,6 +413,7 @@ public class SettingsOldActivity extends PreferenceActivity implements IPreferen
                 Intent intent = new Intent(this,MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
+                Toast.makeText(this, "123", Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

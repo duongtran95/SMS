@@ -49,20 +49,20 @@ import com.example.trantrungduong95.truesms.Model.Conversation;
 import com.example.trantrungduong95.truesms.Model.Message;
 import com.example.trantrungduong95.truesms.Model.Search;
 import com.example.trantrungduong95.truesms.Model.Wrapper.ContactsWrapper;
+import com.example.trantrungduong95.truesms.Presenter.AboutActivity;
 import com.example.trantrungduong95.truesms.Presenter.AsyncHelper;
 import com.example.trantrungduong95.truesms.Presenter.Activity_.BlacklistActivity;
 import com.example.trantrungduong95.truesms.Presenter.Activity_.ConversationActivity;
 import com.example.trantrungduong95.truesms.Presenter.Activity_.DefaultAndPermission;
 import com.example.trantrungduong95.truesms.Presenter.Activity_.FilterActivity;
-import com.example.trantrungduong95.truesms.Presenter.SettingsNewActivity;
-import com.example.trantrungduong95.truesms.Presenter.SettingsOldActivity;
+import com.example.trantrungduong95.truesms.Presenter.Activity_.SettingsNewActivity;
+import com.example.trantrungduong95.truesms.Presenter.Activity_.SettingsOldActivity;
 import com.example.trantrungduong95.truesms.Presenter.SpamHandler;
 import com.example.trantrungduong95.truesms.Presenter.Utils;
 import com.example.trantrungduong95.truesms.Receiver.SmsReceiver;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OnItemClickListener, OnItemLongClickListener {
     //Tag
@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
     //db
     private SpamHandler db = new SpamHandler(this);
 
-    public static List<Conversation> conversationList = new ArrayList<Conversation>();
+    public static boolean turnOffNof = false;
 
     @Override
     public void onStart() {
@@ -155,12 +155,13 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         action = getSupportActionBar();
         if (isSearchOpened) { //test if the search is open
 
-            action.setDisplayShowCustomEnabled(false); //disable a custom view inside the actionbar
-            action.setDisplayShowTitleEnabled(true); //show the title in the action bar
-
+            if (action != null) {
+                action.setDisplayShowCustomEnabled(false); //disable a custom view inside the actionbar
+                action.setDisplayShowTitleEnabled(true); //show the title in the action bar
+            }
             //hides the keyboard
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(edtSearch.getWindowToken(), 0);
+            imm.hideSoftInputFromWindow(edtSearch.getWindowToken(),0);
 
             //add the search icon in the action bar
             mSearchAction.setIcon(getResources().getDrawable(R.drawable.ic_search));
@@ -171,12 +172,13 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
             isSearchOpened = false;
         } else { //open the search entry
 
-            action.setDisplayShowCustomEnabled(true); //enable it to display a
-            // custom view in the action bar.
-            action.setCustomView(R.layout.search_bar);//add the custom view
-            action.setDisplayShowTitleEnabled(false); //hide the title
-
-            edtSearch = (EditText) action.getCustomView().findViewById(R.id.edtSearch); //the text editor
+            if (action != null) {
+                action.setDisplayShowCustomEnabled(true); //enable it to display a
+                // custom view in the action bar.
+                action.setCustomView(R.layout.search_bar);//add the custom view
+                action.setDisplayShowTitleEnabled(false); //hide the title
+                edtSearch = (EditText) action.getCustomView().findViewById(R.id.edtSearch); //the text editor
+            }
 
             //this is a listener to do a search when the user clicks on search button
             listview_conversation.setVisibility(View.INVISIBLE);
@@ -226,11 +228,10 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     String number = ChecknumberContact(conversationsArrayList.get(position).getNum());
-                    if (!ChecknumberContact(conversationsArrayList.get(position).getNum()).equals(""))
-                    {
+                    if (!ChecknumberContact(conversationsArrayList.get(position).getNum()).equals("")) {
                         startActivity(getComposeIntent(MainActivity.this, number));
-                    }
-                    else startActivity(getComposeIntent(MainActivity.this, conversationsArrayList.get(position).getNum()));
+                    } else
+                        startActivity(getComposeIntent(MainActivity.this, conversationsArrayList.get(position).getNum()));
 
                 }
             });
@@ -384,12 +385,11 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this);
         showContactPhoto = p.getBoolean(SettingsOldActivity.PREFS_CONTACT_PHOTO, true);
         showEmoticons = p.getBoolean(SettingsOldActivity.PREFS_EMOTICONS, false);
-        adapter = new ConversationsAdapter(this);
-        setListAdapter(adapter);
         if (adapter != null) {
             adapter.startMsgListQuery();
         }
-
+        adapter = new ConversationsAdapter(this);
+        setListAdapter(adapter);
         Log.d("onResume", "");
     }
 
@@ -398,6 +398,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         getMenuInflater().inflate(R.menu.conversationlist, menu);
         return true;
     }
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         mSearchAction = menu.findItem(R.id.action_search);
@@ -455,7 +456,10 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
             Log.e(TAG, "failed update", e);
             Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
         }
-        SmsReceiver.updateNewMessageNotification(context, null);
+        //Turn off Nof
+        if (!turnOffNof) {
+            SmsReceiver.updateNewMessageNotification(context, null);
+        }
     }
 
     //Delete messages with a given link Uri. Activity to finish when deleting.
@@ -517,6 +521,21 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                 Intent intent_item_filterd = new Intent(this, FilterActivity.class);
                 startActivity(intent_item_filterd);
                 return true;
+            case R.id.item_about:
+                return true;
+            case R.id.item_about_c:
+                Intent iAbout = new Intent(this, AboutActivity.class);
+                startActivity(iAbout);
+                return true;
+            case R.id.item_feedback:
+                //todo feedback
+
+                
+                return true;
+
+            case R.id.item_close:
+                finish();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -543,6 +562,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
 
         Intent i = new Intent(this, ConversationActivity.class);
         i.setData(target);
+        i.putExtra("turnOffCompose", true);
         try {
             startActivity(i);
         } catch (ActivityNotFoundException e) {
@@ -577,7 +597,9 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                 try {
                     switch (which) {
                         case WHICH_ANSWER:
-                            startActivity(getComposeIntent(MainActivity.this, number));
+                            i = getComposeIntent(MainActivity.this, number);
+                            i.putExtra("turnOffCompose", true);
+                            startActivity(i);
                             break;
                         case WHICH_CALL:
                             i = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:" + number));
@@ -596,19 +618,19 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                         case WHICH_VIEW:
                             i = new Intent(MainActivity.this, ConversationActivity.class);
                             i.setData(target);
+                            i.putExtra("turnOffCompose", true);
                             startActivity(i);
                             break;
                         case WHICH_DELETE:
                             deleteMessages(MainActivity.this, target,
-                                            R.string.delete_thread_,
-                                            R.string.delete_thread_question,
-                                            null);
+                                    R.string.delete_thread_,
+                                    R.string.delete_thread_question,
+                                    null);
                             break;
                         case WHICH_MARK_SPAM:
-                            Block block =  new Block();
+                            Block block = new Block();
                             block.setNumber(conv.getContact().getNumber());
                             db.addBlock(block);
-                            conversationList.add(conv);
 
                             adapter.getBlacklist().add(block);
                             adapter.notifyDataSetChanged();
@@ -642,29 +664,11 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
             return DateFormat.getTimeFormat(context).format(t);
         }
     }
-    // delete uri
-    public static void deleteMsg(Uri target,Context context){
-                    try {
-                int ret = context.getContentResolver().delete(target, null, null);
-                Log.d("deleted: ", ret + "");
-                if (ret > 0) {
-                    Conversation.flushCache();
-                    Message.flushCache();
-                    SmsReceiver.updateNewMessageNotification(context, null);
-                }
-            } catch (IllegalArgumentException e) {
-                Log.e(TAG, "Argument Error", e);
-                Toast.makeText(context, R.string.error_unknown, Toast.LENGTH_LONG).show();
-            } catch (SQLiteException e) {
-                Log.e(TAG, "SQL Error", e);
-                Toast.makeText(context, R.string.error_unknown, Toast.LENGTH_LONG).show();
-            }
-    }
 
-    public String ChecknumberContact(String number){
+    public String ChecknumberContact(String number) {
         ArrayList<Contact> contacts = new ArrayList<Contact>();
         contacts = getAllContacts();
-        for (int i=0;i<contacts.size();i++){
+        for (int i = 0; i < contacts.size(); i++) {
             if (contacts.get(i).getName().equals(number))
                 return contacts.get(i).getNumber();
         }
@@ -683,6 +687,5 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         phones.close();
         return contacts;
     }
-
 
 }

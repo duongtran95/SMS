@@ -10,5 +10,5 @@
         android:hint="@string/title_search"
         android:textSize="@dimen/edit_text_search"
         android:imeOptions="actionSearch"
-        android:textColor="@color/purple_dark"/>
+        />
 </LinearLayout>

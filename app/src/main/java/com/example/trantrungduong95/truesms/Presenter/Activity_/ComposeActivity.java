@@ -3,6 +3,7 @@ package com.example.trantrungduong95.truesms.Presenter.Activity_;
 import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -20,17 +21,17 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.trantrungduong95.truesms.CustomAdapter.MobilePhoneAdapter;
+import com.example.trantrungduong95.truesms.CustomAdapter.PhoneAdapter;
 import com.example.trantrungduong95.truesms.MainActivity;
 import com.example.trantrungduong95.truesms.Model.Message;
 import com.example.trantrungduong95.truesms.Model.Wrapper.ContactsWrapper;
-import com.example.trantrungduong95.truesms.Presenter.SettingsOldActivity;
 import com.example.trantrungduong95.truesms.R;
 import com.example.trantrungduong95.truesms.Receiver.SmsReceiver;
 
@@ -125,9 +126,9 @@ public class ComposeActivity extends AppCompatActivity implements View.OnClickLi
                 editText_reply.setText(text);
 
                 MultiAutoCompleteTextView mtv = (MultiAutoCompleteTextView) this.findViewById(R.id.txtPhoneNo);
-                MobilePhoneAdapter mpa = new MobilePhoneAdapter(this);
+                PhoneAdapter mpa = new PhoneAdapter(this);
                 SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this);
-                MobilePhoneAdapter.setMobileNumbersOnly(p.getBoolean(SettingsOldActivity.PREFS_MOBILE_ONLY, false));
+                PhoneAdapter.setMobileNumbersOnly(p.getBoolean(SettingsOldActivity.PREFS_MOBILE_ONLY, false));
                 mtv.setAdapter(mpa);
                 mtv.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
                 mtv.setText(phoneNo);
@@ -156,7 +157,7 @@ public class ComposeActivity extends AppCompatActivity implements View.OnClickLi
                     }
                     mtv.setText(phoneNo);
                     editText_reply.requestFocus();
-                    Log.d("phoneno",phoneNo);
+                    Log.d("phoneno", phoneNo);
                 } else {
                     mtv.requestFocus();
                 }
@@ -164,12 +165,7 @@ public class ComposeActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
-    /**
-     * Parse data pushed by {@link Intent}.
-     *
-     * @param intent {@link Intent}
-     * @return true if message is ready to send
-     */
+    //Parse data pushed by link Intent.
     private boolean parseIntent(Intent intent) {
         if (intent == null) {
             return false;
@@ -202,6 +198,7 @@ public class ComposeActivity extends AppCompatActivity implements View.OnClickLi
             Log.i(TAG, "recipient missing");
             return false;
         }
+        //true if message is ready to send
         return true;
     }
 
@@ -223,12 +220,7 @@ public class ComposeActivity extends AppCompatActivity implements View.OnClickLi
         return threadId;
     }
 
-    /**
-     * Send a message to a single recipient.
-     *
-     * @param recipient recipient
-     * @param message   message
-     */
+    //Send a message to a single recipient.
     private void send(String recipient, String message) {
         Log.d("text: ", recipient);
 
@@ -246,11 +238,11 @@ public class ComposeActivity extends AppCompatActivity implements View.OnClickLi
                         + "' AND " + BODY + " like '" + message.replace("'", "_") + "'", null, DATE + " DESC");
         if (cursor != null && cursor.moveToFirst()) {
             draft = URI_SENT.buildUpon().appendPath(cursor.getString(0)).build();
-            Log.d("skip saving draft: ", draft+"");
+            Log.d("skip saving draft: ", draft + "");
         } else {
             try {
                 draft = cr.insert(URI_SENT, values);
-                Log.d("draft saved: ", draft+"");
+                Log.d("draft saved: ", draft + "");
             } catch (IllegalArgumentException | SQLiteException | NullPointerException e) {
                 Log.e(TAG, "unable to save draft", e);
             }
@@ -267,7 +259,7 @@ public class ComposeActivity extends AppCompatActivity implements View.OnClickLi
 
             ArrayList<String> messages = smsManager.divideMessage(message);
             for (String m : messages) {
-                Log.d("divided messages: ", m+"");
+                Log.d("divided messages: ", m + "");
 
                 Intent sent = new Intent(MESSAGE_SENT_ACTION, draft, this, SmsReceiver.class);
                 sentIntents.add(PendingIntent.getBroadcast(this, 0, sent, 0));
@@ -288,17 +280,13 @@ public class ComposeActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
-    /**
-     * Send a message.
-     *
-     * @return true, if message was sent
-     */
+    // Send a message.
     public boolean send() {
         if (TextUtils.isEmpty(phoneNo) || TextUtils.isEmpty(text)) {
             return false;
         }
         for (String r : phoneNo.split(",")) {
-            r = MobilePhoneAdapter.cleanRecipient(r);
+            r = PhoneAdapter.cleanRecipient(r);
             if (TextUtils.isEmpty(r)) {
                 Log.w("skip empty recipient: ", r);
                 continue;
@@ -306,18 +294,20 @@ public class ComposeActivity extends AppCompatActivity implements View.OnClickLi
 
             try {
                 send(r, text);
-
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(editText_reply.getWindowToken(), 0);
             } catch (Exception e) {
                 Log.e("unable to send msg: ", phoneNo, e);
-                Toast.makeText(this, R.string.error_sending_failed, Toast.LENGTH_LONG).show();
+                //Toast.makeText(this, R.string.error_sending_failed, Toast.LENGTH_LONG).show();
             }
         }
+        //true, if message was sent
         return true;
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.compose, menu);
+        //getMenuInflater().inflate(R.menu.compose, menu);
         return true;
     }
 
@@ -333,7 +323,7 @@ public class ComposeActivity extends AppCompatActivity implements View.OnClickLi
                 startActivity(intent);
                 return true;
             case R.id.item_settings_compose:
-                Toast.makeText(this, "Nothing", Toast.LENGTH_SHORT).show();
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -347,22 +337,21 @@ public class ComposeActivity extends AppCompatActivity implements View.OnClickLi
             case R.id.send_SMS:
                 // app icon in Action Bar clicked; go home
                 Bundle b = getIntent().getExtras();
-                if (b!=null){
+                if (b != null) {
                     text = b.getString("sms_body");
-                }
-                else {
+                } else {
                     EditText compose_reply = (EditText) findViewById(R.id.compose_reply_text);
                     text = compose_reply.getText().toString();
                 }
 
                 EditText compose_reply_p = (MultiAutoCompleteTextView) findViewById(R.id.txtPhoneNo);
                 phoneNo = compose_reply_p.getText().toString();
-                if ( send()) {
+                if (send()) {
                     finish();
                 }
                 return;
             case R.id.compose_icon:
-                LinearLayout  attachment_panel = (LinearLayout) findViewById(R.id.attachment_panel);
+                LinearLayout attachment_panel = (LinearLayout) findViewById(R.id.attachment_panel);
                 if (!flag) {
                     attachment_panel.setVisibility(View.VISIBLE);
                     flag = true;

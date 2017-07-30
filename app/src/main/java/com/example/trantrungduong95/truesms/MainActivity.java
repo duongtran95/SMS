@@ -17,10 +17,12 @@ import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.provider.Telephony;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -34,6 +36,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -46,6 +49,7 @@ import com.example.trantrungduong95.truesms.Fab.FloatingActionButton;
 import com.example.trantrungduong95.truesms.Model.Block;
 import com.example.trantrungduong95.truesms.Model.Contact;
 import com.example.trantrungduong95.truesms.Model.Conversation;
+import com.example.trantrungduong95.truesms.Model.Feedback;
 import com.example.trantrungduong95.truesms.Model.Message;
 import com.example.trantrungduong95.truesms.Model.Search;
 import com.example.trantrungduong95.truesms.Model.Wrapper.ContactsWrapper;
@@ -60,6 +64,8 @@ import com.example.trantrungduong95.truesms.Presenter.Activity_.SettingsOldActiv
 import com.example.trantrungduong95.truesms.Presenter.SpamHandler;
 import com.example.trantrungduong95.truesms.Presenter.Utils;
 import com.example.trantrungduong95.truesms.Receiver.SmsReceiver;
+import com.firebase.client.Firebase;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -126,18 +132,316 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
 
     public static boolean turnOffNof = false;
 
+    //Firebase save feedback
+    private Firebase myFirebase;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        //requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        super.onCreate(savedInstanceState);
+        //SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this);
+        setTheme(SettingsOldActivity.getTheme(this));
+        Utils.setLocale(this);
+        setContentView(R.layout.activity_main);
+
+        Firebase.setAndroidContext(this);
+        myFirebase = new Firebase("https://democn-6f3ab.firebaseio.com/");
+        listview_conversation = getListView();
+
+        listview_conversation.setOnItemClickListener(this);
+        listview_conversation.setOnItemLongClickListener(this);
+        longItemClickDialog = new String[WHICH_N];
+        longItemClickDialog[WHICH_ANSWER] = getString(R.string.reply);
+        longItemClickDialog[WHICH_CALL] = getString(R.string.call);
+        longItemClickDialog[WHICH_VIEW_CONTACT] = getString(R.string.view_contact_);
+        longItemClickDialog[WHICH_VIEW] = getString(R.string.view_thread_);
+        longItemClickDialog[WHICH_DELETE] = getString(R.string.delete_thread_);
+        longItemClickDialog[WHICH_MARK_SPAM] = getString(R.string.filter_spam_);
+
+        initAdapter();
+
+        if (!DefaultAndPermission.isDefaultApp(this)) {
+            Builder b = new Builder(this);
+            b.setTitle(R.string.not_default_app);
+            b.setMessage(R.string.not_default_app_message);
+            b.setNegativeButton(android.R.string.cancel, null);
+            b.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    Intent intent = new Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT);
+                    intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, BuildConfig.APPLICATION_ID);
+                    startActivity(intent);
+                }
+            });
+            b.show();
+        }
+
+        //Fab
+        FloatingActionButton floatingActionButton = (FloatingActionButton) findViewById(R.id.button_floating_action);
+        floatingActionButton.show();
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent_compose = getComposeIntent(MainActivity.this, null);
+                try {
+                    startActivity(intent_compose);
+                } catch (ActivityNotFoundException e) {
+                    Log.e("er launching intent: ", intent_compose.getAction() + ", " + intent_compose.getData());
+                    Toast.makeText(getApplication(), "error launching messaging app!\nPlease contact the developer.", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        Log.d("onCreate", "");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        CAL_DAYAGO.setTimeInMillis(System.currentTimeMillis());
+        CAL_DAYAGO.add(Calendar.DAY_OF_MONTH, -1);
+
+        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this);
+        showContactPhoto = p.getBoolean(SettingsOldActivity.PREFS_CONTACT_PHOTO, true);
+        showEmoticons = p.getBoolean(SettingsOldActivity.PREFS_EMOTICONS, false);
+        if (adapter != null) {
+            adapter.startMsgListQuery();
+        }
+        adapter = new ConversationsAdapter(this);
+        setListAdapter(adapter);
+        Log.d("onResume", "");
+    }
     @Override
     public void onStart() {
         super.onStart();
         AsyncHelper.setAdapter(adapter);
-        Log.d("onStart", "");
+        Log.e("onStart", "");
     }
 
     @Override
     public void onStop() {
         super.onStop();
         AsyncHelper.setAdapter(null);
-        Log.d("onStop", "");
+        Log.e("onStop", "");
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.e("onBackPressed","onBackPressed");
+        if (isSearchOpened) {
+            handleMenuSearch();
+            return;
+        }
+        super.onBackPressed();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        if (SettingsOldActivity.getTheme(this) == R.style.Theme_TrueSMS){
+            recreateActivity();
+            Log.e("1111","eee");
+        }
+        else if (SettingsOldActivity.getTheme(this) == R.style.Theme_TrueSMS_Light){
+            {
+                recreateActivity();
+                Log.e("11112","iii");
+            }
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.conversationlist, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        mSearchAction = menu.findItem(R.id.action_search);
+
+        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean hideDeleteAll = p.getBoolean(SettingsOldActivity.PREFS_HIDE_DELETE_ALL_THREADS, false);
+        menu.findItem(R.id.item_delete_all_threads).setVisible(!hideDeleteAll);
+        return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_READ_SMS: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // just try again.
+                    initAdapter();
+                } else {
+                    // this app is useless without permission for reading sms
+                    Log.e(TAG, "permission for reading sms denied, exit");
+                    finish();
+                }
+                return;
+            }
+            case PERMISSIONS_REQUEST_READ_CONTACTS: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // just try again.
+                    initAdapter();
+                } else {
+                    // this app is useless without permission for reading sms
+                    Log.e(TAG, "permission for reading contacts denied, exit");
+                    finish();
+                }
+                return;
+            }
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_search:
+                handleMenuSearch();
+                return true;
+            case R.id.item_settings: // start settings activity
+                if (Build.VERSION.SDK_INT >= 19) {
+                    startActivity(new Intent(this, SettingsNewActivity.class));
+                } else {
+                    startActivity(new Intent(this, SettingsOldActivity.class));
+                }
+                return true;
+            case R.id.item_delete_all_threads:
+                deleteMessages(this, Uri.parse("content://sms/"), R.string.delete_threads_,
+                        R.string.delete_threads_question, null);
+                return true;
+            case R.id.item_blacklist:
+                Intent intent_blacklist = new Intent(this, BlacklistActivity.class);
+                startActivity(intent_blacklist);
+                return true;
+            case R.id.item_filterd:
+                Intent intent_item_filterd = new Intent(this, FilterActivity.class);
+                startActivity(intent_item_filterd);
+                return true;
+            case R.id.item_about:
+                return true;
+            case R.id.item_about_c:
+                Intent iAbout = new Intent(this, AboutActivity.class);
+                startActivity(iAbout);
+                return true;
+            case R.id.item_feedback:
+                AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
+                View mView = getLayoutInflater().inflate(R.layout.dialog_feedback, null);
+                final EditText mName = (EditText) mView.findViewById(R.id.edt_nameFeedback);
+                final EditText mEmail = (EditText) mView.findViewById(R.id.edt_emailFeedback);
+                final EditText mAddress = (EditText) mView.findViewById(R.id.edt_AddressFeedback);
+                final EditText mDescribe = (EditText) mView.findViewById(R.id.edt_DescribeFeedBack);
+                final Button mSendFeedBack = (Button) mView.findViewById(R.id.btnSend_FeedBack);
+                mBuilder.setView(mView);
+                final AlertDialog dialog = mBuilder.create();
+                dialog.show();
+
+
+
+                mName.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        if (!mName.getText().toString().isEmpty() && !mEmail.getText().toString().isEmpty() &&
+                                !mAddress.getText().toString().isEmpty() && !mDescribe.getText().toString().isEmpty()) {
+                            mSendFeedBack.setText(getString(R.string.send_));
+                        }
+                        else  mSendFeedBack.setText(getString(R.string.menu_close));
+                    }
+                });
+                mEmail.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        if (!mName.getText().toString().isEmpty() && !mEmail.getText().toString().isEmpty() &&
+                                !mAddress.getText().toString().isEmpty() && !mDescribe.getText().toString().isEmpty()) {
+                            mSendFeedBack.setText(getString(R.string.send_));
+                        }
+                        else  mSendFeedBack.setText(getString(R.string.menu_close));
+                    }
+                });
+                mAddress.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        if (!mName.getText().toString().isEmpty() && !mEmail.getText().toString().isEmpty() &&
+                                !mAddress.getText().toString().isEmpty() && !mDescribe.getText().toString().isEmpty()) {
+                            mSendFeedBack.setText(getString(R.string.send_));
+                        }
+                        else  mSendFeedBack.setText(getString(R.string.menu_close));
+                    }
+                });
+                mDescribe.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        if (!mName.getText().toString().isEmpty() && !mEmail.getText().toString().isEmpty() &&
+                                !mAddress.getText().toString().isEmpty() && !mDescribe.getText().toString().isEmpty()) {
+                            mSendFeedBack.setText(getString(R.string.send_));
+                        }
+                        else  mSendFeedBack.setText(getString(R.string.menu_close));
+                    }
+                });
+                mSendFeedBack.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(!mSendFeedBack.getText().toString().equals(getString(R.string.menu_close)) &&
+                                !mName.getText().toString().isEmpty() && !mEmail.getText().toString().isEmpty() &&
+                                !mAddress.getText().toString().isEmpty() && !mDescribe.getText().toString().isEmpty()){
+                            mSendFeedBack.setText(getString(R.string.send_));
+                            handleFeedback(mName.getText().toString(),mEmail.getText().toString(),
+                                    mAddress.getText().toString(),mDescribe.getText().toString());
+                            dialog.hide();
+                        }else if (mSendFeedBack.getText().toString().equals(getString(R.string.menu_close))){
+                            dialog.hide();
+                        }
+                    }
+                });
+                //todo feedback
+                return true;
+
+            case R.id.item_close:
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     //Get Listview.
@@ -280,70 +584,16 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        if (isSearchOpened) {
-            handleMenuSearch();
-            return;
-        }
-        super.onBackPressed();
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        //requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        super.onCreate(savedInstanceState);
-        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this);
-        setTheme(SettingsOldActivity.getTheme(this));
-        Utils.setLocale(this);
-        setContentView(R.layout.activity_main);
-
-        listview_conversation = getListView();
-
-        listview_conversation.setOnItemClickListener(this);
-        listview_conversation.setOnItemLongClickListener(this);
-        longItemClickDialog = new String[WHICH_N];
-        longItemClickDialog[WHICH_ANSWER] = getString(R.string.reply);
-        longItemClickDialog[WHICH_CALL] = getString(R.string.call);
-        longItemClickDialog[WHICH_VIEW_CONTACT] = getString(R.string.view_contact_);
-        longItemClickDialog[WHICH_VIEW] = getString(R.string.view_thread_);
-        longItemClickDialog[WHICH_DELETE] = getString(R.string.delete_thread_);
-        longItemClickDialog[WHICH_MARK_SPAM] = getString(R.string.filter_spam_);
-
-        initAdapter();
-
-        if (!DefaultAndPermission.isDefaultApp(this)) {
-            Builder b = new Builder(this);
-            b.setTitle(R.string.not_default_app);
-            b.setMessage(R.string.not_default_app_message);
-            b.setNegativeButton(android.R.string.cancel, null);
-            b.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    Intent intent = new Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT);
-                    intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, BuildConfig.APPLICATION_ID);
-                    startActivity(intent);
-                }
-            });
-            b.show();
-        }
-
-        //Fab
-        FloatingActionButton floatingActionButton = (FloatingActionButton) findViewById(R.id.button_floating_action);
-        floatingActionButton.show();
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+    private void recreateActivity() {
+        //Delaying activity recreate by 1 millisecond. If the recreate is not delayed and is done
+        // immediately in onResume() you will get RuntimeException: Performing pause of activity that is not resumed
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
             @Override
-            public void onClick(View v) {
-                Intent intent_compose = getComposeIntent(MainActivity.this, null);
-                try {
-                    startActivity(intent_compose);
-                } catch (ActivityNotFoundException e) {
-                    Log.e("er launching intent: ", intent_compose.getAction() + ", " + intent_compose.getData());
-                    Toast.makeText(getApplication(), "error launching messaging app!\nPlease contact the developer.", Toast.LENGTH_LONG).show();
-                }
+            public void run() {
+                recreate();
             }
-        });
-        Log.d("onCreate", "");
+        }, 1);
     }
 
     private void initAdapter() {
@@ -374,67 +624,6 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
 
         adapter.startMsgListQuery();
 
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        CAL_DAYAGO.setTimeInMillis(System.currentTimeMillis());
-        CAL_DAYAGO.add(Calendar.DAY_OF_MONTH, -1);
-
-        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this);
-        showContactPhoto = p.getBoolean(SettingsOldActivity.PREFS_CONTACT_PHOTO, true);
-        showEmoticons = p.getBoolean(SettingsOldActivity.PREFS_EMOTICONS, false);
-        if (adapter != null) {
-            adapter.startMsgListQuery();
-        }
-        adapter = new ConversationsAdapter(this);
-        setListAdapter(adapter);
-        Log.d("onResume", "");
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.conversationlist, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        mSearchAction = menu.findItem(R.id.action_search);
-
-        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean hideDeleteAll = p.getBoolean(SettingsOldActivity.PREFS_HIDE_DELETE_ALL_THREADS, false);
-        menu.findItem(R.id.item_delete_all_threads).setVisible(!hideDeleteAll);
-        return true;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_READ_SMS: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // just try again.
-                    initAdapter();
-                } else {
-                    // this app is useless without permission for reading sms
-                    Log.e(TAG, "permission for reading sms denied, exit");
-                    finish();
-                }
-                return;
-            }
-            case PERMISSIONS_REQUEST_READ_CONTACTS: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // just try again.
-                    initAdapter();
-                } else {
-                    // this app is useless without permission for reading sms
-                    Log.e(TAG, "permission for reading contacts denied, exit");
-                    finish();
-                }
-                return;
-            }
-        }
     }
 
     //Mark all messages with a given uri as read.
@@ -496,56 +685,22 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         builder.show();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_search:
-                handleMenuSearch();
-                return true;
-            case R.id.item_settings: // start settings activity
-                if (Build.VERSION.SDK_INT >= 19) {
-                    startActivity(new Intent(this, SettingsNewActivity.class));
-                } else {
-                    startActivity(new Intent(this, SettingsOldActivity.class));
-                }
-                return true;
-            case R.id.item_delete_all_threads:
-                deleteMessages(this, Uri.parse("content://sms/"), R.string.delete_threads_,
-                        R.string.delete_threads_question, null);
-                return true;
-            case R.id.item_blacklist:
-                Intent intent_blacklist = new Intent(this, BlacklistActivity.class);
-                startActivity(intent_blacklist);
-                return true;
-            case R.id.item_filterd:
-                Intent intent_item_filterd = new Intent(this, FilterActivity.class);
-                startActivity(intent_item_filterd);
-                return true;
-            case R.id.item_about:
-                return true;
-            case R.id.item_about_c:
-                Intent iAbout = new Intent(this, AboutActivity.class);
-                startActivity(iAbout);
-                return true;
-            case R.id.item_feedback:
-                //todo feedback
-
-                
-                return true;
-
-            case R.id.item_close:
-                finish();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+    // handle feedback
+    private void handleFeedback(String name, String email,String sdt,String describe ) {
+        Feedback fb = new Feedback();
+        fb.setName(name);
+        fb.setEmail(email);
+        fb.setAddress(sdt);
+        fb.setDescribe(describe);
+        // Đổi dữ liệu sang dạng Json và đẩy lên Firebase bằng hàm Push
+        Gson gson = new Gson();
+        myFirebase.child("FeedBack").push().setValue(gson.toJson(fb));
     }
 
     // Get a Intent for sending a new message.
     public static Intent getComposeIntent(Context context, String address) {
         Intent i = new Intent(Intent.ACTION_SENDTO);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
         if (address == null) {
             i.setData(Uri.parse("sms:"));
         } else {
@@ -631,6 +786,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                             Block block = new Block();
                             block.setNumber(conv.getContact().getNumber());
                             db.addBlock(block);
+                            markRead(MainActivity.this,conv.getUri(),1);
 
                             adapter.getBlacklist().add(block);
                             adapter.notifyDataSetChanged();

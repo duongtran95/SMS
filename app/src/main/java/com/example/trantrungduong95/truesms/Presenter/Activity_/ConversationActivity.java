@@ -3,6 +3,7 @@ package com.example.trantrungduong95.truesms.Presenter.Activity_;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.ClipboardManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,6 +14,7 @@ import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.CallLog;
 import android.support.annotation.Nullable;
@@ -37,14 +39,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.trantrungduong95.truesms.CustomAdapter.ConversationAdapter;
+import com.example.trantrungduong95.truesms.CustomAdapter.FragmentFilterdAdapter;
 import com.example.trantrungduong95.truesms.MainActivity;
+import com.example.trantrungduong95.truesms.Model.Block;
 import com.example.trantrungduong95.truesms.Model.Contact;
 import com.example.trantrungduong95.truesms.Model.Conversation;
 import com.example.trantrungduong95.truesms.Model.Message;
+import com.example.trantrungduong95.truesms.Model.Test;
 import com.example.trantrungduong95.truesms.Model.Wrapper.ContactsWrapper;
 import com.example.trantrungduong95.truesms.Presenter.Converter;
+import com.example.trantrungduong95.truesms.Presenter.Fragment_.Fragment_Conv_Filter;
 import com.example.trantrungduong95.truesms.Presenter.Utils;
 import com.example.trantrungduong95.truesms.R;
+import com.example.trantrungduong95.truesms.Receiver.SmsReceiver;
+
+import java.util.ArrayList;
 
 public class ConversationActivity extends AppCompatActivity implements AdapterView.OnItemClickListener,
         AdapterView.OnItemLongClickListener, View.OnClickListener, View.OnLongClickListener {
@@ -127,17 +136,6 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
 
     private boolean flag1 = false;
 
-    //Get ListView.
-    private ListView getListView() {
-        return (ListView) findViewById(R.id.conversation_list);
-    }
-
-    //Set ListAdapter to ListView.
-    private void setListAdapter(ListAdapter la) {
-        getListView().setAdapter(la);
-       // getListView().setFastScrollEnabled(true);
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -210,6 +208,155 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
         super.onNewIntent(intent);
         setIntent(intent);
         parseIntent(intent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        ListView lv = getListView();
+        lv.setAdapter(new ConversationAdapter(this, uri,flag1));
+        markedUnread = false;
+
+        Intent i;
+        ActivityInfo ai = null;
+        PackageManager pm = getPackageManager();
+        try {
+            i = buildIntent(enableAutosend);
+            if (pm != null /*&& PreferenceManager.getDefaultSharedPreferences(this).getBoolean(SettingsOldActivity.PREFS_SHOWTARGETAPP, true)*/) {
+                ai = i.resolveActivityInfo(pm, 0);
+            }
+        } catch (NullPointerException e) {
+            Log.e(TAG, "unable to build Intent", e);
+        }
+        etText.setMaxLines(MAX_EDITTEXT_LINES);
+
+        if (ai == null) {
+            etText.setMinLines(1);
+        } else {
+            if (chooserPackage == null) {
+                try {
+                    ActivityInfo cai = buildIntent(enableAutosend).resolveActivityInfo(pm, 0);
+                    if (cai != null) {
+                        chooserPackage = cai.packageName;
+                    }
+                } catch (NullPointerException e) {
+                    Log.e(TAG, "unable to build Intent", e);
+                }
+            }
+            if (ai.packageName.equals(chooserPackage)) {
+            } else {
+                Log.d("ai.pn: ", ai.packageName);
+            }
+        }
+
+    }
+
+    @Override
+    protected void onPause() {
+        if (!markedUnread) {
+            setRead();
+        }
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        if (SettingsOldActivity.getTheme(this) == R.style.Theme_TrueSMS){
+            recreateActivity();
+            Log.e("1111","eee");
+        }
+        else if (SettingsOldActivity.getTheme(this) == R.style.Theme_TrueSMS_Light){
+            {
+                recreateActivity();
+                Log.e("11112","iii");
+            }
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.conversation, menu);
+        contactItem = menu.findItem(R.id.item_contact);
+        if (conv != null) {
+            setContactIcon(conv.getContact());
+        }
+        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this);
+        if (p.getBoolean(SettingsOldActivity.PREFS_HIDE_RESTORE, false)) {
+            menu.removeItem(R.id.item_restore);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+/*                // app icon in Action Bar clicked; go home
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);*/
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(etText.getWindowToken(), 0);
+                if (flag1){
+                    Fragment_Conv_Filter.conversationArrayList.clear();
+                    Fragment_Conv_Filter.conversationArrayList = getConvFilter();
+                    Fragment_Conv_Filter.fragmentFilterdAdapter = new FragmentFilterdAdapter
+                            (this,R.layout.conversationlist_item, Fragment_Conv_Filter.conversationArrayList);
+                    Fragment_Conv_Filter.listView.setAdapter(Fragment_Conv_Filter.fragmentFilterdAdapter);
+                }
+                finish();
+                return true;
+            case R.id.item_delete_thread:
+                MainActivity.deleteMessages(this, uri, R.string.delete_thread_,
+                        R.string.delete_thread_question, this);
+                return true;
+            case R.id.item_settings_conversation:
+                if (Build.VERSION.SDK_INT >= 19) {
+                    startActivity(new Intent(this, SettingsNewActivity.class));
+                } else {
+                    startActivity(new Intent(this, SettingsOldActivity.class));
+                }
+                return true;
+            case R.id.item_call:
+                try {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("tel:"
+                            + conv.getContact().getNumber())));
+                } catch (ActivityNotFoundException e) {
+                    Log.e(TAG, "unable to open dailer", e);
+                    Toast.makeText(this, R.string.error_unknown, Toast.LENGTH_LONG).show();
+                }
+                return true;
+            case R.id.item_restore:
+                etText.setText(PreferenceManager.getDefaultSharedPreferences(this).getString(
+                        SettingsOldActivity.PREFS_BACKUPLASTTEXT, null));
+                return true;
+            case R.id.item_contact:
+                if (conv != null && contactItem != null) {
+                    WRAPPER.showQuickContactFallBack(this, contactItem.getActionView(), conv
+                            .getContact().getLookUpUri(getContentResolver()), 2, null);
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    //Get ListView.
+    private ListView getListView() {
+        return (ListView) findViewById(R.id.conversation_list);
+    }
+
+    //Set ListAdapter to ListView.
+    private void setListAdapter(ListAdapter la) {
+        getListView().setAdapter(la);
+        getListView().setFastScrollEnabled(true);
     }
 
     //Parse data pushed by Intent.
@@ -337,7 +484,7 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
             threadId = c.getThreadId(); // force a NPE :x
             return c;
         } catch (NullPointerException e) {
-           //Fetched null conversation for thread
+            //Fetched null conversation for thread
             Toast.makeText(this, R.string.error_conv_null, Toast.LENGTH_LONG).show();
             return null;
         }
@@ -404,126 +551,22 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
         needContactUpdate = false;
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        ListView lv = getListView();
-        lv.setAdapter(new ConversationAdapter(this, uri,flag1));
-        markedUnread = false;
-
-        Intent i;
-        ActivityInfo ai = null;
-        PackageManager pm = getPackageManager();
-        try {
-            i = buildIntent(enableAutosend);
-            if (pm != null && PreferenceManager.getDefaultSharedPreferences(this).getBoolean(SettingsOldActivity.PREFS_SHOWTARGETAPP, true)) {
-                ai = i.resolveActivityInfo(pm, 0);
+    private void recreateActivity() {
+        //Delaying activity recreate by 1 millisecond. If the recreate is not delayed and is done
+        // immediately in onResume() you will get RuntimeException: Performing pause of activity that is not resumed
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                recreate();
             }
-        } catch (NullPointerException e) {
-            Log.e(TAG, "unable to build Intent", e);
-        }
-        etText.setMaxLines(MAX_EDITTEXT_LINES);
-
-        if (ai == null) {
-            etText.setMinLines(1);
-        } else {
-            if (chooserPackage == null) {
-                try {
-                    ActivityInfo cai = buildIntent(enableAutosend).resolveActivityInfo(pm, 0);
-                    if (cai != null) {
-                        chooserPackage = cai.packageName;
-                    }
-                } catch (NullPointerException e) {
-                    Log.e(TAG, "unable to build Intent", e);
-                }
-            }
-            if (ai.packageName.equals(chooserPackage)) {
-            } else {
-                Log.d("ai.pn: ", ai.packageName);
-            }
-        }
-
-    }
-
-    @Override
-    protected void onPause() {
-        if (!markedUnread) {
-            setRead();
-        }
-        super.onPause();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
+        }, 1);
     }
 
     //Set all messages in a given thread as read.
     private void setRead() {
         if (conv != null) {
             MainActivity.markRead(this, conv.getUri(), 1);
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.conversation, menu);
-        contactItem = menu.findItem(R.id.item_contact);
-        if (conv != null) {
-            setContactIcon(conv.getContact());
-        }
-        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this);
-        if (p.getBoolean(SettingsOldActivity.PREFS_HIDE_RESTORE, false)) {
-            menu.removeItem(R.id.item_restore);
-        }
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-/*                // app icon in Action Bar clicked; go home
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);*/
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(etText.getWindowToken(), 0);
-                finish();
-                return true;
-            case R.id.item_delete_thread:
-                MainActivity.deleteMessages(this, uri, R.string.delete_thread_,
-                        R.string.delete_thread_question, this);
-                return true;
-            case R.id.item_settings_conversation:
-                if (Build.VERSION.SDK_INT >= 19) {
-                    startActivity(new Intent(this, SettingsNewActivity.class));
-                } else {
-                    startActivity(new Intent(this, SettingsOldActivity.class));
-                }
-                return true;
-            case R.id.item_call:
-                try {
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("tel:"
-                            + conv.getContact().getNumber())));
-                } catch (ActivityNotFoundException e) {
-                    Log.e(TAG, "unable to open dailer", e);
-                    Toast.makeText(this, R.string.error_unknown, Toast.LENGTH_LONG).show();
-                }
-                return true;
-            case R.id.item_restore:
-                etText.setText(PreferenceManager.getDefaultSharedPreferences(this).getString(
-                        SettingsOldActivity.PREFS_BACKUPLASTTEXT, null));
-                return true;
-            case R.id.item_contact:
-                if (conv != null && contactItem != null) {
-                    WRAPPER.showQuickContactFallBack(this, contactItem.getActionView(), conv
-                            .getContact().getLookUpUri(getContentResolver()), 2, null);
-                }
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
         }
     }
 
@@ -670,7 +713,7 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
         builder.show();
         return true;
     }
-////todo attachment
+    //todo attachment
     @SuppressWarnings("deprecation")
     public void onClick(View v) {
         switch (v.getId()) {
@@ -754,5 +797,79 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
             Log.e("unable to launch sender", e.getMessage());
             //Toast.makeText(this, R.string.error_sending_failed, Toast.LENGTH_LONG).show();
         }
+    }
+
+    public ArrayList<Test> ReadFilterMailbox() {
+        ArrayList<Test> messages = new ArrayList<>();
+        Uri uriSms = Uri.parse("content://sms/");
+        ContentResolver cr = this.getContentResolver();
+        Cursor c = cr.query(uriSms, null, null, null, null);
+
+        int totalSMS = c.getCount();
+        if (c.moveToFirst()) {
+            for (int i = 0; i < totalSMS; i++) {
+
+                Test message = new Test();
+                String id = c.getString(c.getColumnIndexOrThrow("_id"));
+                message.setId(Integer.parseInt(id));
+                String phone = c.getString(c.getColumnIndexOrThrow("address"));
+                message.setNumber(phone);
+
+                String body = c.getString(c.getColumnIndexOrThrow("body"));
+                message.setBody_(body);
+                long date = c.getLong(c.getColumnIndexOrThrow("date"));
+                message.setDate_(date);
+
+                if (SmsReceiver.filter(this,body,phone) && !isBlocked(phone)) {
+                    messages.add(message);
+                }
+                c.moveToNext();
+            }
+            c.close();
+        }
+        return messages;
+    }
+
+    public ArrayList<Conversation> getConvFilter() {
+        ArrayList<Test> messages = ReadFilterMailbox();
+        ArrayList<Conversation> conversationFilter = new ArrayList<>();
+        Cursor c = null;
+        try {
+            c = this.getContentResolver().query(Conversation.URI_SIMPLE, Conversation.PROJECTION_SIMPLE, Conversation.COUNT + ">0", null, null);
+        } catch (Exception e) {
+            Log.e("error getting conv", e + "");
+        }
+
+        int totalSMS = 0;
+        if (c != null) {
+            totalSMS = c.getCount();
+        }
+        if (c != null && c.moveToFirst()) {
+            for (int i = 0; i < totalSMS; i++) {
+                Conversation conv = Conversation.getConversation(this, c, true);
+                for (int j = 0; j < messages.size(); j++) {
+                    if (conv.getContact().getNumber().equals(messages.get(j).getNumber())) {
+                        conv.setBody(messages.get(j).getBody_());
+                        conversationFilter.add(conv);
+                        break;
+                    }
+                }
+                c.moveToNext();
+            }
+            c.close();
+        }
+        return conversationFilter;
+    }
+
+    public boolean isBlocked(String addr) {
+        if (addr == null) {
+            return false;
+        }
+        for (Block aBlacklist : Fragment_Conv_Filter.blockList) {
+            if (addr.equals(aBlacklist.getNumber())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

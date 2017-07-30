@@ -4,9 +4,11 @@ import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -34,18 +36,21 @@ import com.example.trantrungduong95.truesms.Model.Test;
 import com.example.trantrungduong95.truesms.Presenter.SpamHandler;
 import com.example.trantrungduong95.truesms.R;
 import com.example.trantrungduong95.truesms.Receiver.SmsReceiver;
+import com.firebase.client.Firebase;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Fragment_Filter extends Fragment implements AdapterView.OnItemClickListener,AdapterView.OnItemLongClickListener {
+    private static final int MODE_PRIVATE = 0;
     private ListView listView;
     private FilterAdapter filterAdapter;
     List<Filter> filterList = new ArrayList<Filter>();
     SpamHandler db;
     Button btnChar, btnWord, btnPharse;
     int type =0;
-
+    SharedPreferences mPref;
     String[] longItemClickDialog = new String[WHICH_N];
 
     //Number of items.
@@ -56,6 +61,13 @@ public class Fragment_Filter extends Fragment implements AdapterView.OnItemClick
     private static final int WHICH_DELETE = 1;
 
     boolean flag_edit = false;
+
+    // number autoFiterd update Firebase
+    private int countFiter = 20;
+
+    //Firebase Filter
+    Firebase myFirebase;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -66,6 +78,17 @@ public class Fragment_Filter extends Fragment implements AdapterView.OnItemClick
         db.createDefaultFilterIfNeed();
         filterList = db.getAllFilters();
         listView = (ListView) view.findViewById(R.id.list_filter);
+
+        myFirebase = new Firebase("https://democn-6f3ab.firebaseio.com/");
+
+        // create SharedPreferences
+        mPref = getActivity().getSharedPreferences("MyPrefsFile", MODE_PRIVATE);
+
+        if (filterList.size() <= 30) {
+            SharedPreferences.Editor editor = mPref.edit();
+            editor.putInt("numberFilterd", filterList.size());
+            editor.apply();
+        }
 
         listView.setOnItemLongClickListener(this);
         listView.setOnItemClickListener(this);
@@ -174,6 +197,9 @@ public class Fragment_Filter extends Fragment implements AdapterView.OnItemClick
         final EditText editText2 = new EditText(getActivity());
 
         editText2.setText(filterList.get(position).getPharse_());
+        int pos = editText2.getText().length();
+        editText2.setSelection(pos);
+
         AlertDialog.Builder builder2 = new AlertDialog.Builder(getActivity());
         builder2.setTitle(getActivity().getString(R.string.title_edit_filterd_pharse));
         builder2.setMessage(getActivity().getString(R.string.title_edit_filter_hint));
@@ -183,19 +209,23 @@ public class Fragment_Filter extends Fragment implements AdapterView.OnItemClick
             @Override
             public void onClick(final DialogInterface dialog, final int which) {
                 if (!editText2.getText().toString().equals("")) {
-                    Filter filter = new Filter();
-                    filter.setId_(filterList.get(position).getId_());
-                    filter.setPharse_(editText2.getText().toString());
-                    filter.setChar_(null);
-                    filter.setWord_(null);
-                    db.updateFilters(filter);
+                    if (isDuplicated(editText2.getText().toString())) {
+                        Filter filter = new Filter();
+                        filter.setId_(filterList.get(position).getId_());
+                        filter.setPharse_(editText2.getText().toString());
+                        filter.setChar_(null);
+                        filter.setWord_(null);
 
-                    filterList.clear();
-                    filterList = db.getAllFilters();
-                    filterAdapter = new FilterAdapter(getActivity(),R.layout.custom_filter,filterList,type);
-                    listView.setAdapter(filterAdapter);
+                        db.updateFilters(filter);
 
-                    updateListFilterWhenAdd();
+                        filterList.clear();
+                        filterList = db.getAllFilters();
+                        filterAdapter = new FilterAdapter(getActivity(), R.layout.custom_filter, filterList, type);
+                        listView.setAdapter(filterAdapter);
+
+                        updateListFilterWhenAdd();
+                    }
+                    else  Toast.makeText(getActivity(), getActivity().getString(R.string.db_isExits), Toast.LENGTH_SHORT).show();
                 }
                 else {
                     Toast.makeText(getActivity(), getActivity().getString(R.string.non_empty), Toast.LENGTH_SHORT).show();
@@ -244,7 +274,10 @@ public class Fragment_Filter extends Fragment implements AdapterView.OnItemClick
         editText1.setFilters(new InputFilter[] {filter1,filterw,
                 new InputFilter.LengthFilter(maxLength)
         });
+
         editText1.setText(filterList.get(position).getWord_());
+        int pos = editText1.getText().length();
+        editText1.setSelection(pos);
 
         AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
         builder1.setTitle(getActivity().getString(R.string.title_menu_add_filterd));
@@ -255,19 +288,23 @@ public class Fragment_Filter extends Fragment implements AdapterView.OnItemClick
             @Override
             public void onClick(final DialogInterface dialog, final int which) {
                 if (!editText1.getText().toString().equals("")) {
-                    Filter filter = new Filter();
-                    filter.setId_(filterList.get(position).getId_());
-                    filter.setWord_(editText1.getText().toString());
-                    filter.setChar_(null);
-                    filter.setPharse_(null);
-                    db.updateFilters(filter);
+                    if (isDuplicated(editText1.getText().toString())) {
+                        Filter filter = new Filter();
+                        filter.setId_(filterList.get(position).getId_());
+                        filter.setWord_(editText1.getText().toString());
+                        filter.setChar_(null);
+                        filter.setPharse_(null);
 
-                    filterList.clear();
-                    filterList = db.getAllFilters();
-                    filterAdapter = new FilterAdapter(getActivity(),R.layout.custom_filter,filterList,type);
-                    listView.setAdapter(filterAdapter);
+                        db.updateFilters(filter);
 
-                    updateListFilterWhenAdd();
+                        filterList.clear();
+                        filterList = db.getAllFilters();
+                        filterAdapter = new FilterAdapter(getActivity(), R.layout.custom_filter, filterList, type);
+                        listView.setAdapter(filterAdapter);
+
+                        updateListFilterWhenAdd();
+                    }
+                    else Toast.makeText(getActivity(), getActivity().getString(R.string.db_isExits), Toast.LENGTH_SHORT).show();
                 }
                 else {
                     Toast.makeText(getActivity(), getActivity().getString(R.string.non_empty), Toast.LENGTH_SHORT).show();
@@ -297,6 +334,8 @@ public class Fragment_Filter extends Fragment implements AdapterView.OnItemClick
 
         editText.setFilters(new InputFilter[] { filter});
         editText.setText(filterList.get(position).getChar_());
+        int pos = editText.getText().length();
+        editText.setSelection(pos);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(getActivity().getString(R.string.title_edit_filterd_char));
@@ -307,19 +346,24 @@ public class Fragment_Filter extends Fragment implements AdapterView.OnItemClick
             @Override
             public void onClick(final DialogInterface dialog, final int which) {
                 if (!editText.getText().toString().equals("")) {
-                    Filter filter = new Filter();
-                    filter.setId_(filterList.get(position).getId_());
-                    filter.setChar_(editText.getText().toString());
-                    filter.setWord_(null);
-                    filter.setPharse_(null);
-                    db.updateFilters(filter);
+                    if (isDuplicated(editText.getText().toString())) {
+                        Filter filter = new Filter();
+                        filter.setId_(filterList.get(position).getId_());
+                        filter.setChar_(editText.getText().toString());
+                        filter.setWord_(null);
+                        filter.setPharse_(null);
 
-                    filterList.clear();
-                    filterList = db.getAllFilters();
-                    filterAdapter = new FilterAdapter(getActivity(),R.layout.custom_filter,filterList,type);
-                    listView.setAdapter(filterAdapter);
+                        db.updateFilters(filter);
 
-                    updateListFilterWhenAdd();
+                        filterList.clear();
+                        filterList = db.getAllFilters();
+                        filterAdapter = new FilterAdapter(getActivity(), R.layout.custom_filter, filterList, type);
+                        listView.setAdapter(filterAdapter);
+
+                        updateListFilterWhenAdd();
+                    }
+                    else
+                    Toast.makeText(getActivity(), getActivity().getString(R.string.db_isExits), Toast.LENGTH_SHORT).show();
                 }
                 else {
                     Toast.makeText(getActivity(), getActivity().getString(R.string.non_empty), Toast.LENGTH_SHORT).show();
@@ -343,14 +387,17 @@ public class Fragment_Filter extends Fragment implements AdapterView.OnItemClick
                 return true;
             case R.id.item_char:
                 addCharF();
+
                 return true;
 
             case R.id.item_word:
                 addWordF();
+
                 return true;
 
             case R.id.item_pharse:
                 addPharseF();
+
                 return true;
 
             case R.id.item_delete_all_filter: // start settings activity
@@ -380,6 +427,22 @@ public class Fragment_Filter extends Fragment implements AdapterView.OnItemClick
         }
     }
 
+    private void autoUpdateFilterFromSever() {
+        int countttt = mPref.getInt("numberFilterd", countFiter);
+        Log.d("number-F-UpdateServer",countttt+ " "+ filterList.size());
+        if (filterList.size() == countttt + countFiter) {
+            SharedPreferences.Editor editor = mPref.edit();
+            editor.putInt("numberFilterd", filterList.size());
+            editor.apply();
+            for (int i = countttt; i <=filterList.size()-1; i++) {
+                // Đổi dữ liệu sang dạng Json và đẩy lên Firebase bằng hàm Push
+                Gson gson = new Gson();
+                myFirebase.child("Filter").push().setValue(gson.toJson(filterList.get(i)));
+            }
+            //todo call sever update
+        }
+    }
+
     private void addPharseF() {
         final EditText editText2 = new EditText(getActivity());
 
@@ -392,17 +455,22 @@ public class Fragment_Filter extends Fragment implements AdapterView.OnItemClick
             @Override
             public void onClick(final DialogInterface dialog, final int which) {
                 if (!editText2.getText().toString().equals("")) {
-                    Filter filter = new Filter();
-                    filter.setPharse_(editText2.getText().toString());
-                    filter.setChar_(null);
-                    filter.setWord_(null);
-                    long id = db.addFilter(filter);
-                    filter.setId_((int) id);
+                    if (isDuplicated(editText2.getText().toString())) {
+                        Filter filter = new Filter();
+                        filter.setPharse_(editText2.getText().toString());
+                        filter.setChar_(null);
+                        filter.setWord_(null);
 
-                    filterList.add(filter);
-                    filterAdapter.notifyDataSetChanged();
+                        long id = db.addFilter(filter);
+                        filter.setId_((int) id);
+                        filterList.add(filter);
+                        filterAdapter.notifyDataSetChanged();
 
-                    updateListFilterWhenAdd();
+                        updateListFilterWhenAdd();
+
+                        autoUpdateFilterFromSever();
+                    } else
+                        Toast.makeText(getActivity(), getActivity().getString(R.string.db_isExits), Toast.LENGTH_SHORT).show();
                 }
                 else {
                     Toast.makeText(getActivity(), getActivity().getString(R.string.non_empty), Toast.LENGTH_SHORT).show();
@@ -462,17 +530,22 @@ public class Fragment_Filter extends Fragment implements AdapterView.OnItemClick
             @Override
             public void onClick(final DialogInterface dialog, final int which) {
                 if (!editText1.getText().toString().equals("")) {
-                    Filter filter = new Filter();
-                    filter.setWord_(editText1.getText().toString());
-                    filter.setChar_(null);
-                    filter.setPharse_(null);
-                    long id = db.addFilter(filter);
-                    filter.setId_((int) id);
+                    if (isDuplicated(editText1.getText().toString())) {
+                        Filter filter = new Filter();
+                        filter.setWord_(editText1.getText().toString());
+                        filter.setChar_(null);
+                        filter.setPharse_(null);
 
-                    filterList.add(filter);
-                    filterAdapter.notifyDataSetChanged();
+                        long id = db.addFilter(filter);
+                        filter.setId_((int) id);
 
-                    updateListFilterWhenAdd();
+                        filterList.add(filter);
+                        filterAdapter.notifyDataSetChanged();
+
+                        updateListFilterWhenAdd();
+                        autoUpdateFilterFromSever();
+                    }
+                    else Toast.makeText(getActivity(), getActivity().getString(R.string.db_isExits), Toast.LENGTH_SHORT).show();
                 }
                 else {
                     Toast.makeText(getActivity(), getActivity().getString(R.string.non_empty), Toast.LENGTH_SHORT).show();
@@ -511,17 +584,21 @@ public class Fragment_Filter extends Fragment implements AdapterView.OnItemClick
             @Override
             public void onClick(final DialogInterface dialog, final int which) {
                 if (!editText.getText().toString().equals("")) {
-                    Filter filter = new Filter();
-                    filter.setChar_(editText.getText().toString());
-                    filter.setWord_(null);
-                    filter.setPharse_(null);
-                    long id = db.addFilter(filter);
-                    filter.setId_((int) id);
+                    if (isDuplicated(editText.getText().toString())) {
+                        Filter filter = new Filter();
+                        filter.setChar_(editText.getText().toString());
+                        filter.setWord_(null);
+                        filter.setPharse_(null);
 
-                    filterList.add(filter);
-                    filterAdapter.notifyDataSetChanged();
+                        long id = db.addFilter(filter);
+                        filter.setId_((int) id);
+                        filterList.add(filter);
+                        filterAdapter.notifyDataSetChanged();
 
-                    updateListFilterWhenAdd();
+                        updateListFilterWhenAdd();
+                        autoUpdateFilterFromSever();
+                    }
+                    else Toast.makeText(getActivity(), getActivity().getString(R.string.db_isExits), Toast.LENGTH_SHORT).show();
                 }
                 else {
                     Toast.makeText(getActivity(), getActivity().getString(R.string.non_empty), Toast.LENGTH_SHORT).show();
@@ -613,6 +690,18 @@ public class Fragment_Filter extends Fragment implements AdapterView.OnItemClick
                 (getActivity(),R.layout.conversationlist_item, Fragment_Conv_Filter.conversationArrayList);
         Fragment_Conv_Filter.listView.setAdapter(Fragment_Conv_Filter.fragmentFilterdAdapter);
     }
-
-
+    public boolean isDuplicated( String content) {
+        for (int i = 0; i < filterList.size(); i++) {
+            if (filterList.get(i).getChar_() != null && filterList.get(i).getChar_().equals(content)) {
+                return false;
+            }
+            else if (filterList.get(i).getWord_() != null && filterList.get(i).getWord_().equals(content)){
+                return false;
+            }
+            else if (filterList.get(i).getPharse_() != null && filterList.get(i).getPharse_().equals(content)){
+                return false;
+            }
+        }
+        return true;
+    }
 }

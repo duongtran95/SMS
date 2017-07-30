@@ -67,7 +67,7 @@ public class SpamHandler extends SQLiteOpenHelper {
                 + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NUMBER + " TEXT" + ")";
         String CREATE_FILTER_TABLE = "CREATE TABLE " + TABLE_FILTER + "("
                 + KEY_IDF + " INTEGER PRIMARY KEY," + KEY_CHAR + " TEXT,"
-                + KEY_WORD + " TEXT,"+ KEY_PHARSE + " TEXT" + ")";
+                + KEY_WORD + " TEXT," + KEY_PHARSE + " TEXT" + ")";
         db.execSQL(CREATE_BLOCK_TABLE);
         db.execSQL(CREATE_FILTER_TABLE);
     }
@@ -82,9 +82,9 @@ public class SpamHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void createDefaultBlocksIfNeed()  {
+    public void createDefaultBlocksIfNeed() {
         int count = this.getBlocksCount();
-        if(count ==0 ) {
+        if (count == 0) {
             Block block = new Block(0, "123");
             Block block1 = new Block(1, "456");
             this.addBlock(block);
@@ -109,12 +109,12 @@ public class SpamHandler extends SQLiteOpenHelper {
     public Block getBlock(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.query(TABLE_BLOCK, new String[] { KEY_ID, KEY_NUMBER }, KEY_ID + "=?",
-                new String[] { String.valueOf(id) }, null, null, null, null);
+        Cursor cursor = db.query(TABLE_BLOCK, new String[]{KEY_ID, KEY_NUMBER}, KEY_ID + "=?",
+                new String[]{String.valueOf(id)}, null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
 
-        Block block = new Block(Integer.parseInt(cursor.getString(0)),cursor.getString(1));
+        Block block = new Block(Integer.parseInt(cursor.getString(0)), cursor.getString(1));
         // return note
         return block;
     }
@@ -174,11 +174,11 @@ public class SpamHandler extends SQLiteOpenHelper {
     public void deleteBlock(Block block) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_BLOCK, KEY_NUMBER + " = ?",
-                new String[] { block.getNumber() });
+                new String[]{block.getNumber()});
         db.close();
     }
 
-    public void deleteAllBlocks(){
+    public void deleteAllBlocks() {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("DELETE FROM " + TABLE_BLOCK); //delete all rows in a table
         db.close();
@@ -189,7 +189,7 @@ public class SpamHandler extends SQLiteOpenHelper {
         if (number == null) {
             return false;
         }
-        Cursor cursor = db.query(TABLE_BLOCK, new String[] { KEY_ID, KEY_NUMBER }, KEY_NUMBER + " = ?",
+        Cursor cursor = db.query(TABLE_BLOCK, new String[]{KEY_ID, KEY_NUMBER}, KEY_NUMBER + " = ?",
                 new String[]{number}, null, null, null);
         boolean c = cursor.moveToFirst();
         if (!cursor.isClosed()) {
@@ -197,6 +197,7 @@ public class SpamHandler extends SQLiteOpenHelper {
         }
         return c;
     }
+
     public boolean isBlacklisted(String number) {
         try {
             SQLiteDatabase db = getWritableDatabase();
@@ -205,47 +206,47 @@ public class SpamHandler extends SQLiteOpenHelper {
             return result;
         } catch (SQLiteException e) {
             //ER opening spam db, continue with empty list
-            Log.e("error opening spam db",e+"");
+            Log.e("error opening spam db", e + "");
             return false;
         }
     }
 
     //////////////////////////////////////////////Filter///////////////////////////////////////////////
 
-    public void createDefaultFilterIfNeed()  {
+    public void createDefaultFilterIfNeed() {
         int count = this.getFiltersCount();
-        if(count ==0 ) {
-            Filter filter = new Filter(0, null,"vip",null);
-            Filter filter1 = new Filter(1, null,"[Hot]",null);
-            Filter filter2 = new Filter(2, null,"[Vip]",null);
-            Filter filter3 = new Filter(3, null,"qc",null);
-            Filter filter4 = new Filter(4, null,"[QC]",null);
-            Filter filter5 = new Filter(5, null,"lh",null);
-            Filter filter6 = new Filter(6, null,"km",null);
-            Filter filter7 = new Filter(7, null,"hot",null);
-            Filter filter8 = new Filter(8, null,"kq",null);
-            Filter filter9 = new Filter(9, null,"sim",null);
-            Filter filter10 = new Filter(10, null,"l/h",null);
-            Filter filter11 = new Filter(11, null,"loto",null);
-            Filter filter12 = new Filter(12, null,"Tbao",null);
+        if (count == 0) {
+            Filter filter = new Filter(0, null, "vip", null);
+            Filter filter1 = new Filter(1, null, "[Hot]", null);
+            Filter filter2 = new Filter(2, null, "[Vip]", null);
+            Filter filter3 = new Filter(3, null, "qc", null);
+            Filter filter4 = new Filter(4, null, "[QC]", null);
+            Filter filter5 = new Filter(5, null, "lh", null);
+            Filter filter6 = new Filter(6, null, "km", null);
+            Filter filter7 = new Filter(7, null, "hot", null);
+            Filter filter8 = new Filter(8, null, "kq", null);
+            Filter filter9 = new Filter(9, null, "sim", null);
+            Filter filter10 = new Filter(10, null, "l/h", null);
+            Filter filter11 = new Filter(11, null, "loto", null);
+            Filter filter12 = new Filter(12, null, "Tbao", null);
 
-            Filter filter13 = new Filter(13, null,null,"cho vay");
-            Filter filter14 = new Filter(14, null,null,"mua ban");
-            Filter filter15 = new Filter(15, null,null,"bán sim");
-            Filter filter16 = new Filter(16, null,null,"căn hộ");
-            Filter filter17 = new Filter(17, null,null,"chung cư");
-            Filter filter18 = new Filter(18, null,null,"trúng thưởng");
-            Filter filter19 = new Filter(19, null,null,"thông báo");
-            Filter filter20 = new Filter(20, null,null,"chúc mừng");
-            Filter filter21 = new Filter(21, null,null,"khuyến mại");
-            Filter filter22 = new Filter(22, null,null,"bán đất");
-            Filter filter23 = new Filter(23, null,null,"bán nhà");
-            Filter filter24 = new Filter(24, null,null,"miễn phí");
-            Filter filter25 = new Filter(25, null,null,"quảng cáo");
-            Filter filter26 = new Filter(26, null,null,"siêu hot");
-            Filter filter27 = new Filter(27, null,null,"siêu rẻ");
-            Filter filter28 = new Filter(28, null,null,"may mắn");
-            Filter filter29 = new Filter(29, null,null,"(miễn phí)");
+            Filter filter13 = new Filter(13, null, null, "cho vay");
+            Filter filter14 = new Filter(14, null, null, "mua ban");
+            Filter filter15 = new Filter(15, null, null, "bán sim");
+            Filter filter16 = new Filter(16, null, null, "căn hộ");
+            Filter filter17 = new Filter(17, null, null, "chung cư");
+            Filter filter18 = new Filter(18, null, null, "trúng thưởng");
+            Filter filter19 = new Filter(19, null, null, "thông báo");
+            Filter filter20 = new Filter(20, null, null, "chúc mừng");
+            Filter filter21 = new Filter(21, null, null, "khuyến mại");
+            Filter filter22 = new Filter(22, null, null, "bán đất");
+            Filter filter23 = new Filter(23, null, null, "bán nhà");
+            Filter filter24 = new Filter(24, null, null, "miễn phí");
+            Filter filter25 = new Filter(25, null, null, "quảng cáo");
+            Filter filter26 = new Filter(26, null, null, "siêu hot");
+            Filter filter27 = new Filter(27, null, null, "siêu rẻ");
+            Filter filter28 = new Filter(28, null, null, "may mắn");
+            Filter filter29 = new Filter(29, null, null, "(miễn phí)");
 
             this.addFilter(filter);
             this.addFilter(filter1);
@@ -302,17 +303,19 @@ public class SpamHandler extends SQLiteOpenHelper {
     public Filter getFilter(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.query(TABLE_FILTER, new String[] { KEY_IDF,
-                        KEY_CHAR, KEY_WORD,KEY_PHARSE }, KEY_ID + "=?",
-                new String[] { String.valueOf(id) }, null, null, null, null);
+        Cursor cursor = db.query(TABLE_FILTER, new String[]{KEY_IDF,
+                        KEY_CHAR, KEY_WORD, KEY_PHARSE}, KEY_ID + "=?",
+                new String[]{String.valueOf(id)}, null, null, null, null);
         if (cursor != null)
             cursor.moveToFirst();
 
         Filter filter = new Filter(Integer.parseInt(cursor.getString(0)),
-                cursor.getString(1), cursor.getString(2),cursor.getString(3));
+                cursor.getString(1), cursor.getString(2), cursor.getString(3));
         // return note
         return filter;
     }
+
+
 
 
     public List<Filter> getAllFilters() {

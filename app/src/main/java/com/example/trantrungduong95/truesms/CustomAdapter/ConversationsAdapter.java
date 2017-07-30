@@ -24,7 +24,6 @@ import com.example.trantrungduong95.truesms.MainActivity;
 import com.example.trantrungduong95.truesms.Model.Block;
 import com.example.trantrungduong95.truesms.Model.Contact;
 import com.example.trantrungduong95.truesms.Model.Conversation;
-import com.example.trantrungduong95.truesms.Model.Test;
 import com.example.trantrungduong95.truesms.Model.Wrapper.ContactsWrapper;
 import com.example.trantrungduong95.truesms.Presenter.Converter;
 import com.example.trantrungduong95.truesms.Presenter.Activity_.SettingsOldActivity;
@@ -33,7 +32,6 @@ import com.example.trantrungduong95.truesms.Presenter.SpamHandler;
 import com.example.trantrungduong95.truesms.R;
 import com.example.trantrungduong95.truesms.Receiver.SmsReceiver;
 
-import java.util.ArrayList;
 import java.util.List;
 
 // Adapter for the list of link Conversations.

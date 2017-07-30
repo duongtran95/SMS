@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <CheckBoxPreference
-        android:defaultValue="true"
+        android:defaultValue="false"
         android:key="show_target_app"
+        android:enabled="false"
         android:summary="@string/show_target_app_hint"
         android:title="@string/show_target_app_" />
     <CheckBoxPreference
@@ -15,6 +16,7 @@
         android:summary="@string/activate_sender_hint"/>-->
     <CheckBoxPreference
         android:key="mobile_only"
+        android:enabled="false"
         android:title="@string/mobile_only_"
         android:summary="@string/mobile_only_hint"
         android:defaultValue="false"/>
@@ -24,6 +26,7 @@
         android:title="@string/edit_short_text_"
         android:summary="@string/edit_short_text_hint"/>-->
     <CheckBoxPreference
+        android:enabled="false"
         android:key="forwarded_sms_clean"
         android:title="@string/forwarded_sms_clean_"
         android:summary="@string/forwarded_sms_clean_hint"

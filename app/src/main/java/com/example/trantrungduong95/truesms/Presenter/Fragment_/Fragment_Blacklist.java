@@ -116,22 +116,24 @@ public class Fragment_Blacklist extends Fragment implements AdapterView.OnItemCl
                     @Override
                     public void onClick(final DialogInterface dialog, final int which) {
                         if (!editText.getText().toString().equals("")) {
+                            if (isDuplicated(editText.getText().toString())) {
+                                Block block = new Block();
+                                block.setNumber(editText.getText().toString());
+                                ((BlacklistActivity) getActivity()).db.addBlock(block);
+                                ((BlacklistActivity) getActivity()).blockList.add(block);
+                                blockAdapter.notifyDataSetChanged();
 
-                            Block block = new Block();
-                            block.setNumber(editText.getText().toString());
-                            ((BlacklistActivity) getActivity()).db.addBlock(block);
-                            ((BlacklistActivity) getActivity()).blockList.add(block);
-                            blockAdapter.notifyDataSetChanged();
+                                if (isExits(editText.getText().toString()) != null) {
+                                    Conversation a = isExits(editText.getText().toString());
+                                    Fragment_Conv_Blacklist.conversationArrayList.clear();
 
-                            if (isExits(editText.getText().toString()) != null) {
-                                Conversation a = isExits(editText.getText().toString());
-                                Fragment_Conv_Blacklist.conversationArrayList.clear();
-
-                                Fragment_Conv_Blacklist.conversationArrayList = getConvBlacklist();
-                                Fragment_Conv_Blacklist.fragmentBlacklistAdapter = new FragmentBlacklistAdapter
-                                        (getActivity(), R.layout.conversationlist_item, Fragment_Conv_Blacklist.conversationArrayList);
-                                Fragment_Conv_Blacklist.listView.setAdapter(Fragment_Conv_Blacklist.fragmentBlacklistAdapter);
+                                    Fragment_Conv_Blacklist.conversationArrayList = getConvBlacklist();
+                                    Fragment_Conv_Blacklist.fragmentBlacklistAdapter = new FragmentBlacklistAdapter
+                                            (getActivity(), R.layout.conversationlist_item, Fragment_Conv_Blacklist.conversationArrayList);
+                                    Fragment_Conv_Blacklist.listView.setAdapter(Fragment_Conv_Blacklist.fragmentBlacklistAdapter);
+                                }
                             }
+                            else Toast.makeText(getActivity(), getActivity().getString(R.string.db_isExits), Toast.LENGTH_SHORT).show();
 
                         } else
                             Toast.makeText(getActivity(), getActivity().getString(R.string.non_empty), Toast.LENGTH_SHORT).show();
@@ -219,5 +221,14 @@ public class Fragment_Blacklist extends Fragment implements AdapterView.OnItemCl
             }
         }
         return false;
+    }
+
+    public boolean isDuplicated( String number) {
+        for (int i = 0; i <  ((BlacklistActivity) getActivity()).blockList.size(); i++) {
+            if ( ((BlacklistActivity) getActivity()).blockList.get(i).getNumber().equals(number)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

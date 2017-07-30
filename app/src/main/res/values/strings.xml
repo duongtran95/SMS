@@ -11,11 +11,16 @@
     <string name="about_a">Giới thiệu ứng dụng</string>
     <string name="about_hint">Luận văn tốt nghiệp</string>
     <string name="about_author">Author: Trần Trung Dương</string>
-    <string name="about_version">Version: v1.0.0</string>
+    <string name="about_version">Version: v2.0.2</string>
     <string name="about_date">25/7/2017</string>
     <string name="faq_hint">Một số mẹo và thủ thuật, cách thiết lập ứng dụng này.</string>
     <string name="feedback_">Phản hồi</string>
     <string name="feedback_hint">Báo cáo lỗi, yêu cầu tính năng…</string>
+    <string name="feedback_name_hint">Nhập tên chủ đề</string>
+    <string name="feedback_email_hint">Nhập email</string>
+    <string name="feedback_address_hint">Nhập số điện thoại</string>
+    <string name="feedback_describe_hint">Nhập mô tả chi tiết</string>
+    <string name="db_isExits">Đã tồn tại trong cơ sở dữ liệu</string>
     <string name="settings">Cài đặt</string>
     <string name="new_message_">Tin nhắn mới</string>
     <string name="new_message">1 tin nhắn chưa đọc.</string>
@@ -218,7 +223,7 @@
     <string name="title_edit_filterd_char">Sửa mẫu lọc ký tự</string>
     <string name="title_edit_filterd_word">Sửa mẫu lọc từ</string>
     <string name="title_edit_filterd_pharse">Sửa mẫu lọc cụm từ</string>
-    
+
     <string name="count">SL</string>
     <string name="title_add_blacklit">Thêm SDT chặn</string>
     <string name="title_add_blacklit_hint">Bạn có muốn thêm SDT vào danh sách chặn không?</string>

@@ -2,11 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
         <item
-            android:id="@+id/item_delete_all_filter"
-            android:title="@string/delete_all_filter"
-            app:showAsAction="ifRoom"
-            android:icon="@drawable/ic_delete"/>
-        <item
             android:id="@+id/item_add_filter"
             android:title="@string/add_filter"
             app:showAsAction="ifRoom"
@@ -26,4 +21,9 @@
                     android:orderInCategory="100" />
         </menu>
         </item>
+        <item
+            android:id="@+id/item_delete_all_filter"
+            android:title="@string/delete_all_filter"
+            app:showAsAction="ifRoom"
+            android:icon="@drawable/ic_delete"/>
 </menu>

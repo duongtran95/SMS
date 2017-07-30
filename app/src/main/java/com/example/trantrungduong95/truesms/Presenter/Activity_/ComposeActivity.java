@@ -347,7 +347,9 @@ public class ComposeActivity extends AppCompatActivity implements View.OnClickLi
                 EditText compose_reply_p = (MultiAutoCompleteTextView) findViewById(R.id.txtPhoneNo);
                 phoneNo = compose_reply_p.getText().toString();
                 if (send()) {
-                    finish();
+                    Intent i;
+                    i = MainActivity.getComposeIntent(this, phoneNo);
+                    startActivity(i);
                 }
                 return;
             case R.id.compose_icon:

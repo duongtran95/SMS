@@ -29,14 +29,14 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.GET_TASKS" />
+
     <application
         android:name=".Presenter.Activity_.DefaultAndPermission"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:resizeableActivity="true">
+        android:resizeableActivity="true"
+        android:roundIcon="@mipmap/ic_launcher_round">
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden"
@@ -64,17 +64,17 @@
         <activity android:name=".Presenter.Activity_.SettingsNofActivity" />
         <activity
             android:name=".Presenter.AboutActivity"
-            android:theme="@style/Theme.TrueSMS_Light"
-            />
+            android:theme="@style/Theme.TrueSMS_Light" />
         <activity
             android:name=".Presenter.Activity_.ConversationActivity"
             android:launchMode="singleTop"
             android:theme="@style/Theme.TrueSMS_Light"
-
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data
                     android:host="0"
                     android:mimeType="vnd.android-dir/mms-sms"
@@ -122,11 +122,18 @@
         <activity
             android:name=".Presenter.Activity_.BlacklistActivity"
             android:theme="@style/Theme.TrueSMS_Light">
+
         </activity>
         <activity
             android:name=".Presenter.Activity_.FilterActivity"
             android:theme="@style/Theme.TrueSMS_Light">
+
         </activity>
+
+        <activity android:name=".Presenter.Activity_.DialogFeedBackActivity">
+
+        </activity>
+
         <receiver
             android:name=".Receiver.SmsReceiver"
             android:exported="true"

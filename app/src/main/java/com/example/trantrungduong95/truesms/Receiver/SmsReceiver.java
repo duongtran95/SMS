@@ -13,7 +13,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
@@ -22,7 +21,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.CallLog;
@@ -34,7 +32,6 @@ import android.telephony.SmsMessage;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
-import android.widget.Toast;
 
 import com.example.trantrungduong95.truesms.BuildConfig;
 import com.example.trantrungduong95.truesms.CustomAdapter.FragmentBlacklistAdapter;
@@ -121,7 +118,19 @@ public class SmsReceiver extends BroadcastReceiver {
     //Red lights.
     public static int RED = 0xFFFF0000;
 
-    public static String sdt;
+    //1
+    // set value the number of occurrences char in filter mailbox
+    private static int occurrencesChar = 2;
+    // set value the number of occurrences word in word mailbox
+    private static int occurrencesWord = 2;
+
+    //2
+    // set value the number of occurrences word in filter mailbox
+    private static int occurrencesWordF = 4;
+
+    //3
+    // set value the number of occurrences word in filter mailbox
+    private static int occurrencesPharse = 2;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -183,7 +192,6 @@ public class SmsReceiver extends BroadcastReceiver {
 
                     //String addr = smsMessage[0].getDisplayOriginatingAddress();
                     addr = smsMessage[0].getDisplayOriginatingAddress();
-                    sdt = addr;
 
 /*                    //filter
                     if (filter(context,text,addr)){
@@ -358,10 +366,6 @@ public class SmsReceiver extends BroadcastReceiver {
         }
         int count = cursor.getCount();
 
-        if (sdt !=null && isBlocked(sdt,context)) {
-            count--;
-            Log.e("23455",count+"");
-        }
         //todo handle nof sms blocked
         if (!cursor.isClosed()) {
             cursor.close();
@@ -402,10 +406,6 @@ public class SmsReceiver extends BroadcastReceiver {
             }
         }
         int count = cursor.getCount();
-        if (sdt !=null && isBlocked(sdt,context)) {
-            count--;
-            Log.e("23455",count+"");
-        }
         if (!cursor.isClosed()) {
             cursor.close();
         }
@@ -737,15 +737,15 @@ public class SmsReceiver extends BroadcastReceiver {
 
                 // the number of occurrences
                 //char 2 and word 2
-                if (charF(arrayList,filterList) >= 2 && wordF(arrayList,filterList) >= 2){
+                if (charF(arrayList,filterList) >= occurrencesChar && wordF(arrayList,filterList) >= occurrencesWord){
                     return true;
                 }
                 // word 4
-                if (wordF(arrayList,filterList) >= 4){
+                if (wordF(arrayList,filterList) >= occurrencesWordF){
                     return true;
                 }
                 //pharse 2
-                if (pharseF(filterList,text) >=2)
+                if (pharseF(filterList,text) >=occurrencesPharse)
                 {
                     return true;
                 }
@@ -820,6 +820,7 @@ public class SmsReceiver extends BroadcastReceiver {
         }
         return contacts;
     }
+
     public static boolean isBlocked(String addr, Context context) {
         SpamHandler db = new SpamHandler(context);
         List<Block> blockList = db.getAllBlocks();

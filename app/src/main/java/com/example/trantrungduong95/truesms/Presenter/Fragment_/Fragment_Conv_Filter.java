@@ -52,7 +52,7 @@ public class Fragment_Conv_Filter extends android.support.v4.app.Fragment  imple
 
     String[] longItemClickDialog = new String[WHICH_N];
 
-    public List<Block> blockList = new ArrayList<Block>();
+    public static List<Block> blockList = new ArrayList<Block>();
     public SpamHandler db;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

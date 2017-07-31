@@ -149,7 +149,7 @@ public class Fragment_Blacklist extends Fragment implements AdapterView.OnItemCl
     }
 
     //Update mailbox block when added.
-    public Conversation isExits(String addr) {
+    private Conversation isExits(String addr) {
         if (addr == null) {
             return null;
         }
@@ -161,7 +161,7 @@ public class Fragment_Blacklist extends Fragment implements AdapterView.OnItemCl
         return null;
     }
 
-    public ArrayList<Conversation> getConv() {
+    private ArrayList<Conversation> getConv() {
         ArrayList<Conversation> conversationArrayList = new ArrayList<>();
         Cursor c = null;
         try {
@@ -185,7 +185,7 @@ public class Fragment_Blacklist extends Fragment implements AdapterView.OnItemCl
         return conversationArrayList;
     }
 
-    public ArrayList<Conversation> getConvBlacklist(/*ArrayList<Conversation> convList*/) {
+    private ArrayList<Conversation> getConvBlacklist(/*ArrayList<Conversation> convList*/) {
         ArrayList<Conversation> convList = new ArrayList<>();
         Cursor c = null;
         try {
@@ -211,7 +211,7 @@ public class Fragment_Blacklist extends Fragment implements AdapterView.OnItemCl
         return convList;
     }
 
-    public boolean isBlocked(String addr) {
+    private boolean isBlocked(String addr) {
         if (addr == null) {
             return false;
         }
@@ -223,7 +223,7 @@ public class Fragment_Blacklist extends Fragment implements AdapterView.OnItemCl
         return false;
     }
 
-    public boolean isDuplicated( String number) {
+    private boolean isDuplicated( String number) {
         for (int i = 0; i <  ((BlacklistActivity) getActivity()).blockList.size(); i++) {
             if ( ((BlacklistActivity) getActivity()).blockList.get(i).getNumber().equals(number)) {
                 return false;

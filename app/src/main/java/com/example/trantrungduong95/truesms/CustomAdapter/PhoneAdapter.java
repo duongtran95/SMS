@@ -94,7 +94,6 @@ public class PhoneAdapter extends ResourceCursorAdapter {
     }
 
     // Clean recipient's phone number from [ -.()<>]. Return clean number
-
     public static String cleanRecipient(String recipient) {
         if (TextUtils.isEmpty(recipient)) {
             return "";

@@ -46,12 +46,12 @@ public class Fragment_Filter extends Fragment implements AdapterView.OnItemClick
     private static final int MODE_PRIVATE = 0;
     private ListView listView;
     private FilterAdapter filterAdapter;
-    List<Filter> filterList = new ArrayList<Filter>();
-    SpamHandler db;
-    Button btnChar, btnWord, btnPharse;
-    int type =0;
-    SharedPreferences mPref;
-    String[] longItemClickDialog = new String[WHICH_N];
+    private List<Filter> filterList = new ArrayList<Filter>();
+    private SpamHandler db;
+    private Button btnChar, btnWord, btnPharse;
+    private int type =0;
+    private SharedPreferences mPref;
+    private String[] longItemClickDialog = new String[WHICH_N];
 
     //Number of items.
     private static final int WHICH_N = 2;
@@ -60,7 +60,7 @@ public class Fragment_Filter extends Fragment implements AdapterView.OnItemClick
     //Index in dialog: delete.
     private static final int WHICH_DELETE = 1;
 
-    boolean flag_edit = false;
+    private boolean flag_edit = false;
 
     // number autoFiterd update Firebase
     private int countFiter = 20;
@@ -75,12 +75,11 @@ public class Fragment_Filter extends Fragment implements AdapterView.OnItemClick
         setHasOptionsMenu(true);
 
         db = new SpamHandler(getActivity());
-        db.createDefaultFilterIfNeed();
         filterList = db.getAllFilters();
+
         listView = (ListView) view.findViewById(R.id.list_filter);
 
         myFirebase = new Firebase("https://democn-6f3ab.firebaseio.com/");
-
         // create SharedPreferences
         mPref = getActivity().getSharedPreferences("MyPrefsFile", MODE_PRIVATE);
 
@@ -174,6 +173,8 @@ public class Fragment_Filter extends Fragment implements AdapterView.OnItemClick
                                     db.deleteFilter(filterList.get(position));
                                     filterList.remove(filterList.get(position));
                                     filterAdapter.notifyDataSetChanged();
+
+                                    updateListFilterWhenAdd();
                                 }
                             });
                             builder2.show();
@@ -191,6 +192,76 @@ public class Fragment_Filter extends Fragment implements AdapterView.OnItemClick
         builder.create().show();
 
         return true;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        getActivity().getMenuInflater().inflate(R.menu.filterd, menu);
+        menu.removeItem(R.id.action_search);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.item_add_filter:
+                return true;
+            case R.id.item_char:
+                addCharF();
+
+                return true;
+
+            case R.id.item_word:
+                addWordF();
+
+                return true;
+
+            case R.id.item_pharse:
+                addPharseF();
+
+                return true;
+
+            case R.id.item_delete_all_filter: // start settings activity
+                AlertDialog.Builder builder3 = new AlertDialog.Builder(getActivity());
+                builder3.setTitle(getActivity().getString(R.string.delete_all_filter));
+                builder3.setMessage(getActivity().getString(R.string.confirm_all_delete_filter));
+                builder3.setNegativeButton(android.R.string.no, null);
+                builder3.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(final DialogInterface dialog, final int which) {
+                        db.deleteAllFilters();
+                        filterList.clear();
+
+                        db.createDefaultFilterIfNeed();
+                        filterList = db.getAllFilters();
+                        filterAdapter = new FilterAdapter(getActivity(),R.layout.custom_filter,filterList,type);
+                        listView.setAdapter(filterAdapter);
+
+                        updateListFilterWhenAdd();
+
+                    }
+                });
+                builder3.show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void autoUpdateFilterFromSever() {
+        int countttt = mPref.getInt("numberFilterd", countFiter);
+        Log.d("number-F-UpdateServer",countttt+ " "+ filterList.size());
+        if (filterList.size() == countttt + countFiter) {
+            SharedPreferences.Editor editor = mPref.edit();
+            editor.putInt("numberFilterd", filterList.size());
+            editor.apply();
+            for (int i = countttt; i <=filterList.size()-1; i++) {
+                // Đổi dữ liệu sang dạng Json và đẩy lên Firebase bằng hàm Push
+                Gson gson = new Gson();
+                myFirebase.child("Filter").push().setValue(gson.toJson(filterList.get(i)));
+            }
+            //todo call sever update
+        }
     }
 
     private void editPharseF(final int position) {
@@ -363,7 +434,7 @@ public class Fragment_Filter extends Fragment implements AdapterView.OnItemClick
                         updateListFilterWhenAdd();
                     }
                     else
-                    Toast.makeText(getActivity(), getActivity().getString(R.string.db_isExits), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), getActivity().getString(R.string.db_isExits), Toast.LENGTH_SHORT).show();
                 }
                 else {
                     Toast.makeText(getActivity(), getActivity().getString(R.string.non_empty), Toast.LENGTH_SHORT).show();
@@ -371,76 +442,6 @@ public class Fragment_Filter extends Fragment implements AdapterView.OnItemClick
             }
         });
         builder.show();
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        getActivity().getMenuInflater().inflate(R.menu.filterd, menu);
-        menu.removeItem(R.id.action_search);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.item_add_filter:
-                return true;
-            case R.id.item_char:
-                addCharF();
-
-                return true;
-
-            case R.id.item_word:
-                addWordF();
-
-                return true;
-
-            case R.id.item_pharse:
-                addPharseF();
-
-                return true;
-
-            case R.id.item_delete_all_filter: // start settings activity
-                AlertDialog.Builder builder3 = new AlertDialog.Builder(getActivity());
-                builder3.setTitle(getActivity().getString(R.string.delete_all_filter));
-                builder3.setMessage(getActivity().getString(R.string.confirm_all_delete_filter));
-                builder3.setNegativeButton(android.R.string.no, null);
-                builder3.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(final DialogInterface dialog, final int which) {
-                        db.deleteAllFilters();
-                        filterList.clear();
-
-                        db.createDefaultFilterIfNeed();
-                        filterList = db.getAllFilters();
-                        filterAdapter = new FilterAdapter(getActivity(),R.layout.custom_filter,filterList,type);
-                        listView.setAdapter(filterAdapter);
-
-                        updateListFilterWhenAdd();
-
-                    }
-                });
-                builder3.show();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    private void autoUpdateFilterFromSever() {
-        int countttt = mPref.getInt("numberFilterd", countFiter);
-        Log.d("number-F-UpdateServer",countttt+ " "+ filterList.size());
-        if (filterList.size() == countttt + countFiter) {
-            SharedPreferences.Editor editor = mPref.edit();
-            editor.putInt("numberFilterd", filterList.size());
-            editor.apply();
-            for (int i = countttt; i <=filterList.size()-1; i++) {
-                // Đổi dữ liệu sang dạng Json và đẩy lên Firebase bằng hàm Push
-                Gson gson = new Gson();
-                myFirebase.child("Filter").push().setValue(gson.toJson(filterList.get(i)));
-            }
-            //todo call sever update
-        }
     }
 
     private void addPharseF() {
@@ -608,12 +609,19 @@ public class Fragment_Filter extends Fragment implements AdapterView.OnItemClick
         builder.show();
     }
 
-    public ArrayList<Test> ReadFilterMailbox() {
+    private ArrayList<Test> ReadFilterMailbox() {
         ArrayList<Test> messages = new ArrayList<>();
         Uri uriSms = Uri.parse("content://sms/");
         ContentResolver cr = getActivity().getContentResolver();
-        Cursor c = cr.query(uriSms, null, null, null, null);
-
+        //Cursor's projection.
+        String[] PROJECTION = { //
+                "_id", // 0
+                "address", // 1
+                "body", // 2
+                "date", // 3
+        };
+        //Cursor c = cr.query(uriSms, null, null, null, null);
+        Cursor c = cr.query(uriSms,PROJECTION,null, null, null);
         int totalSMS = c.getCount();
         if (c.moveToFirst()) {
             for (int i = 0; i < totalSMS; i++) {
@@ -638,7 +646,7 @@ public class Fragment_Filter extends Fragment implements AdapterView.OnItemClick
         return messages;
     }
 
-    public ArrayList<Conversation> getConvFilter() {
+    private ArrayList<Conversation> getConvFilter() {
         ArrayList<Test> messages = ReadFilterMailbox();
         ArrayList<Conversation> conversationFilter = new ArrayList<>();
         Cursor c = null;
@@ -669,13 +677,13 @@ public class Fragment_Filter extends Fragment implements AdapterView.OnItemClick
         return conversationFilter;
     }
 
-    public boolean isBlocked(String addr) {
-        SpamHandler db = new SpamHandler(getActivity());
-        List<Block> blockList = db.getAllBlocks();
+    private boolean isBlocked(String addr) {
+        //SpamHandler db = new SpamHandler(getActivity());
+        //List<Block> blockList = db.getAllBlocks();
         if (addr == null) {
             return false;
         }
-        for (Block aBlacklist : blockList) {
+        for (Block aBlacklist : Fragment_Conv_Filter.blockList) {
             if (addr.equals(aBlacklist.getNumber())) {
                 return true;
             }
@@ -683,14 +691,15 @@ public class Fragment_Filter extends Fragment implements AdapterView.OnItemClick
         return false;
     }
 
-    public void updateListFilterWhenAdd(){
+    private void updateListFilterWhenAdd(){
         Fragment_Conv_Filter.conversationArrayList.clear();
         Fragment_Conv_Filter.conversationArrayList = getConvFilter();
         Fragment_Conv_Filter.fragmentFilterdAdapter = new FragmentFilterdAdapter
                 (getActivity(),R.layout.conversationlist_item, Fragment_Conv_Filter.conversationArrayList);
         Fragment_Conv_Filter.listView.setAdapter(Fragment_Conv_Filter.fragmentFilterdAdapter);
     }
-    public boolean isDuplicated( String content) {
+
+    private boolean isDuplicated( String content) {
         for (int i = 0; i < filterList.size(); i++) {
             if (filterList.get(i).getChar_() != null && filterList.get(i).getChar_().equals(content)) {
                 return false;

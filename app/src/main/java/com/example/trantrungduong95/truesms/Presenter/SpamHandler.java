@@ -231,7 +231,7 @@ public class SpamHandler extends SQLiteOpenHelper {
             Filter filter12 = new Filter(12, null, "Tbao", null);
 
             Filter filter13 = new Filter(13, null, null, "cho vay");
-            Filter filter14 = new Filter(14, null, null, "mua ban");
+            Filter filter14 = new Filter(14, null, null, "mua bán");
             Filter filter15 = new Filter(15, null, null, "bán sim");
             Filter filter16 = new Filter(16, null, null, "căn hộ");
             Filter filter17 = new Filter(17, null, null, "chung cư");

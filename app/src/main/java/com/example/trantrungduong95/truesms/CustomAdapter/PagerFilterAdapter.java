@@ -11,18 +11,23 @@ import com.example.trantrungduong95.truesms.Presenter.Fragment_.Fragment_Conv_Fi
 import com.example.trantrungduong95.truesms.Presenter.Fragment_.Fragment_Filter;
 import com.example.trantrungduong95.truesms.R;
 
+import java.util.HashMap;
 
 /**
  * Created by ngomi_000 on 6/1/2017.
  */
 
 public class PagerFilterAdapter extends FragmentStatePagerAdapter {
+    private HashMap<Integer, Fragment> fragmentHashMap;
     private int NUM_ITEMS = 2;
     Context context;
 
     public PagerFilterAdapter(FragmentManager fragmentManager,Context nContext) {
         super(fragmentManager);
         context = nContext;
+        fragmentHashMap = new HashMap<>();
+        fragmentHashMap.put(0,new Fragment_Conv_Filter());
+        fragmentHashMap.put(1,new Fragment_Filter());
 
     }
 
@@ -35,14 +40,15 @@ public class PagerFilterAdapter extends FragmentStatePagerAdapter {
     // Returns the fragment to display for that page
     @Override
     public Fragment getItem(int position) {
-        switch (position) {
+        return fragmentHashMap.get(position);
+/*        switch (position) {
             case 0:// Fragment # 0 - This will show FirstFragment different title
                 return new Fragment_Conv_Filter();
             case 1: // Fragment # 0 - This will show FirstFragment different title
                 return new Fragment_Filter();
             default:
                 return null;
-        }
+        }*/
     }
 
     // Returns the page title for the top indicator
@@ -56,7 +62,4 @@ public class PagerFilterAdapter extends FragmentStatePagerAdapter {
         }
         return null;
     }
-
-
-
 }

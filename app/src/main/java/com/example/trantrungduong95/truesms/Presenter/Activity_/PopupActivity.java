@@ -110,7 +110,7 @@ public class PopupActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    public Conversation getConvFilter() {
+    private Conversation getConvFilter() {
         Conversation conv = new Conversation();
         Cursor c = null;
         try {
@@ -252,7 +252,7 @@ public class PopupActivity extends AppCompatActivity implements View.OnClickList
         return message;
     }
 
-    public boolean send() {
+    private boolean send() {
         if (TextUtils.isEmpty(phoneNo) || TextUtils.isEmpty(text)) {
             return false;
         }

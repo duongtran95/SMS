@@ -60,60 +60,6 @@ public class Fragment_Conv_Blacklist extends android.support.v4.app.Fragment imp
         return view;
     }
 
-    private void handleData(View view) {
-        conversationArrayList = getConvBlacklist();
-        listView = (ListView) view.findViewById(R.id.conversations_list_blacklist);
-        listView.setOnItemLongClickListener(this);
-        listView.setOnItemClickListener(this);
-
-        longItemClickDialog = new String[WHICH_N];
-        longItemClickDialog[WHICH_VIEW] = getString(R.string.view_thread_);
-        longItemClickDialog[WHICH_CALL] = getString(R.string.call);
-        //longItemClickDialog[WHICH_VIEW_CONTACT] = getString(R.string.view_contact_);
-        longItemClickDialog[WHICH_RESTORE] = getString(R.string.title_restore);
-        longItemClickDialog[WHICH_DELETE] = getString(R.string.delete_thread_);
-        fragmentBlacklistAdapter = new FragmentBlacklistAdapter(getActivity(), R.layout.conversationlist_item, conversationArrayList);
-        listView.setAdapter(fragmentBlacklistAdapter);
-    }
-
-    public boolean isBlocked(String addr) {
-        if (addr == null) {
-            return false;
-        }
-        for (Block aBlacklist : ((BlacklistActivity) getActivity()).blockList) {
-            if (addr.equals(aBlacklist.getNumber())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public ArrayList<Conversation> getConvBlacklist() {
-        ArrayList<Conversation> convList = new ArrayList<>();
-        Cursor c = null;
-        try {
-            c = getActivity().getContentResolver().query(Conversation.URI_SIMPLE, Conversation.PROJECTION_SIMPLE, Conversation.COUNT + ">0", null, null);
-        } catch (Exception e) {
-            Log.e("error getting conv", e + "");
-        }
-
-        int totalSMS = 0;
-        if (c != null) {
-            totalSMS = c.getCount();
-        }
-        if (c != null && c.moveToFirst()) {
-            for (int i = 0; i < totalSMS; i++) {
-                Conversation conv = Conversation.getConversation(getActivity(), c, true);
-                if (isBlocked(conv.getContact().getNumber())) {
-                    convList.add(conv);
-                }
-                c.moveToNext();
-            }
-            c.close();
-        }
-        return convList;
-    }
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         getActivity().getMenuInflater().inflate(R.menu.blacklist, menu);
@@ -230,6 +176,60 @@ public class Fragment_Conv_Blacklist extends android.support.v4.app.Fragment imp
         builder.create().show();
 
         return true;
+    }
+
+    private void handleData(View view) {
+        conversationArrayList = getConvBlacklist();
+        listView = (ListView) view.findViewById(R.id.conversations_list_blacklist);
+        listView.setOnItemLongClickListener(this);
+        listView.setOnItemClickListener(this);
+
+        longItemClickDialog = new String[WHICH_N];
+        longItemClickDialog[WHICH_VIEW] = getString(R.string.view_thread_);
+        longItemClickDialog[WHICH_CALL] = getString(R.string.call);
+        //longItemClickDialog[WHICH_VIEW_CONTACT] = getString(R.string.view_contact_);
+        longItemClickDialog[WHICH_RESTORE] = getString(R.string.title_restore);
+        longItemClickDialog[WHICH_DELETE] = getString(R.string.delete_thread_);
+        fragmentBlacklistAdapter = new FragmentBlacklistAdapter(getActivity(), R.layout.conversationlist_item, conversationArrayList);
+        listView.setAdapter(fragmentBlacklistAdapter);
+    }
+
+    private boolean isBlocked(String addr) {
+        if (addr == null) {
+            return false;
+        }
+        for (Block aBlacklist : ((BlacklistActivity) getActivity()).blockList) {
+            if (addr.equals(aBlacklist.getNumber())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private ArrayList<Conversation> getConvBlacklist() {
+        ArrayList<Conversation> convList = new ArrayList<>();
+        Cursor c = null;
+        try {
+            c = getActivity().getContentResolver().query(Conversation.URI_SIMPLE, Conversation.PROJECTION_SIMPLE, Conversation.COUNT + ">0", null, null);
+        } catch (Exception e) {
+            Log.e("error getting conv", e + "");
+        }
+
+        int totalSMS = 0;
+        if (c != null) {
+            totalSMS = c.getCount();
+        }
+        if (c != null && c.moveToFirst()) {
+            for (int i = 0; i < totalSMS; i++) {
+                Conversation conv = Conversation.getConversation(getActivity(), c, true);
+                if (isBlocked(conv.getContact().getNumber())) {
+                    convList.add(conv);
+                }
+                c.moveToNext();
+            }
+            c.close();
+        }
+        return convList;
     }
 
     private void recover_msg(int position) {

@@ -11,7 +11,6 @@ import com.example.trantrungduong95.truesms.R;
 
 import java.util.HashMap;
 
-
 /**
  * Created by ngomi_000 on 6/1/2017.
  */
@@ -61,7 +60,4 @@ public class PagerBlacklistAdapter extends FragmentStatePagerAdapter {
         }
         return null;
     }
-
-
-
 }

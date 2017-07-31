@@ -63,7 +63,7 @@
         <activity android:name=".Presenter.Activity_.SettingsBehaviorActivity" />
         <activity android:name=".Presenter.Activity_.SettingsNofActivity" />
         <activity
-            android:name=".Presenter.AboutActivity"
+            android:name=".Presenter.Activity_.AboutActivity"
             android:theme="@style/Theme.TrueSMS_Light" />
         <activity
             android:name=".Presenter.Activity_.ConversationActivity"

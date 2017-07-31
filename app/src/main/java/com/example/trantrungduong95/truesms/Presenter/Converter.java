@@ -6,7 +6,6 @@ import java.util.regex.Pattern;
 
 //Converts a string containing &#...; escapes to a string of characters
 public class Converter {
-
     //Private constructor.
     private Converter() {
     }

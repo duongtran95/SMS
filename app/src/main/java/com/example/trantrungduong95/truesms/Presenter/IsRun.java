@@ -6,10 +6,6 @@ import android.content.Context;
 
 import java.util.List;
 
-/**
- * Created by ngomi_000 on 7/1/2017.
- */
-
 public class isRun {
 
   /*  public boolean isAppRunning(final Context context, final String packageName) {

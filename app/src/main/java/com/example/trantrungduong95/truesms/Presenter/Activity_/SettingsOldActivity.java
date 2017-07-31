@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
@@ -325,7 +326,7 @@ public class SettingsOldActivity extends PreferenceActivity implements IPreferen
         if (context instanceof MainActivity && p.getBoolean(PREFS_TEXTCOLOR_IGNORE_CONV, false)) {
             return 0;
         }
-        int ret = p.getInt(PREFS_TEXTCOLOR, 0);
+        int ret = p.getInt(PREFS_TEXTCOLOR, Color.BLACK);
         Log.d("text color: ", ret+"");
         return ret;
     }

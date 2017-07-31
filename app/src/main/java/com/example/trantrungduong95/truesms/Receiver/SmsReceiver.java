@@ -366,7 +366,6 @@ public class SmsReceiver extends BroadcastReceiver {
         }
         int count = cursor.getCount();
 
-        //todo handle nof sms blocked
         if (!cursor.isClosed()) {
             cursor.close();
         }
@@ -721,8 +720,8 @@ public class SmsReceiver extends BroadcastReceiver {
         SpamHandler db = new SpamHandler(context);
         List<Filter> filterList =db.getAllFilters();
 
-        // length body > 25 and number whitout in contacts.
-        if (text.length()>0 && !checkNumberExits(context,addr) && !db.isBlacklisted(addr)) {
+        // length body > 25 // ignore (and number whitout in contacts.)
+        if (text.length()>0/* && !checkNumberExits(context,addr)*/ && !db.isBlacklisted(addr)) {
 
             /*// remove marks all
             String body = Utils.removeAccent(text);*/
@@ -795,30 +794,6 @@ public class SmsReceiver extends BroadcastReceiver {
         }
         //Log.e("pharseF", pharseF+"");
         return pharseF;
-    }
-
-    private static boolean checkNumberExits(Context context, String s) {
-        ArrayList<Contact> contacts = getAllContacts(context);
-        for (int i = 0; i < contacts.size(); i++) {
-            if (contacts.get(i).getNumber().equals(s))
-                return true;
-        }
-        return false;
-    }
-
-    public static ArrayList<Contact> getAllContacts(Context context) {
-        Cursor phones = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
-        ArrayList<Contact> contacts = new ArrayList<Contact>();
-        if (phones != null) {
-            while (phones.moveToNext()) {
-                String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-                String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                Contact contact = new Contact(phoneNumber, name);
-                contacts.add(contact);
-            }
-            phones.close();
-        }
-        return contacts;
     }
 
     public static boolean isBlocked(String addr, Context context) {
@@ -923,4 +898,28 @@ public class SmsReceiver extends BroadcastReceiver {
         }
         return conversationFilter;
     }
+
+/*    private static boolean checkNumberExits(Context context, String s) {
+        ArrayList<Contact> contacts = getAllContacts(context);
+        for (int i = 0; i < contacts.size(); i++) {
+            if (contacts.get(i).getNumber().equals(s))
+                return true;
+        }
+        return false;
+    }
+
+    public static ArrayList<Contact> getAllContacts(Context context) {
+        Cursor phones = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
+        ArrayList<Contact> contacts = new ArrayList<Contact>();
+        if (phones != null) {
+            while (phones.moveToNext()) {
+                String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+                String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                Contact contact = new Contact(phoneNumber, name);
+                contacts.add(contact);
+            }
+            phones.close();
+        }
+        return contacts;
+    }*/
 }

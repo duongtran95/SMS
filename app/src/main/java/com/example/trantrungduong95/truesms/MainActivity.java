@@ -40,7 +40,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.trantrungduong95.truesms.CustomAdapter.ConversationSearchAdapter;
@@ -53,7 +52,7 @@ import com.example.trantrungduong95.truesms.Model.Feedback;
 import com.example.trantrungduong95.truesms.Model.Message;
 import com.example.trantrungduong95.truesms.Model.Search;
 import com.example.trantrungduong95.truesms.Model.Wrapper.ContactsWrapper;
-import com.example.trantrungduong95.truesms.Presenter.AboutActivity;
+import com.example.trantrungduong95.truesms.Presenter.Activity_.AboutActivity;
 import com.example.trantrungduong95.truesms.Presenter.AsyncHelper;
 import com.example.trantrungduong95.truesms.Presenter.Activity_.BlacklistActivity;
 import com.example.trantrungduong95.truesms.Presenter.Activity_.ConversationActivity;
@@ -69,6 +68,9 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity implements OnItemClickListener, OnItemLongClickListener {
     //Tag
@@ -132,6 +134,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
 
     public static boolean turnOffNof = false;
 
+    private boolean updateContact = false;
+
     //Firebase save feedback
     private Firebase myFirebase;
 
@@ -187,10 +191,12 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                     startActivity(intent_compose);
                 } catch (ActivityNotFoundException e) {
                     Log.e("er launching intent: ", intent_compose.getAction() + ", " + intent_compose.getData());
-                    Toast.makeText(getApplication(), "error launching messaging app!\nPlease contact the developer.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplication(), getString(R.string.error_launching_messaging_app), Toast.LENGTH_LONG).show();
                 }
             }
         });
+
+        db.createDefaultFilterIfNeed();
         Log.d("onCreate", "");
     }
 
@@ -239,12 +245,10 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         super.onRestart();
         if (SettingsOldActivity.getTheme(this) == R.style.Theme_TrueSMS){
             recreateActivity();
-            Log.e("1111","eee");
         }
         else if (SettingsOldActivity.getTheme(this) == R.style.Theme_TrueSMS_Light){
             {
                 recreateActivity();
-                Log.e("11112","iii");
             }
         }
     }
@@ -465,7 +469,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
             }
             //hides the keyboard
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(edtSearch.getWindowToken(),0);
+            imm.hideSoftInputFromWindow(edtSearch.getWindowToken(), 0);
 
             //add the search icon in the action bar
             mSearchAction.setIcon(getResources().getDrawable(R.drawable.ic_search));
@@ -490,11 +494,15 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
             listView.setVisibility(View.VISIBLE);
 
             // new search list
-            final ArrayList<Search> conversationsArrayList = new ArrayList<>();
-            getAllValues(listview_conversation, conversationsArrayList);
+            //final ArrayList<Search> conversationsArrayList = new ArrayList<>();
+            //getAllValues(listview_conversation, conversationsArrayList);
+
+            List<Block> blockList = db.getAllBlocks();
+            ArrayList<Search> conversationsArrayList1 = new ArrayList<>();
+            conversationsArrayList1 = getConvSearch(blockList);
 
             //set adapter search
-            conversationSearchAdapter = new ConversationSearchAdapter(conversationsArrayList, this);
+            conversationSearchAdapter = new ConversationSearchAdapter(conversationsArrayList1, this);
             listView.setAdapter(conversationSearchAdapter);
 
             registerForContextMenu(listView);
@@ -528,14 +536,17 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
             imm.showSoftInput(edtSearch, InputMethodManager.SHOW_IMPLICIT);
 
             // click item listview
+            final ArrayList<Search> finalConversationsArrayList = conversationsArrayList1;
             listView.setOnItemClickListener(new OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    String number = ChecknumberContact(conversationsArrayList.get(position).getNum());
-                    if (!ChecknumberContact(conversationsArrayList.get(position).getNum()).equals("")) {
-                        startActivity(getComposeIntent(MainActivity.this, number));
+                    String number = finalConversationsArrayList.get(position).getNum();
+                    Pattern pattern = Pattern.compile("^[0-9]*$");
+                    Matcher matcher = pattern.matcher(number);
+                    if (!matcher.matches()) {
+                        startActivity(getComposeIntent(MainActivity.this,cleanRecipient(number)));
                     } else
-                        startActivity(getComposeIntent(MainActivity.this, conversationsArrayList.get(position).getNum()));
+                        startActivity(getComposeIntent(MainActivity.this, number));
 
                 }
             });
@@ -547,7 +558,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         }
     }
 
-    //Get All item listview comversations
+/*    //Get All item listview comversations
     public void getAllValues(ListView list, ArrayList<Search> arrayList) {
         View parentView = null;
         for (int i = 0; i < list.getCount(); i++) {
@@ -556,22 +567,22 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                     .findViewById(R.id.addr)).getText().toString();
             String body = ((TextView) parentView
                     .findViewById(R.id.body)).getText().toString();
-          /*  String date = ((TextView) parentView
+            String date = ((TextView) parentView
                     .findViewById(R.id.date)).getText().toString();
             String count = ((TextView) parentView
                     .findViewById(R.id.count)).getText().toString();
             ImageView photo = ((ImageView) parentView.findViewById(R.id.photo));
             BitmapDrawable bitmapDrawable = (BitmapDrawable) photo.getDrawable();
-            Bitmap yourBitmap = bitmapDrawable.getBitmap();*/
+            Bitmap yourBitmap = bitmapDrawable.getBitmap();
             Search a;
             if (!addr.equals("false")) {
                 a = new Search(addr, body);
                 arrayList.add(a);
             }
         }
-    }
+    }*/
 
-    public View getViewByPosition(int pos, ListView listView) {
+/*    public View getViewByPosition(int pos, ListView listView) {
         final int firstListItemPosition = listView.getFirstVisiblePosition();
         final int lastListItemPosition = firstListItemPosition
                 + listView.getChildCount() - 1;
@@ -582,6 +593,46 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
             final int childIndex = pos - firstListItemPosition;
             return listView.getChildAt(childIndex);
         }
+    }*/
+
+
+    private ArrayList<Search> getConvSearch(List<Block> blockList) {
+        ArrayList<Search> convListSearch = new ArrayList<>();
+        Cursor c = null;
+        try {
+            c = getContentResolver().query(Conversation.URI_SIMPLE, Conversation.PROJECTION_SIMPLE, Conversation.COUNT + ">0", null, null);
+        } catch (Exception e) {
+            Log.e("error getting conv", e + "");
+        }
+
+        int totalSMS = 0;
+        if (c != null) {
+            totalSMS = c.getCount();
+        }
+        if (c != null && c.moveToFirst()) {
+            for (int i = 0; i < totalSMS; i++) {
+                Conversation conv = Conversation.getConversation(this, c, true);
+                if (!isBlocked(conv.getContact().getNumber(),blockList)) {
+                    Search a = new Search(conv.getContact().getNameAndNumber(),conv.getBody());
+                    convListSearch.add(a);
+                }
+                c.moveToNext();
+            }
+            c.close();
+        }
+        return convListSearch;
+    }
+
+    private boolean isBlocked(String addr, List<Block> blockList) {
+        if (addr == null) {
+            return false;
+        }
+        for (Block aBlacklist : blockList) {
+            if (addr.equals(aBlacklist.getNumber())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void recreateActivity() {
@@ -768,7 +819,13 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                                 Uri uri = conv.getContact().getUri();
                                 i = new Intent(Intent.ACTION_VIEW, uri);
                             }
-                            startActivity(i);
+                            try {
+                                startActivity(i);
+                            } catch (ActivityNotFoundException e) {
+                                //unable to launch dailer
+                                Toast.makeText(MainActivity.this, R.string.error_unknown, Toast.LENGTH_LONG).show();
+                            }
+                            //startActivity(i);
                             break;
                         case WHICH_VIEW:
                             i = new Intent(MainActivity.this, ConversationActivity.class);
@@ -821,27 +878,20 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         }
     }
 
-    public String ChecknumberContact(String number) {
-        ArrayList<Contact> contacts = new ArrayList<Contact>();
-        contacts = getAllContacts();
-        for (int i = 0; i < contacts.size(); i++) {
-            if (contacts.get(i).getName().equals(number))
-                return contacts.get(i).getNumber();
+    //Clean phone number from [ -.()<>]. Return clean number
+    private String cleanRecipient(String recipient) {
+        if (TextUtils.isEmpty(recipient)) {
+            return "";
         }
-        return "";
-    }
-
-    public ArrayList<Contact> getAllContacts() {
-        Cursor phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
-        ArrayList<Contact> contacts = new ArrayList<Contact>();
-        while (phones.moveToNext()) {
-            String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-            String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-            Contact contact = new Contact(phoneNumber, name);
-            contacts.add(contact);
+        String n;
+        int i = recipient.indexOf("<");
+        int j = recipient.indexOf(">");
+        if (i != -1 && i < j) {
+            n = recipient.substring(recipient.indexOf("<"), recipient.indexOf(">"));
+        } else {
+            n = recipient;
         }
-        phones.close();
-        return contacts;
+        return n.replaceAll("[^*#+0-9]", "").replaceAll("^[*#][0-9]*#", "");
     }
 
 }

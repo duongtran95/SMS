@@ -16,6 +16,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,10 +37,13 @@ import com.example.trantrungduong95.truesms.Presenter.Fragment_.Fragment_Blackli
 import com.example.trantrungduong95.truesms.Presenter.Fragment_.Fragment_Conv_Blacklist;
 import com.example.trantrungduong95.truesms.Presenter.Fragment_.Fragment_Filter;
 import com.example.trantrungduong95.truesms.Presenter.SpamHandler;
+import com.example.trantrungduong95.truesms.Presenter.Utils;
 import com.example.trantrungduong95.truesms.R;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class BlacklistActivity extends AppCompatActivity {
     public List<Block> blockList = new ArrayList<Block>();
@@ -56,7 +60,7 @@ public class BlacklistActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-/*        setTheme(SettingsOldActivity.getTheme(this));
+       /* setTheme(SettingsOldActivity.getTheme(this));
         Utils.setLocale(this);*/
         super.onCreate(savedInstanceState);
 
@@ -64,37 +68,6 @@ public class BlacklistActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         FetchDB();
         initInstancesDrawer();
-    }
-
-    public void FetchDB() {
-        db = new SpamHandler(this);
-        blockList = db.getAllBlocks();
-    }
-
-    //Tabview
-    private void initInstancesDrawer() {
-        TabLayout tabs = (TabLayout) findViewById(R.id.tab_layout);
-        ViewPager pager = (ViewPager) findViewById(R.id.vpPager);
-        adapter = new PagerBlacklistAdapter(getSupportFragmentManager(), this);
-
-        pager.setAdapter(adapter);
-        tabs.setupWithViewPager(pager);
-        int[][] states = new int[][]{
-                new int[]{android.R.attr.state_enabled}, // enabled
-                new int[]{-android.R.attr.state_enabled}, // disabled
-                new int[]{-android.R.attr.state_checked}, // unchecked
-                new int[]{android.R.attr.state_pressed}  // pressed
-        };
-
-        int[] colors = new int[]{
-                Color.GREEN,
-                Color.RED,
-                Color.BLACK,
-                Color.BLUE
-        };
-
-        ColorStateList myList = new ColorStateList(states, colors);
-        tabs.setTabTextColors(myList);
     }
 
     @Override
@@ -154,6 +127,53 @@ public class BlacklistActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.blacklist_activity, menu);
         menu.removeItem(R.id.item_settings_blacklist_filterd);
         return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        mSearchAction = menu.findItem(R.id.action_search);
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (isSearchOpened) {
+            handleMenuSearch();
+            return;
+        }
+        super.onBackPressed();
+    }
+
+    //DB
+    public void FetchDB() {
+        db = new SpamHandler(this);
+        blockList = db.getAllBlocks();
+    }
+
+    //Tabview
+    private void initInstancesDrawer() {
+        TabLayout tabs = (TabLayout) findViewById(R.id.tab_layout);
+        ViewPager pager = (ViewPager) findViewById(R.id.vpPager);
+        adapter = new PagerBlacklistAdapter(getSupportFragmentManager(), this);
+
+        pager.setAdapter(adapter);
+        tabs.setupWithViewPager(pager);
+        int[][] states = new int[][]{
+                new int[]{android.R.attr.state_enabled}, // enabled
+                new int[]{-android.R.attr.state_enabled}, // disabled
+                new int[]{-android.R.attr.state_checked}, // unchecked
+                new int[]{android.R.attr.state_pressed}  // pressed
+        };
+
+        int[] colors = new int[]{
+                Color.GREEN,
+                Color.RED,
+                Color.BLACK,
+                Color.BLUE
+        };
+
+        ColorStateList myList = new ColorStateList(states, colors);
+        tabs.setTabTextColors(myList);
     }
 
     public void update_frg_1(String number) {
@@ -247,11 +267,13 @@ public class BlacklistActivity extends AppCompatActivity {
             listViewSearch.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    String number = ChecknumberContact(conversationsArrayList.get(position).getNum());
-                    if (!ChecknumberContact(conversationsArrayList.get(position).getNum()).equals("")) {
-                        startActivity(MainActivity.getComposeIntent(getApplicationContext(), number));
+                    String number = conversationsArrayList.get(position).getNum();
+                    Pattern pattern = Pattern.compile("^[0-9]*$");
+                    Matcher matcher = pattern.matcher(number);
+                    if (!matcher.matches()) {
+                        startActivity(MainActivity.getComposeIntent(getApplicationContext(),cleanRecipient(number)));
                     } else
-                        startActivity(MainActivity.getComposeIntent(getApplicationContext(), conversationsArrayList.get(position).getNum()));
+                        startActivity(MainActivity.getComposeIntent(getApplicationContext(),number));
 
                 }
             });
@@ -263,22 +285,23 @@ public class BlacklistActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        mSearchAction = menu.findItem(R.id.action_search);
-        return true;
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (isSearchOpened) {
-            handleMenuSearch();
-            return;
+    //Clean phone number from [ -.()<>]. Return clean number
+    private String cleanRecipient(String recipient) {
+        if (TextUtils.isEmpty(recipient)) {
+            return "";
         }
-        super.onBackPressed();
+        String n;
+        int i = recipient.indexOf("<");
+        int j = recipient.indexOf(">");
+        if (i != -1 && i < j) {
+            n = recipient.substring(recipient.indexOf("<"), recipient.indexOf(">"));
+        } else {
+            n = recipient;
+        }
+        return n.replaceAll("[^*#+0-9]", "").replaceAll("^[*#][0-9]*#", "");
     }
 
-    public String ChecknumberContact(String number) {
+    /*private String ChecknumberContact(String number) {
         ArrayList<Contact> contacts = new ArrayList<Contact>();
         contacts = getAllContacts();
         for (int i = 0; i < contacts.size(); i++) {
@@ -288,7 +311,7 @@ public class BlacklistActivity extends AppCompatActivity {
         return "";
     }
 
-    public ArrayList<Contact> getAllContacts() {
+    private ArrayList<Contact> getAllContacts() {
         Cursor phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
         ArrayList<Contact> contacts = new ArrayList<Contact>();
         while (phones.moveToNext()) {
@@ -299,5 +322,5 @@ public class BlacklistActivity extends AppCompatActivity {
         }
         phones.close();
         return contacts;
-    }
+    }*/
 }

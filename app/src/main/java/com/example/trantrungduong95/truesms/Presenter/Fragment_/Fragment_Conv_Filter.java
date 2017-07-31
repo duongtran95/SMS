@@ -28,6 +28,7 @@ import com.example.trantrungduong95.truesms.Model.Conversation;
 import com.example.trantrungduong95.truesms.Model.Test;
 import com.example.trantrungduong95.truesms.Model.Wrapper.ContactsWrapper;
 import com.example.trantrungduong95.truesms.Presenter.Activity_.ConversationActivity;
+import com.example.trantrungduong95.truesms.Presenter.Activity_.FilterActivity;
 import com.example.trantrungduong95.truesms.Presenter.SpamHandler;
 import com.example.trantrungduong95.truesms.R;
 import com.example.trantrungduong95.truesms.Receiver.SmsReceiver;
@@ -37,6 +38,9 @@ import java.util.List;
 
 public class Fragment_Conv_Filter extends android.support.v4.app.Fragment  implements
         AdapterView.OnItemClickListener,AdapterView.OnItemLongClickListener{
+    public static List<Block> blockList = new ArrayList<Block>();
+    private SpamHandler db;
+
     //Number of items.
     private static final int WHICH_N = 2;
     //Index in dialog: answer.
@@ -50,10 +54,8 @@ public class Fragment_Conv_Filter extends android.support.v4.app.Fragment  imple
     public static ArrayList<Conversation> conversationArrayList = new ArrayList<>();
     public static FragmentFilterdAdapter fragmentFilterdAdapter;
 
-    String[] longItemClickDialog = new String[WHICH_N];
+    private String[] longItemClickDialog = new String[WHICH_N];
 
-    public static List<Block> blockList = new ArrayList<Block>();
-    public SpamHandler db;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -64,11 +66,13 @@ public class Fragment_Conv_Filter extends android.support.v4.app.Fragment  imple
         handleData(view);
         return view;
     }
-
-    private void handleData(View view) {
+    private void FetchDB() {
         db = new SpamHandler(getActivity());
         blockList = db.getAllBlocks();
+    }
 
+    private void handleData(View view) {
+        FetchDB();
         conversationArrayList = getConvFilter();
 
         listView = (ListView) view.findViewById(R.id.conversations_list_blacklist);
@@ -83,7 +87,7 @@ public class Fragment_Conv_Filter extends android.support.v4.app.Fragment  imple
         listView.setAdapter(fragmentFilterdAdapter);
     }
 
-    public ArrayList<Test> ReadFilterMailbox() {
+    private ArrayList<Test> ReadFilterMailbox() {
         ArrayList<Test> messages = new ArrayList<>();
         Uri uriSms = Uri.parse("content://sms/");
         ContentResolver cr = getActivity().getContentResolver();
@@ -114,7 +118,7 @@ public class Fragment_Conv_Filter extends android.support.v4.app.Fragment  imple
         return messages;
     }
 
-    public ArrayList<Conversation> getConvFilter() {
+    private ArrayList<Conversation> getConvFilter() {
         ArrayList<Test> messages = ReadFilterMailbox();
         ArrayList<Conversation> conversationFilter = new ArrayList<>();
         Cursor c = null;
@@ -232,7 +236,7 @@ public class Fragment_Conv_Filter extends android.support.v4.app.Fragment  imple
         return true;
     }
 
-    public boolean isBlocked(String addr) {
+    private boolean isBlocked(String addr) {
         if (addr == null) {
             return false;
         }

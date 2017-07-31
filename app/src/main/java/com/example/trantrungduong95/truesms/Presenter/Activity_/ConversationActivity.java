@@ -132,8 +132,10 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
     @SuppressWarnings("deprecation")
     private ClipboardManager clipboard;
 
+    //compose attachment
     private boolean flag = false;
 
+    // hide sms filterd
     private boolean flag1 = false;
 
     @Override
@@ -613,31 +615,32 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
                             i = ContactsWrapper.getInstance().getInsertPickIntent(a);
                             Conversation.flushCache();
                         } else {
-                            Uri u = ConversationActivity.this.conv.getContact().getUri();
+                            Uri u = conv.getContact().getUri();
                             i = new Intent(Intent.ACTION_VIEW, u);
                         }
                         try {
-                            ConversationActivity.this.startActivity(i);
+                            startActivity(i);
                         } catch (ActivityNotFoundException e) {
                             //unable to launch dailer
                             Toast.makeText(ConversationActivity.this, R.string.error_unknown, Toast.LENGTH_LONG).show();
                         }
+
                         break;
                     case WHICH_CALL:
-                        ConversationActivity.this.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("tel:" + a)));
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("tel:" + a)));
                         break;
                     case WHICH_MARK_UNREAD:
                         MainActivity.markRead(context, target, 1 - read);
-                        ConversationActivity.this.markedUnread = true;
+                        markedUnread = true;
                         break;
                     case WHICH_REPLY:
-                        ConversationActivity.this.startActivity(MainActivity.getComposeIntent(ConversationActivity.this, a));
+                        startActivity(MainActivity.getComposeIntent(ConversationActivity.this, a));
                         break;
                     case WHICH_FORWARD:
                         int resId;
                         if (type == Message.SMS_DRAFT) {
                             resId = R.string.send_draft_;
-                            i = MainActivity.getComposeIntent(ConversationActivity.this, ConversationActivity.this.conv.getContact().getNumber());
+                            i = MainActivity.getComposeIntent(ConversationActivity.this, conv.getContact().getNumber());
                         } else {
                             resId = R.string.forward_;
                             i = MainActivity.getComposeIntent(ConversationActivity.this, null);
@@ -799,7 +802,7 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
         }
     }
 
-    public ArrayList<Test> ReadFilterMailbox() {
+    private ArrayList<Test> ReadFilterMailbox() {
         ArrayList<Test> messages = new ArrayList<>();
         Uri uriSms = Uri.parse("content://sms/");
         ContentResolver cr = this.getContentResolver();
@@ -830,7 +833,7 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
         return messages;
     }
 
-    public ArrayList<Conversation> getConvFilter() {
+    private ArrayList<Conversation> getConvFilter() {
         ArrayList<Test> messages = ReadFilterMailbox();
         ArrayList<Conversation> conversationFilter = new ArrayList<>();
         Cursor c = null;
@@ -861,7 +864,7 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
         return conversationFilter;
     }
 
-    public boolean isBlocked(String addr) {
+    private boolean isBlocked(String addr) {
         if (addr == null) {
             return false;
         }

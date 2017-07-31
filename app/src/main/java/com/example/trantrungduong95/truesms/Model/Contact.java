@@ -95,7 +95,6 @@ public class Contact {
 
 
 	//Update link Contact's details. LoadOnly load only data which is not available. Return true if link Contact's details where changed
-
 	public boolean update(Context context, boolean loadOnly, boolean loadAvatar) {
 		return ContactsWrapper.getInstance().updateContactDetails(context, loadOnly, loadAvatar, this);
 	}

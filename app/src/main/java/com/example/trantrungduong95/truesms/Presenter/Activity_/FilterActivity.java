@@ -12,6 +12,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,16 +26,22 @@ import android.widget.Toast;
 import com.example.trantrungduong95.truesms.CustomAdapter.ConversationSearchAdapter;
 import com.example.trantrungduong95.truesms.CustomAdapter.PagerFilterAdapter;
 import com.example.trantrungduong95.truesms.MainActivity;
+import com.example.trantrungduong95.truesms.Model.Block;
 import com.example.trantrungduong95.truesms.Model.Contact;
 import com.example.trantrungduong95.truesms.Model.Search;
 import com.example.trantrungduong95.truesms.Presenter.Fragment_.Fragment_Conv_Blacklist;
 import com.example.trantrungduong95.truesms.Presenter.Fragment_.Fragment_Conv_Filter;
+import com.example.trantrungduong95.truesms.Presenter.SpamHandler;
+import com.example.trantrungduong95.truesms.Presenter.Utils;
 import com.example.trantrungduong95.truesms.R;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FilterActivity extends AppCompatActivity {
-
+    private PagerFilterAdapter adapter;
     //search
     private ListView listViewSearch;
     private MenuItem mSearchAction;
@@ -42,45 +49,19 @@ public class FilterActivity extends AppCompatActivity {
     private EditText edtSearch;
     private android.support.v7.app.ActionBar action;
     private ConversationSearchAdapter conversationSearchAdapter;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-/*        setTheme(SettingsOldActivity.getTheme(this));
+       /* setTheme(SettingsOldActivity.getTheme(this));
         Utils.setLocale(this);*/
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_blacklist);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         initInstancesDrawer();
 
     }
 
-    //Tabview
-    private void initInstancesDrawer() {
-        TabLayout tabs = (TabLayout) findViewById(R.id.tab_layout);
-        ViewPager pager = (ViewPager) findViewById(R.id.vpPager);
-        PagerFilterAdapter adapter = new PagerFilterAdapter(getSupportFragmentManager(), this);
-
-        pager.setAdapter(adapter);
-        tabs.setupWithViewPager(pager);
-        int[][] states = new int[][]{
-                new int[]{android.R.attr.state_enabled}, // enabled
-                new int[]{-android.R.attr.state_enabled}, // disabled
-                new int[]{-android.R.attr.state_checked}, // unchecked
-                new int[]{android.R.attr.state_pressed}  // pressed
-        };
-
-        int[] colors = new int[]{
-                Color.GREEN,
-                Color.RED,
-                Color.BLACK,
-                Color.BLUE
-        };
-
-        //pager.setBackgroundColor(Color.DKGRAY);
-        ColorStateList myList = new ColorStateList(states, colors);
-        tabs.setTabTextColors(myList);
-
-    }
     @Override
     protected boolean onPrepareOptionsPanel(View view, Menu menu) {
         return super.onPrepareOptionsPanel(view, menu);
@@ -110,6 +91,27 @@ public class FilterActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.blacklist_activity, menu);
+        menu.removeItem(R.id.item_settings_blacklist_filterd);
+        return true;
+    }
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        mSearchAction = menu.findItem(R.id.action_search);
+        return true;
+    }
+    @Override
+    public void onBackPressed() {
+        if (isSearchOpened) {
+            handleMenuSearch();
+            return;
+        }
+        super.onBackPressed();
     }
 
     protected void handleMenuSearch() {
@@ -189,12 +191,13 @@ public class FilterActivity extends AppCompatActivity {
             listViewSearch.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    String number = ChecknumberContact(conversationsArrayList.get(position).getNum());
-                    if (!ChecknumberContact(conversationsArrayList.get(position).getNum()).equals(""))
-                    {
-                        startActivity(MainActivity.getComposeIntent(getApplicationContext(), number));
-                    }
-                    else startActivity(MainActivity.getComposeIntent(getApplicationContext(), conversationsArrayList.get(position).getNum()));
+                    String number = conversationsArrayList.get(position).getNum();
+                    Pattern pattern = Pattern.compile("^[0-9]*$");
+                    Matcher matcher = pattern.matcher(number);
+                    if (!matcher.matches()) {
+                        startActivity(MainActivity.getComposeIntent(getApplicationContext(),cleanRecipient(number)));
+                    } else
+                        startActivity(MainActivity.getComposeIntent(getApplicationContext(),number));
 
                 }
             });
@@ -206,27 +209,51 @@ public class FilterActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.blacklist_activity, menu);
-        menu.removeItem(R.id.item_settings_blacklist_filterd);
-        return true;
-    }
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        mSearchAction = menu.findItem(R.id.action_search);
-        return true;
-    }
-    @Override
-    public void onBackPressed() {
-        if (isSearchOpened) {
-            handleMenuSearch();
-            return;
-        }
-        super.onBackPressed();
+    //Tabview
+    private void initInstancesDrawer() {
+        TabLayout tabs = (TabLayout) findViewById(R.id.tab_layout);
+        ViewPager pager = (ViewPager) findViewById(R.id.vpPager);
+        adapter = new PagerFilterAdapter(getSupportFragmentManager(), this);
+
+        pager.setAdapter(adapter);
+        tabs.setupWithViewPager(pager);
+        int[][] states = new int[][]{
+                new int[]{android.R.attr.state_enabled}, // enabled
+                new int[]{-android.R.attr.state_enabled}, // disabled
+                new int[]{-android.R.attr.state_checked}, // unchecked
+                new int[]{android.R.attr.state_pressed}  // pressed
+        };
+
+        int[] colors = new int[]{
+                Color.GREEN,
+                Color.RED,
+                Color.BLACK,
+                Color.BLUE
+        };
+
+        //pager.setBackgroundColor(Color.DKGRAY);
+        ColorStateList myList = new ColorStateList(states, colors);
+        tabs.setTabTextColors(myList);
+
     }
 
-    public String ChecknumberContact(String number) {
+    //Clean phone number from [ -.()<>]. Return clean number
+    private String cleanRecipient(String recipient) {
+        if (TextUtils.isEmpty(recipient)) {
+            return "";
+        }
+        String n;
+        int i = recipient.indexOf("<");
+        int j = recipient.indexOf(">");
+        if (i != -1 && i < j) {
+            n = recipient.substring(recipient.indexOf("<"), recipient.indexOf(">"));
+        } else {
+            n = recipient;
+        }
+        return n.replaceAll("[^*#+0-9]", "").replaceAll("^[*#][0-9]*#", "");
+    }
+
+ /*   public String ChecknumberContact(String number) {
         ArrayList<Contact> contacts = new ArrayList<Contact>();
         contacts = getAllContacts();
         for (int i = 0; i < contacts.size(); i++) {
@@ -235,6 +262,7 @@ public class FilterActivity extends AppCompatActivity {
         }
         return "";
     }
+
     public ArrayList<Contact> getAllContacts() {
         Cursor phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
         ArrayList<Contact> contacts = new ArrayList<Contact>();
@@ -246,5 +274,5 @@ public class FilterActivity extends AppCompatActivity {
         }
         phones.close();
         return contacts;
-    }
+    }*/
 }

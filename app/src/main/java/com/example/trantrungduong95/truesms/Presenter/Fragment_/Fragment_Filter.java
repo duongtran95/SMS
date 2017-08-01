@@ -47,8 +47,8 @@ public class Fragment_Filter extends Fragment implements AdapterView.OnItemClick
     private static final int MODE_PRIVATE = 0;
     private ListView listView;
     private FilterAdapter filterAdapter;
-    private List<Filter> filterList;
     private SpamHandler db;
+    private List<Filter> filterList;
     private Button btnChar, btnWord, btnPharse;
     private int type =0;
     private SharedPreferences mPref;
@@ -67,7 +67,7 @@ public class Fragment_Filter extends Fragment implements AdapterView.OnItemClick
     private int countFiter = 20;
 
     //Firebase Filter
-    Firebase myFirebase;
+    private Firebase myFirebase;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

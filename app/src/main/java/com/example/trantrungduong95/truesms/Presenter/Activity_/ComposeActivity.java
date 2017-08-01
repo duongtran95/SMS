@@ -107,6 +107,11 @@ public class ComposeActivity extends AppCompatActivity implements View.OnClickLi
 
                 editText_reply = (EditText) findViewById(R.id.compose_reply_text);
                 final TextView count_reply = (TextView) findViewById(R.id.content_count);
+
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                //imm.showSoftInput(edtSearch, InputMethodManager.SHOW_IMPLICIT);
+                imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
+
                 editText_reply.addTextChangedListener(new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -297,6 +302,7 @@ public class ComposeActivity extends AppCompatActivity implements View.OnClickLi
                 send(r, text);
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(editText_reply.getWindowToken(), 0);
+                imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
             } catch (Exception e) {
                 Log.e("unable to send msg: ", phoneNo, e);
                 //Toast.makeText(this, R.string.error_sending_failed, Toast.LENGTH_LONG).show();

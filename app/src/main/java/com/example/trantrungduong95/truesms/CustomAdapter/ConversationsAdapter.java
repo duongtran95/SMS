@@ -238,6 +238,10 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
             text = SmileyParser.getInstance(context).addSmileySpans(text);
         }
         if (SmsReceiver.filter(context, text.toString(), contact.getNumber())) {
+            if (conv.getCount()==1){
+                view.setVisibility(View.GONE);
+                view.getLayoutParams().height = 1;
+            }
             if (messageLastSMS(context,conv.getBody() ,conv.getContact().getNumber())!= null) {
                 Message msg = messageLastSMS(context, conv.getBody(), conv.getContact().getNumber());
                 //text = context.getString(R.string.filter_content);

@@ -349,11 +349,10 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                 final EditText mAddress = (EditText) mView.findViewById(R.id.edt_AddressFeedback);
                 final EditText mDescribe = (EditText) mView.findViewById(R.id.edt_DescribeFeedBack);
                 final Button mSendFeedBack = (Button) mView.findViewById(R.id.btnSend_FeedBack);
+
                 mBuilder.setView(mView);
                 final AlertDialog dialog = mBuilder.create();
                 dialog.show();
-
-
 
                 mName.addTextChangedListener(new TextWatcher() {
                     @Override
@@ -448,6 +447,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                         }else if (mSendFeedBack.getText().toString().equals(getString(R.string.menu_close))){
                             dialog.hide();
                         }
+                        dialog.dismiss();
                     }
                 });
                 //todo feedback
@@ -627,24 +627,17 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
             for (int i = 0; i < totalSMS; i++) {
                 Conversation conv = Conversation.getConversation(this, c, true);
                 if (!isBlocked(conv.getContact().getNumber(), blockList)) {
-                    /*if (messageLastSMS(conv) !=null) {
-                        Search search = new Search(conv.getContact().getNameAndNumber(),conv.getBody());
-                        *//*search.setNum(conv.getContact().getNameAndNumber());
-                        search.setContent(conv.getBody());*//*
-
-                    }*/
                     Search search = null;//conv.getContact().getNameAndNumber(),conv.getBody());
-                    if (SmsReceiver.filter(this,conv.getBody(),conv.getContact().getNumber())){
+                    if (!SmsReceiver.filter(this,conv.getBody(),conv.getContact().getNumber())){
                         /*if (messageLastSMS(conv) != null){
-                            Message a = messageLastSMS(conv);*/
+                            Message a = messageLastSMS(conv);
                             //Log.e("1234",a.getBody().toString());
                             search = new Search(conv.getContact().getNameAndNumber(),conv.getBody());
                             //conv.setBody(a.getBody().toString());
-                        //}
-                    }else {
+                        }*/
                         search = new Search(conv.getContact().getNameAndNumber(),conv.getBody());
+                        convListSearch.add(search);
                     }
-                    convListSearch.add(search);
                 }
                 c.moveToNext();
             }
@@ -942,7 +935,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
             if (c != null && c.moveToFirst()) {
                 for (int i = 0; i < totalSMS; i++) {
                     message = Message.getMessage(this, c);
-                    if (!message.getBody().toString().equals(conv.getBody())) {
+                    if (message.getBody().toString().equals(conv.getBody())) {
                         Log.e("123", message.getBody().toString());
                         return message;
                     }

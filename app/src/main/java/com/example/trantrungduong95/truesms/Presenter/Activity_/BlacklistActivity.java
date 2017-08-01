@@ -263,7 +263,7 @@ public class BlacklistActivity extends AppCompatActivity {
             //open the keyboard focused in the edtSearch
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             //imm.showSoftInput(edtSearch, InputMethodManager.SHOW_IMPLICIT);
-            imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
+
             // click item listViewSearch
             listViewSearch.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override

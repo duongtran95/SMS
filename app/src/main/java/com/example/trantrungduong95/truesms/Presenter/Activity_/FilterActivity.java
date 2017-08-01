@@ -251,26 +251,4 @@ public class FilterActivity extends AppCompatActivity {
         return n.replaceAll("[^*#+0-9]", "").replaceAll("^[*#][0-9]*#", "");
     }
 
- /*   public String ChecknumberContact(String number) {
-        ArrayList<Contact> contacts = new ArrayList<Contact>();
-        contacts = getAllContacts();
-        for (int i = 0; i < contacts.size(); i++) {
-            if (contacts.get(i).getName().equals(number))
-                return contacts.get(i).getNumber();
-        }
-        return "";
-    }
-
-    public ArrayList<Contact> getAllContacts() {
-        Cursor phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
-        ArrayList<Contact> contacts = new ArrayList<Contact>();
-        while (phones.moveToNext()) {
-            String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-            String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-            Contact contact = new Contact(phoneNumber, name);
-            contacts.add(contact);
-        }
-        phones.close();
-        return contacts;
-    }*/
 }

@@ -121,18 +121,11 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Presenter.Activity_.BlacklistActivity"
-            android:theme="@style/Theme.TrueSMS_Light">
-
-        </activity>
+            android:theme="@style/Theme.TrueSMS_Light"></activity>
         <activity
             android:name=".Presenter.Activity_.FilterActivity"
-            android:theme="@style/Theme.TrueSMS_Light">
-
-        </activity>
-
-        <activity android:name=".Presenter.Activity_.DialogFeedBackActivity">
-
-        </activity>
+            android:theme="@style/Theme.TrueSMS_Light"></activity>
+        <activity android:name=".Presenter.Activity_.DialogFeedBackActivity"></activity>
 
         <receiver
             android:name=".Receiver.SmsReceiver"
@@ -177,6 +170,11 @@
                 <data android:scheme="mmsto" />
             </intent-filter>
         </service>
+        <service
+            android:name=".Presenter.ContactObserverService"
+            android:enabled="true"
+            android:exported="true">
+        </service>
 
         <receiver android:name=".Presenter.NofReceiver">
             <intent-filter>
@@ -196,6 +194,7 @@
         <provider
             android:name=".Presenter.MessageProvider"
             android:authorities="com.example.trantrungduong95.truesms.Presenter" />
+
     </application>
 
 </manifest>

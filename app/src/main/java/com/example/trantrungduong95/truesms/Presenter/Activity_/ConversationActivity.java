@@ -392,10 +392,11 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
                     attachment.setEnabled(true);
                 }
 
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
+
             }
             else {
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(etText.getWindowToken(),0);
                 etText.setEnabled(false);
                 if (sendSMS != null) {
                     sendSMS.setEnabled(false);
@@ -403,6 +404,8 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
                 if (attachment != null) {
                     attachment.setEnabled(false);
                 }
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
             }
         }
         uri = intent.getData();

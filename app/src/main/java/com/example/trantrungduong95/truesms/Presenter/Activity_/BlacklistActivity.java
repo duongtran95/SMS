@@ -171,7 +171,14 @@ public class BlacklistActivity extends AppCompatActivity {
                 Color.BLACK,
                 Color.BLUE
         };
-
+        if (SettingsOldActivity.getTheme(this) == R.style.Theme_TrueSMS){
+            pager.setBackgroundColor(Color.parseColor("#ff303030"));
+        }
+        else /*if (SettingsOldActivity.getTheme(this) == R.style.Theme_TrueSMS_Light)*/{
+            {
+                pager.setBackgroundColor(Color.WHITE);
+            }
+        }
         ColorStateList myList = new ColorStateList(states, colors);
         tabs.setTabTextColors(myList);
     }

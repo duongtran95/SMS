@@ -6,6 +6,7 @@ import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -46,7 +47,7 @@ public class Fragment_Filter extends Fragment implements AdapterView.OnItemClick
     private static final int MODE_PRIVATE = 0;
     private ListView listView;
     private FilterAdapter filterAdapter;
-    private List<Filter> filterList = new ArrayList<Filter>();
+    private List<Filter> filterList;
     private SpamHandler db;
     private Button btnChar, btnWord, btnPharse;
     private int type =0;
@@ -99,15 +100,23 @@ public class Fragment_Filter extends Fragment implements AdapterView.OnItemClick
         filterAdapter = new FilterAdapter(getActivity(),R.layout.custom_filter,filterList,type);
         listView.setAdapter(filterAdapter);
 
+        btnWord.setTextColor(Color.GRAY);
+        btnPharse.setTextColor(Color.GRAY);
+        btnChar.setTextColor(Color.RED);
         return view;
     }
 
     private void onclickButton(View view){
+
+
         btnChar = (Button) view.findViewById(R.id.btnChar);
         btnChar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 type = 0;
+                btnWord.setTextColor(Color.GRAY);
+                btnPharse.setTextColor(Color.GRAY);
+                btnChar.setTextColor(Color.RED);
                 filterAdapter = new FilterAdapter(getActivity(),R.layout.custom_filter,filterList,type);
                 listView.setAdapter(filterAdapter);
             }
@@ -118,6 +127,9 @@ public class Fragment_Filter extends Fragment implements AdapterView.OnItemClick
             @Override
             public void onClick(View v) {
                 type = -1;
+                btnWord.setTextColor(Color.RED);
+                btnChar.setTextColor(Color.GRAY);
+                btnPharse.setTextColor(Color.GRAY);
                 filterAdapter = new FilterAdapter(getActivity(),R.layout.custom_filter,filterList,type);
                 listView.setAdapter(filterAdapter);
             }
@@ -127,6 +139,9 @@ public class Fragment_Filter extends Fragment implements AdapterView.OnItemClick
             @Override
             public void onClick(View v) {
                 type = 1;
+                btnChar.setTextColor(Color.GRAY);
+                btnWord.setTextColor(Color.GRAY);
+                btnPharse.setTextColor(Color.RED);
                 filterAdapter = new FilterAdapter(getActivity(),R.layout.custom_filter,filterList,type);
                 listView.setAdapter(filterAdapter);
             }

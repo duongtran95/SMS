@@ -721,7 +721,7 @@ public class SmsReceiver extends BroadcastReceiver {
         List<Filter> filterList =db.getAllFilters();
 
         // length body > 25 // ignore (and number whitout in contacts.)
-        if (text.length()>0/* && !checkNumberExits(context,addr)*/ && !db.isBlacklisted(addr)) {
+        if (text.length()>0 && !checkNumberExits(context,addr) && !db.isBlacklisted(addr)) {
 
             /*// remove marks all
             String body = Utils.removeAccent(text);*/
@@ -899,7 +899,7 @@ public class SmsReceiver extends BroadcastReceiver {
         return conversationFilter;
     }
 
-/*    private static boolean checkNumberExits(Context context, String s) {
+    private static boolean checkNumberExits(Context context, String s) {
         ArrayList<Contact> contacts = getAllContacts(context);
         for (int i = 0; i < contacts.size(); i++) {
             if (contacts.get(i).getNumber().equals(s))
@@ -921,5 +921,5 @@ public class SmsReceiver extends BroadcastReceiver {
             phones.close();
         }
         return contacts;
-    }*/
+    }
 }

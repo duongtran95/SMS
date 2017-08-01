@@ -98,16 +98,15 @@ public class Fragment_Conv_Filter extends android.support.v4.app.Fragment  imple
             for (int i = 0; i < totalSMS; i++) {
 
                 Test message = new Test();
-                String id = c.getString(c.getColumnIndexOrThrow("_id"));
-                message.setId(Integer.parseInt(id));
+               /* String id = c.getString(c.getColumnIndexOrThrow("_id"));
+                message.setId(Integer.parseInt(id));*/
                 String phone = c.getString(c.getColumnIndexOrThrow("address"));
                 message.setNumber(phone);
 
                 String body = c.getString(c.getColumnIndexOrThrow("body"));
                 message.setBody_(body);
-                long date = c.getLong(c.getColumnIndexOrThrow("date"));
-                message.setDate_(date);
-
+              /*  long date = c.getLong(c.getColumnIndexOrThrow("date"));
+                message.setDate_(date);*/
                 if (SmsReceiver.filter(getActivity(),body,phone) && !isBlocked(phone)) {
                     messages.add(message);
                 }

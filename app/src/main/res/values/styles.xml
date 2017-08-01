@@ -12,6 +12,7 @@
     <style name="Theme.TrueSMS" parent="Theme.AppCompat">
         <item name="android:actionBarStyle">@style/Widget.Styled.ActionBar</item>
         <item name="actionBarStyle">@style/Widget.Styled.ActionBar</item>
+
     </style>
 
     <style name="Theme.TrueSMS_Light" parent="Theme.AppCompat.Light.DarkActionBar">

@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.trantrungduong95.truesms.Model.Search;
+import com.example.trantrungduong95.truesms.Presenter.Activity_.SettingsOldActivity;
 import com.example.trantrungduong95.truesms.R;
 
 public class ConversationSearchAdapter extends ArrayAdapter<Search> implements Filterable {
@@ -23,11 +24,15 @@ public class ConversationSearchAdapter extends ArrayAdapter<Search> implements F
 	private Filter conversationFilter;
 	private List<Search> origConversationList;
 
+	private int textSize, textColor;
+
 	public ConversationSearchAdapter(List<Search> conversationList, Context context) {
 		super(context, R.layout.conversation_item, conversationList);
 		this.conversationList = conversationList;
 		this.context = context;
 		this.origConversationList = conversationList;
+		textSize = SettingsOldActivity.getTextsize(context);
+		textColor = SettingsOldActivity.getTextcolor(context);
 	}
 
 	public int getCount() {
@@ -56,15 +61,30 @@ public class ConversationSearchAdapter extends ArrayAdapter<Search> implements F
 			TextView nameSearch = (TextView) v.findViewById(R.id.name_search);
 			TextView bodySearch = (TextView) v.findViewById(R.id.body_search);
 			TextView textView3 = (TextView) v.findViewById(R.id.textView3);
+			TextView textView5 = (TextView) v.findViewById(R.id.textView5);
+
 			holder.conversationNameView = nameSearch;
 			holder.bodyView = bodySearch;
 			holder.textView3 = textView3;
+			holder.textView5 = textView5;
 			v.setTag(holder);
 		}
 		else
 			holder = (ConversationHolder) v.getTag();
 
 		Search p = conversationList.get(position);
+
+		if (textSize > 0) {
+			holder.conversationNameView.setTextSize(textSize);
+			holder.bodyView.setTextSize(textSize);
+		}
+		int col = textColor;
+		if (col != 0) {
+			holder.conversationNameView.setTextColor(col);
+			holder.textView3.setTextColor(col);
+			holder.textView5.setTextColor(col);
+			holder.bodyView.setTextColor(col);
+		}
 
 		if (p.getNum().matches("[-+]?\\d*\\.?\\d+"))
 		{
@@ -76,7 +96,6 @@ public class ConversationSearchAdapter extends ArrayAdapter<Search> implements F
 			holder.conversationNameView.setText(p.getNum());
 			holder.textView3.setText(context.getString(R.string.nameSearch));
 		}
-
 		holder.bodyView.setText(p.getContent());
 		return v;
 	}
@@ -95,6 +114,7 @@ public class ConversationSearchAdapter extends ArrayAdapter<Search> implements F
 		TextView conversationNameView;
 		TextView bodyView;
 		TextView textView3;
+		TextView textView5;
 	}
 
 	/*

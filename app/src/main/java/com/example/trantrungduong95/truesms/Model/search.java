@@ -9,6 +9,9 @@ public class Search {
     private String num;
     private String content;
 
+    public Search() {
+    }
+
     public Search(String num, String content) {
         this.num = num;
         this.content = content;

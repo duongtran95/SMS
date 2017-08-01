@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -271,13 +272,19 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
     protected void onRestart() {
         super.onRestart();
         if (SettingsOldActivity.getTheme(this) == R.style.Theme_TrueSMS){
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            if (SettingsOldActivity.getTextcolor(this) == Color.BLACK) {
+                prefs.edit().putInt(SettingsOldActivity.PREFS_TEXTCOLOR, Color.WHITE).apply();
+            }
             recreateActivity();
-            Log.e("1111","eee");
         }
-        else if (SettingsOldActivity.getTheme(this) == R.style.Theme_TrueSMS_Light){
+        else /*if (SettingsOldActivity.getTheme(this) == R.style.Theme_TrueSMS_Light)*/{
             {
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+                if (SettingsOldActivity.getTextcolor(this)== Color.WHITE) {
+                    prefs.edit().putInt(SettingsOldActivity.PREFS_TEXTCOLOR, Color.BLACK).apply();
+                }
                 recreateActivity();
-                Log.e("11112","iii");
             }
         }
     }

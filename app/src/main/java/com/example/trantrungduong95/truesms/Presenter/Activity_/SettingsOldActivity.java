@@ -91,7 +91,7 @@ public class SettingsOldActivity extends PreferenceActivity implements IPreferen
     private static String PREFS_TEXTSIZE = "textsizen";
 
     //Preference's name: text color.
-    private static String PREFS_TEXTCOLOR = "textcolor";
+    public static String PREFS_TEXTCOLOR = "textcolor";
 
     //Preference's name: ignore text color for list ov threads.
     private static String PREFS_TEXTCOLOR_IGNORE_CONV = "text_color_ignore_conv";

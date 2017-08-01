@@ -13,6 +13,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.provider.CallLog;
 import android.provider.CallLog.Calls;
 import android.util.Log;
 import android.view.View;
@@ -24,6 +25,7 @@ import com.example.trantrungduong95.truesms.MainActivity;
 import com.example.trantrungduong95.truesms.Model.Block;
 import com.example.trantrungduong95.truesms.Model.Contact;
 import com.example.trantrungduong95.truesms.Model.Conversation;
+import com.example.trantrungduong95.truesms.Model.Message;
 import com.example.trantrungduong95.truesms.Model.Wrapper.ContactsWrapper;
 import com.example.trantrungduong95.truesms.Presenter.Converter;
 import com.example.trantrungduong95.truesms.Presenter.Activity_.SettingsOldActivity;
@@ -32,6 +34,7 @@ import com.example.trantrungduong95.truesms.Presenter.SpamHandler;
 import com.example.trantrungduong95.truesms.R;
 import com.example.trantrungduong95.truesms.Receiver.SmsReceiver;
 
+import java.util.ArrayList;
 import java.util.List;
 
 // Adapter for the list of link Conversations.
@@ -82,6 +85,8 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
 
         View vRead;
     }
+
+    String bodyLast = null;
 
     //Handle queries in background.
     private class BackgroundQueryHandler extends AsyncQueryHandler {
@@ -233,12 +238,19 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
             text = SmileyParser.getInstance(context).addSmileySpans(text);
         }
         if (SmsReceiver.filter(context, text.toString(), contact.getNumber())) {
-            text = context.getString(R.string.filter_content);
-            holder.tvBody.setTextColor(Color.RED);
-        } else {
+            if (messageLastSMS(context,conv.getBody() ,conv.getContact().getNumber())!= null) {
+                Message msg = messageLastSMS(context, conv.getBody(), conv.getContact().getNumber());
+                //text = context.getString(R.string.filter_content);
+                text = msg.getBody();
+            }
+        } else{
             if (col != 0) {
+                text = conv.getBody();
                 holder.tvBody.setTextColor(col);
-            } else holder.tvBody.setTextColor(Color.GRAY);
+            } else {
+                text = conv.getBody();
+                holder.tvBody.setTextColor(Color.BLACK);
+            }
         }
         holder.tvBody.setText(text);
 
@@ -271,5 +283,33 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
 
     public List<Block> getBlacklist() {
         return blacklist;
+    }
+
+    private Message messageLastSMS(Context context,String text ,String addr){
+        Message message = new Message();
+        Uri URI_SMS = Uri.parse("content://sms/");
+        String SORT = CallLog.Calls.DATE + " DESC";
+        Cursor c = null;
+        try {
+            c = context.getContentResolver().query
+                    (URI_SMS, Message.PROJECTION, "address =?", new String[]{addr}, SORT);
+        } catch (Exception e) {
+            Log.e("error getting conv", e + "");
+        }
+        int totalSMS = 0;
+        if (c != null) {
+            totalSMS = c.getCount();
+        }
+        if (c != null && c.moveToFirst()) {
+            for (int i = 0; i < totalSMS; i++) {
+                message = Message.getMessage(context,c);
+                if (!message.getBody().toString().equals(text)) {
+                    return message;
+                }
+                c.moveToNext();
+            }
+            c.close();
+        }
+        return null;
     }
 }

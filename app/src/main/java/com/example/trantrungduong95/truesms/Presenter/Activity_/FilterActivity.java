@@ -231,7 +231,14 @@ public class FilterActivity extends AppCompatActivity {
                 Color.BLUE
         };
 
-        //pager.setBackgroundColor(Color.DKGRAY);
+        if (SettingsOldActivity.getTheme(this) == R.style.Theme_TrueSMS){
+            pager.setBackgroundColor(Color.parseColor("#ff303030"));
+        }
+        else /*if (SettingsOldActivity.getTheme(this) == R.style.Theme_TrueSMS_Light)*/{
+            {
+                pager.setBackgroundColor(Color.WHITE);
+            }
+        }
         ColorStateList myList = new ColorStateList(states, colors);
         tabs.setTabTextColors(myList);
 

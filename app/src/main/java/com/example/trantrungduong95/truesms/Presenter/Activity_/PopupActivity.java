@@ -182,6 +182,7 @@ public class PopupActivity extends AppCompatActivity implements View.OnClickList
                 intent.putExtra(Intent.EXTRA_TEXT, text);
                 intent.putExtra("sms_body", text);
                 startActivity(Intent.createChooser(intent, this.getString(resId)));
+                //startActivity(intent);
                 return true;
 
             case R.id.menu_close:
@@ -231,7 +232,7 @@ public class PopupActivity extends AppCompatActivity implements View.OnClickList
         Cursor c = null;
         try {
             c = getContentResolver().query
-                    (URI_SMS, Message.PROJECTION, Message.SELECTION_READ_UNREAD, Message.SELECTION_UNREAD, SORT);
+                    (URI_SMS, Message.PROJECTION, "address = ? and read = ?", new String[]{conv.getContact().getNumber(),"0"}, SORT);
         } catch (Exception e) {
             Log.e("error getting conv", e + "");
         }

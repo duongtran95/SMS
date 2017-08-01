@@ -293,6 +293,7 @@ public class ComposeActivity extends AppCompatActivity implements View.OnClickLi
             }
 
             try {
+                editText_reply = (EditText) findViewById(R.id.compose_reply_text);
                 send(r, text);
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(editText_reply.getWindowToken(), 0);

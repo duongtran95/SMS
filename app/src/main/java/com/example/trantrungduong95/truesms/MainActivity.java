@@ -14,11 +14,13 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.provider.CallLog;
 import android.provider.ContactsContract;
 import android.provider.Telephony;
 import android.support.annotation.NonNull;
@@ -197,6 +199,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         });
 
         db.createDefaultFilterIfNeed();
+        //getDataLastSMS(this,"12","Hot hot hot vip");
+
         Log.d("onCreate", "");
     }
 
@@ -212,10 +216,11 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         if (adapter != null) {
             adapter.startMsgListQuery();
         }
-        adapter = new ConversationsAdapter(this);
-        setListAdapter(adapter);
+        //adapter = new ConversationsAdapter(this);
+        //setListAdapter(adapter);
         Log.d("onResume", "");
     }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -244,13 +249,22 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
     protected void onRestart() {
         super.onRestart();
         if (SettingsOldActivity.getTheme(this) == R.style.Theme_TrueSMS){
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            if (SettingsOldActivity.getTextcolor(this) == Color.BLACK) {
+                prefs.edit().putInt(SettingsOldActivity.PREFS_TEXTCOLOR, Color.WHITE).apply();
+            }
             recreateActivity();
         }
-        else if (SettingsOldActivity.getTheme(this) == R.style.Theme_TrueSMS_Light){
+        else /*if (SettingsOldActivity.getTheme(this) == R.style.Theme_TrueSMS_Light)*/{
             {
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+                if (SettingsOldActivity.getTextcolor(this)== Color.WHITE) {
+                    prefs.edit().putInt(SettingsOldActivity.PREFS_TEXTCOLOR, Color.BLACK).apply();
+                }
                 recreateActivity();
             }
         }
+
     }
 
     @Override
@@ -612,16 +626,32 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         if (c != null && c.moveToFirst()) {
             for (int i = 0; i < totalSMS; i++) {
                 Conversation conv = Conversation.getConversation(this, c, true);
-                if (!isBlocked(conv.getContact().getNumber(),blockList)) {
-                    Search a = new Search(conv.getContact().getNameAndNumber(),conv.getBody());
-                    convListSearch.add(a);
+                if (!isBlocked(conv.getContact().getNumber(), blockList)) {
+                    /*if (messageLastSMS(conv) !=null) {
+                        Search search = new Search(conv.getContact().getNameAndNumber(),conv.getBody());
+                        *//*search.setNum(conv.getContact().getNameAndNumber());
+                        search.setContent(conv.getBody());*//*
+
+                    }*/
+                    Search search = null;//conv.getContact().getNameAndNumber(),conv.getBody());
+                    if (SmsReceiver.filter(this,conv.getBody(),conv.getContact().getNumber())){
+                        if (messageLastSMS(conv) != null){
+                            Message a = messageLastSMS(conv);
+                            Log.e("1234",a.getBody().toString());
+                            search = new Search(conv.getContact().getNameAndNumber(),a.getBody().toString());
+                            //conv.setBody(a.getBody().toString());
+                        }
+                    }else {
+                        search = new Search(conv.getContact().getNameAndNumber(),conv.getBody());
+                    }
+                    convListSearch.add(search);
                 }
                 c.moveToNext();
             }
             c.close();
         }
         return convListSearch;
-    }
+}
 
     private boolean isBlocked(String addr, List<Block> blockList) {
         if (addr == null) {
@@ -894,4 +924,32 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         return n.replaceAll("[^*#+0-9]", "").replaceAll("^[*#][0-9]*#", "");
     }
 
+    private Message messageLastSMS(Conversation conv){
+        Message message = new Message();
+        Uri URI_SMS = Uri.parse("content://sms/");
+        String SORT = CallLog.Calls.DATE + " DESC";
+        Cursor c = null;
+        try {
+            c = getContentResolver().query
+                    (URI_SMS, Message.PROJECTION, "address =?", new String[]{conv.getContact().getNumber()}, SORT);
+        } catch (Exception e) {
+            Log.e("error getting conv", e + "");
+        }
+        int totalSMS = 0;
+        if (c != null) {
+            totalSMS = c.getCount();
+        }
+            if (c != null && c.moveToFirst()) {
+                for (int i = 0; i < totalSMS; i++) {
+                    message = Message.getMessage(this, c);
+                    if (!message.getBody().toString().equals(conv.getBody())) {
+                        Log.e("123", message.getBody().toString());
+                        return message;
+                    }
+                    c.moveToNext();
+                }
+                c.close();
+            }
+        return message;
+    }
 }

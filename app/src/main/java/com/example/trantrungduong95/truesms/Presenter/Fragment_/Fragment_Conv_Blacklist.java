@@ -5,6 +5,7 @@ import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -24,9 +25,11 @@ import com.example.trantrungduong95.truesms.MainActivity;
 import com.example.trantrungduong95.truesms.Model.Block;
 import com.example.trantrungduong95.truesms.Model.Contact;
 import com.example.trantrungduong95.truesms.Model.Conversation;
+import com.example.trantrungduong95.truesms.Model.Message;
 import com.example.trantrungduong95.truesms.Model.Wrapper.ContactsWrapper;
 import com.example.trantrungduong95.truesms.Presenter.Activity_.BlacklistActivity;
 import com.example.trantrungduong95.truesms.R;
+import com.example.trantrungduong95.truesms.Receiver.SmsReceiver;
 
 import java.util.ArrayList;
 
@@ -158,10 +161,38 @@ public class Fragment_Conv_Blacklist extends android.support.v4.app.Fragment imp
                             builder.show();
                             break;
                         case WHICH_DELETE:
-                            MainActivity.deleteMessages(getActivity(), target,
+/*                            MainActivity.deleteMessages(getActivity(), target,
                                     R.string.delete_thread_,
                                     R.string.delete_thread_question,
-                                    null);
+                                    null);*/
+
+                            AlertDialog.Builder builder22 = new AlertDialog.Builder(getActivity());
+                            builder22.setTitle( R.string.delete_thread_);
+                            builder22.setMessage( R.string.delete_thread_question);
+                            builder22.setNegativeButton(android.R.string.no, null);
+                            builder22.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(final DialogInterface dialog, final int which) {
+                                    try {
+                                        int ret = getActivity().getContentResolver().delete(target, null, null);
+                                        Log.d("deleted: ", ret + "");
+                                        if (ret > 0) {
+                                            Conversation.flushCache();
+                                            Message.flushCache();
+                                            SmsReceiver.updateNewMessageNotification(getActivity(), null);
+                                            conversationArrayList.remove(conversationArrayList.get(position));
+                                            fragmentBlacklistAdapter.notifyDataSetChanged();
+                                        }
+                                    } catch (IllegalArgumentException e) {
+                                        Log.e("DeleteConvBlacklist", "Argument Error", e);
+                                        Toast.makeText(getActivity(), R.string.error_unknown, Toast.LENGTH_LONG).show();
+                                    } catch (SQLiteException e) {
+                                        Log.e("DeleteConvBlacklist", "SQL Error", e);
+                                        Toast.makeText(getActivity(), R.string.error_unknown, Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                            });
+                            builder22.show();
                             break;
                         default:
                             break;
@@ -176,6 +207,12 @@ public class Fragment_Conv_Blacklist extends android.support.v4.app.Fragment imp
         builder.create().show();
 
         return true;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
     }
 
     private void handleData(View view) {

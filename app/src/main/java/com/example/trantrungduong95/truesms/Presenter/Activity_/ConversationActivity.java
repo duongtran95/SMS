@@ -382,6 +382,7 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
         if (intent.getExtras() !=null) {
             ImageView sendSMS = findMenuItemView(R.id.send_SMS);
             ImageView attachment = findMenuItemView(R.id.compose_icon);
+
             if (intent.getExtras().getBoolean("turnOffCompose")) {
                 etText.setEnabled(true);
                 if (sendSMS != null) {
@@ -390,6 +391,7 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
                 if (attachment != null) {
                     attachment.setEnabled(true);
                 }
+
             }
             else {
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -401,7 +403,6 @@ public class ConversationActivity extends AppCompatActivity implements AdapterVi
                 if (attachment != null) {
                     attachment.setEnabled(false);
                 }
-
             }
         }
         uri = intent.getData();

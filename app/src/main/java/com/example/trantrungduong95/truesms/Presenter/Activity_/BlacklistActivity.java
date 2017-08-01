@@ -4,13 +4,10 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
-import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Build;
-import android.preference.PreferenceManager;
-import android.provider.ContactsContract;
+
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -25,19 +22,16 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.example.trantrungduong95.truesms.CustomAdapter.ConversationSearchAdapter;
 import com.example.trantrungduong95.truesms.CustomAdapter.PagerBlacklistAdapter;
 import com.example.trantrungduong95.truesms.MainActivity;
 import com.example.trantrungduong95.truesms.Model.Block;
-import com.example.trantrungduong95.truesms.Model.Contact;
 import com.example.trantrungduong95.truesms.Model.Search;
 import com.example.trantrungduong95.truesms.Presenter.Fragment_.Fragment_Blacklist;
 import com.example.trantrungduong95.truesms.Presenter.Fragment_.Fragment_Conv_Blacklist;
-import com.example.trantrungduong95.truesms.Presenter.Fragment_.Fragment_Filter;
 import com.example.trantrungduong95.truesms.Presenter.SpamHandler;
-import com.example.trantrungduong95.truesms.Presenter.Utils;
+
 import com.example.trantrungduong95.truesms.R;
 
 import java.util.ArrayList;
@@ -207,8 +201,8 @@ public class BlacklistActivity extends AppCompatActivity {
 
             //hides the keyboard
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(edtSearch.getWindowToken(), 0);
-
+            //imm.hideSoftInputFromWindow(edtSearch.getWindowToken(), 0);
+            imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
             //add the search icon in the action bar
             mSearchAction.setIcon(getResources().getDrawable(R.drawable.ic_search));
 
@@ -268,8 +262,8 @@ public class BlacklistActivity extends AppCompatActivity {
 
             //open the keyboard focused in the edtSearch
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(edtSearch, InputMethodManager.SHOW_IMPLICIT);
-
+            //imm.showSoftInput(edtSearch, InputMethodManager.SHOW_IMPLICIT);
+            imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
             // click item listViewSearch
             listViewSearch.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override

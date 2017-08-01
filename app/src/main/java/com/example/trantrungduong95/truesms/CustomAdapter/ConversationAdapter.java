@@ -296,28 +296,26 @@ public class ConversationAdapter extends ResourceCursorAdapter {
 
         }
         else if (SmsReceiver.filter(context, text.toString(), message.getAddress(context))) {
-            view.setVisibility(View.GONE);
-            view.getLayoutParams().height = 1;
-/*            holder.tvBody.setText(context.getString(R.string.filter_content));
+            holder.tvBody.setText(context.getString(R.string.filter_content));
             holder.btnShow.setVisibility(View.VISIBLE);
             final String t = text.toString();
             final ViewHolder finalHolder = holder;
             holder.btnShow.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                   *//* finalHolder.btnShow.setText(context.getString(R.string.goFilterd));*//*
+                    finalHolder.btnShow.setText(context.getString(R.string.goFilterd));
                     finalHolder.tvBody.setText(t);
                     finalHolder.btnShow.setVisibility(View.GONE);
-                    *//*finalHolder.btnShow.setOnClickListener(new OnClickListener() {
+                    finalHolder.btnShow.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             Intent intent = new Intent(context, FilterActivity.class);
                             context.startActivity(intent);
                         }
-                    });*//*
+                    });
                 }
-            });*/
-            final String t = text.toString();
+            });
+            //final String t = text.toString();
             if (flag1) {
                 view.setVisibility(View.VISIBLE);
                 view.getLayoutParams().height = 0;

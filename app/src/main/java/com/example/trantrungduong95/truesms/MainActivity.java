@@ -15,6 +15,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.graphics.Color;
+import android.media.audiofx.LoudnessEnhancer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -248,17 +249,16 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
     @Override
     protected void onRestart() {
         super.onRestart();
-        if (SettingsOldActivity.getTheme(this) == R.style.Theme_TrueSMS){
+        if (SettingsOldActivity.getTheme(this) == R.style.Theme_TrueSMS) {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
             if (SettingsOldActivity.getTextcolor(this) == Color.BLACK) {
                 prefs.edit().putInt(SettingsOldActivity.PREFS_TEXTCOLOR, Color.WHITE).apply();
             }
             recreateActivity();
-        }
-        else /*if (SettingsOldActivity.getTheme(this) == R.style.Theme_TrueSMS_Light)*/{
+        } else if (SettingsOldActivity.getTheme(this) == R.style.Theme_TrueSMS_Light) {
             {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-                if (SettingsOldActivity.getTextcolor(this)== Color.WHITE) {
+                if (SettingsOldActivity.getTextcolor(this) == Color.WHITE) {
                     prefs.edit().putInt(SettingsOldActivity.PREFS_TEXTCOLOR, Color.BLACK).apply();
                 }
                 recreateActivity();
@@ -266,7 +266,6 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         }
 
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.conversationlist, menu);
@@ -481,10 +480,12 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                 action.setDisplayShowCustomEnabled(false); //disable a custom view inside the actionbar
                 action.setDisplayShowTitleEnabled(true); //show the title in the action bar
             }
+
+
             //hides the keyboard
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(edtSearch.getWindowToken(), 0);
-
+            //imm.hideSoftInputFromWindow(edtSearch.getWindowToken(), 0);
+            imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
             //add the search icon in the action bar
             mSearchAction.setIcon(getResources().getDrawable(R.drawable.ic_search));
 
@@ -502,6 +503,10 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                 edtSearch = (EditText) action.getCustomView().findViewById(R.id.edtSearch); //the text editor
             }
 
+            //open the keyboard focused in the edtSearch
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            //imm.showSoftInput(edtSearch, InputMethodManager.SHOW_IMPLICIT);
+            imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
             //this is a listener to do a search when the user clicks on search button
             listview_conversation.setVisibility(View.INVISIBLE);
             listView = (ListView) findViewById(R.id.listView);
@@ -545,10 +550,6 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
 
             edtSearch.requestFocus();
 
-            //open the keyboard focused in the edtSearch
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(edtSearch, InputMethodManager.SHOW_IMPLICIT);
-
             // click item listview
             final ArrayList<Search> finalConversationsArrayList = conversationsArrayList1;
             listView.setOnItemClickListener(new OnItemClickListener() {
@@ -567,7 +568,6 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
 
             //add the close icon
             mSearchAction.setIcon(getResources().getDrawable(R.drawable.ic_cancel));
-
             isSearchOpened = true;
         }
     }
@@ -635,12 +635,12 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                     }*/
                     Search search = null;//conv.getContact().getNameAndNumber(),conv.getBody());
                     if (SmsReceiver.filter(this,conv.getBody(),conv.getContact().getNumber())){
-                        if (messageLastSMS(conv) != null){
-                            Message a = messageLastSMS(conv);
-                            Log.e("1234",a.getBody().toString());
-                            search = new Search(conv.getContact().getNameAndNumber(),a.getBody().toString());
+                        /*if (messageLastSMS(conv) != null){
+                            Message a = messageLastSMS(conv);*/
+                            //Log.e("1234",a.getBody().toString());
+                            search = new Search(conv.getContact().getNameAndNumber(),conv.getBody());
                             //conv.setBody(a.getBody().toString());
-                        }
+                        //}
                     }else {
                         search = new Search(conv.getContact().getNameAndNumber(),conv.getBody());
                     }
@@ -924,7 +924,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         return n.replaceAll("[^*#+0-9]", "").replaceAll("^[*#][0-9]*#", "");
     }
 
-    private Message messageLastSMS(Conversation conv){
+    /*private Message messageLastSMS(Conversation conv){
         Message message = new Message();
         Uri URI_SMS = Uri.parse("content://sms/");
         String SORT = CallLog.Calls.DATE + " DESC";
@@ -951,5 +951,5 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                 c.close();
             }
         return message;
-    }
+    }*/
 }

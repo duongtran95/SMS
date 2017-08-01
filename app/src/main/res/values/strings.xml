@@ -111,7 +111,7 @@
     <string name="error_sending_failed">Gửi tin nhắn thất bại</string>
     <string name="sending_successfully">Gửi tin nhắn thành công</string>
     <string name="text_hint">Text</string>
-    <string name="restore_">Khôi phục tin nhắn cuối cùng</string>
+    <string name="restore_">Nội dung tin nhắn cuối</string>
     <string name="attachment_saved">Đã lưu tệp đính kèm trên thẻ SD dưới dạng:</string>
     <string name="attachment_not_saved">Không thể lưu tệp đính kèm.</string>
     <string name="notification_icon_">Biểu tượng thông báo</string>

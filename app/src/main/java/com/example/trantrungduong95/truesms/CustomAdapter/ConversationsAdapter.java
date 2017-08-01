@@ -243,6 +243,10 @@ public class ConversationsAdapter extends ResourceCursorAdapter {
                 //text = context.getString(R.string.filter_content);
                 text = msg.getBody();
             }
+            else {
+                view.setVisibility(View.GONE);
+                view.getLayoutParams().height = 1;
+            }
         } else{
             if (col != 0) {
                 text = conv.getBody();

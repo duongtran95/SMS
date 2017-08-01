@@ -82,7 +82,8 @@ public class FragmentFilterdAdapter extends ArrayAdapter<Conversation> {
             if (count < 0) {
                 holder.tvCount.setText("");
             } else {
-                holder.tvCount.setText(context.getString(R.string.count) + ": " + conversation.getCount() + "");
+                holder.tvCount.setText("");
+                //holder.tvCount.setText(context.getString(R.string.count) + ": " + conversation.getCount() + "");
             }
         }
 
